@@ -26,6 +26,25 @@ npx serve .
 
 Y abrir http://localhost:8000/
 
+## Marca
+
+El logotipo es **monocromo**: negro, blanco y plata. Ya no hay azul de marca
+(`#2f6bff`); el color solo aparece cuando significa algo — un estado, un
+resultado de comprobacion, el acento de una demo.
+
+| Donde | Que hay |
+|---|---|
+| `brand/simbolo.svg`, `brand/simbolo-blanco.svg` | El isotipo, para fondos claros y oscuros |
+| `brand/logo-horizontal.svg`, `-blanco.svg` | Isotipo + nombre |
+| `brand/favicon.svg`, `favicon.svg` | Icono de pestana |
+| `brand/share-card.png` | Tarjeta de enlace (1200x630) |
+
+En `index.html`, `gracias.html` y las paginas legales el isotipo va **en linea**
+(dos `path`), para que tome el color del fondo de cada barra sin cargar otro
+archivo. Si llega un SVG oficial nuevo, se sustituyen esos dos `path` — hay un
+comentario en el sitio exacto — y los archivos de `brand/`. La forma no se
+redibuja aqui: se copia del asset.
+
 ## Estructura
 
 | Ruta | Que es |
@@ -61,6 +80,29 @@ git add -A && git commit -m "Actualizar la web" && git push
 ```
 
 Netlify despliega solo al recibir el push.
+
+## Movimiento
+
+Todo el movimiento vive en `main.js`, sin dependencias, en **un solo bucle**:
+
+- El **scroll** manda en el relato. Cada seccion con historia (hero, las cuatro
+  etapas, el proceso, el anillo de sectores y el escaparate) calcula su
+  progreso 0..1 desde la posicion de su contenedor y escribe variables CSS. No
+  hay animaciones "disparadas": son funcion directa del scroll, asi que se
+  pueden parar a medio camino y volver atras.
+- El **raton** manda en la luz y el relieve, y siempre suma sobre lo que el
+  scroll ya decidio.
+- El bucle solo pide fotogramas cuando hay algo que mover, y ninguna seccion
+  fuera de pantalla se recalcula.
+- Con `prefers-reduced-motion: reduce` no se anima nada: las historias se
+  convierten en listas legibles con el mismo contenido. Lo mismo por debajo de
+  560 px de alto, donde un panel pegajoso no cabe.
+
+Las maquetas de web (`.mock`) son un componente reutilizable: el mismo sirve
+para el hero, las cuatro etapas, las seis tarjetas de sector y los tres
+escaparates. Todo mide en `em` y el tamano se controla con `--mfs`. Las "fotos"
+son composiciones de degradados: **no hay imagenes externas**, asi que no hay
+nada que se pueda caer.
 
 ## Pendiente
 
