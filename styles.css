@@ -1,0 +1,732 @@
+/* ===========================================================================
+   TIPOGRAFIAS SERVIDAS DESDE ESTE MISMO DOMINIO
+   ---------------------------------------------------------------------------
+   Antes se cargaban del CDN de Google Fonts. Eso enviaba la direccion IP de
+   cada visitante a un tercero antes de que nadie aceptase nada, lo cual es
+   dificil de sostener en una web que vende cumplimiento legal — y anadia dos
+   conexiones externas que retrasan el primer texto.
+   Ambas familias tienen licencia SIL Open Font License 1.1, que permite
+   servirlas. Las licencias viajan al lado, en esta misma carpeta.
+   =========================================================================== */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;
+  src:url('/fonts/inter-400.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;
+  src:url('/fonts/inter-500.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
+  src:url('/fonts/inter-600.woff2') format('woff2')}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500;font-display:swap;
+  src:url('/fonts/spacegrotesk-500.woff2') format('woff2')}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:700;font-display:swap;
+  src:url('/fonts/spacegrotesk-700.woff2') format('woff2')}
+
+/* ===========================================================================
+   VANGUARD TECH — sistema visual
+   Negro, blanco, grises y azul eléctrico con cuentagotas.
+   Los tonos son los de BRAND/BRAND_GUIDELINES; si cambian allí, cambian aquí.
+   Sin dependencias: todo es CSS 3D + transformaciones sobre GPU.
+   =========================================================================== */
+
+:root{
+  --ink:#08090b;
+  --ink-soft:#12151a;
+  --paper:#ffffff;
+  --paper-2:#f5f6f8;
+  /* Cumple sobre blanco Y sobre --paper-2: el gris se usa sobre los dos, y el
+     anterior (#6a7381) se quedaba en 4,43:1 sobre el fondo con tinte. */
+  --muted:#656d7a;        /* 5,22:1 sobre blanco · 4,83:1 sobre papel 2 */
+  --muted-dark:#98a2b0;   /* 7,71:1 sobre tinta  · 7,08:1 sobre tarjeta oscura */
+  --line:#e6e8ec;
+  --line-dark:#22262d;
+
+  /* El azul eléctrico. SOLO gráfica: el isotipo, resplandores, rellenos.
+     Da 4,50:1 sobre blanco, por debajo del mínimo AA para texto. */
+  --brand:#2f6bff;
+
+  /* --accent es el azul que SÍ se puede leer, y cambia según el fondo de la
+     sección: sobre claro el fuerte, sobre oscuro el claro. Por eso hay dos
+     tokens y no uno: el color de marca y el color legible no son el mismo. */
+  --accent:#1d5cf0;       /* 5,47:1 sobre blanco */
+  --accent-soft:#656d7a;
+  --glow:rgba(47,107,255,.30);
+
+  --w:1200px;
+  --r:14px;
+  --r-lg:26px;
+  --font:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --display:'Space Grotesk','Inter',system-ui,sans-serif;
+  /* curva de Apple: sale rápido, entra despacio, nunca rebota */
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-soft:cubic-bezier(.4,0,.2,1);
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+/* La barra de navegacion es fija, asi que tapa lo alto de cualquier seccion a
+   la que se salte. `--nav-h` es su altura real: en movil son dos filas (logo y
+   boton arriba, enlaces debajo) y mide casi el doble que en escritorio. Sin
+   esto, pulsar "Pricing" en un movil deja el titulo debajo de la barra. */
+:root{--nav-h:133px}
+@media(min-width:960px){:root{--nav-h:76px}}
+:target,section[id],footer[id]{scroll-margin-top:calc(var(--nav-h) + 20px)}
+body{
+  margin:0;background:var(--paper);color:var(--ink);font-family:var(--font);
+  font-size:clamp(1rem,.95rem + .22vw,1.09rem);line-height:1.6;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  overflow-x:hidden;
+}
+img,svg,canvas{max-width:100%;display:block}
+a{color:inherit}
+::selection{background:var(--accent);color:#fff}
+
+h1,h2,h3,h4{font-family:var(--display);margin:0 0 .5em;font-weight:700}
+h1{font-size:clamp(2.4rem,1.5rem + 3.3vw,4.25rem);line-height:1;letter-spacing:-.042em}
+h2{font-size:clamp(2.1rem,1.4rem + 3.1vw,4rem);line-height:1.02;letter-spacing:-.04em;
+  text-wrap:balance}
+h3{font-size:clamp(1.15rem,1rem + .6vw,1.5rem);line-height:1.15;letter-spacing:-.025em}
+p{margin:0 0 1.1em;max-width:62ch}
+
+.wrap{width:min(100% - 2.5rem,var(--w));margin-inline:auto}
+section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
+.eyebrow{
+  font-size:.74rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--accent-soft);margin:0 0 1.2rem;display:flex;align-items:center;gap:.7rem;
+}
+.eyebrow::before{content:"";width:26px;height:1.5px;background:var(--accent);flex:none}
+.lead{font-size:clamp(1.1rem,1rem + .55vw,1.4rem);color:var(--muted);max-width:52ch;line-height:1.5}
+.muted{color:var(--muted)}
+.center{text-align:center}
+.center .eyebrow{justify-content:center}
+.center .lead,.center p{margin-inline:auto}
+
+/* ============================================================ NAVEGACIÓN === */
+.nav{
+  position:fixed;inset:0 0 auto 0;z-index:100;
+  background:rgba(255,255,255,0);backdrop-filter:blur(0px);
+  border-bottom:1px solid transparent;
+  transition:background .4s var(--ease-soft),backdrop-filter .4s var(--ease-soft),border-color .4s var(--ease-soft);
+}
+.nav.is-stuck{background:rgba(255,255,255,.78);backdrop-filter:saturate(180%) blur(20px);border-bottom-color:var(--line)}
+.nav.is-dark{color:#fff}
+.nav.is-dark.is-stuck{background:rgba(8,9,11,.66);border-bottom-color:var(--line-dark)}
+.nav__inner{display:flex;align-items:center;flex-wrap:wrap;gap:1rem;padding:1.05rem 0 .5rem}
+@media(min-width:960px){.nav__inner{flex-wrap:nowrap;padding:1.05rem 0}}
+@media(min-width:960px){.nav__inner{gap:2rem}}
+.brand{display:flex;align-items:center;gap:.6rem;font-family:var(--display);font-weight:700;
+  font-size:1.05rem;letter-spacing:-.035em;text-decoration:none;white-space:nowrap;flex:none}
+@media(max-width:420px){.brand{font-size:.95rem;gap:.45rem}}
+/* 26 px, no 21. Los brazos del isotipo miden 16 de 120 unidades: a 21 px eso
+   son 2,8 px y el brazo oscuro se lava con el antialiasing, de modo que la
+   marca se lee como una barra "/" en vez de como una V. A 26 px vuelve a
+   leerse. Comprobado comparando 21/24/26/28/32 px sobre claro y sobre oscuro. */
+.brand__mark{width:26px;height:26px;flex:none}
+/* Primer brazo: el color del texto de alrededor. Segundo: el azul de marca.
+   Es gráfica, no texto, así que aquí sí va el azul eléctrico puro. */
+.brand__mark path:first-child{fill:currentColor}
+.brand__mark path:last-child{fill:var(--brand)}
+/* En movil los enlaces bajan a una segunda fila que se desliza en horizontal.
+   Antes se ocultaban por completo por debajo de 960 px: con doce secciones,
+   quien entraba desde el movil no tenia forma de llegar a Pricing salvo
+   desplazandose por toda la pagina. Fila deslizante en vez de menu desplegable
+   porque no necesita JavaScript, ni atrapar el foco, ni estado que sincronizar. */
+.nav__links{
+  display:flex;gap:1.5rem;order:3;flex:1 0 100%;
+  margin:.75rem -1.25rem -.2rem;padding:0 1.25rem .55rem;
+  overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;
+}
+.nav__links::-webkit-scrollbar{display:none}
+.nav__links a{flex:none}
+.nav__links a{text-decoration:none;opacity:.62;font-size:.92rem;font-weight:500;
+  position:relative;padding:.25rem 0;transition:opacity .25s var(--ease-soft)}
+.nav__links a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1.5px;
+  background:currentColor;transition:right .35s var(--ease)}
+.nav__links a:hover{opacity:1}
+.nav__links a:hover::after{right:0}
+@media(min-width:960px){
+  .nav__links{gap:2.1rem;order:0;flex:0 1 auto;margin:0 0 0 auto;padding:0;overflow:visible}
+}
+.nav .btn{margin-left:auto}
+@media(min-width:960px){.nav .btn{margin-left:0}}
+
+/* ================================================================ BOTONES == */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  padding:.92rem 1.7rem;border-radius:999px;font-weight:600;font-size:.97rem;
+  text-decoration:none;border:1.5px solid transparent;cursor:pointer;min-height:52px;
+  font-family:inherit;position:relative;overflow:hidden;white-space:nowrap;
+  transform:translate3d(0,0,0);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease),background .3s var(--ease-soft),border-color .3s var(--ease-soft);
+}
+.btn:hover{transform:translate3d(0,-2px,0)}
+.btn:active{transform:translate3d(0,0,0) scale(.985)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn--primary{background:var(--ink);color:#fff}
+.btn--primary:hover{background:#000;box-shadow:0 14px 36px rgba(0,0,0,.25)}
+/* Sobre fondo negro el botón se invierte: en monocromo el contraste es el
+   único recurso, así que un botón oscuro sobre negro desaparecería. */
+.hero .btn--primary,.section--dark .btn--primary,.speed .btn--primary,
+.nav.is-dark .btn--primary{background:#fff;color:#000}
+.hero .btn--primary:hover,.section--dark .btn--primary:hover,
+.speed .btn--primary:hover,.nav.is-dark .btn--primary:hover{
+  background:#f5f5f7;box-shadow:0 14px 36px rgba(255,255,255,.18)}
+.btn--ghost{border-color:currentColor;opacity:.75}
+.btn--ghost:hover{opacity:1}
+.btn--light{background:#fff;color:var(--ink)}
+.btn--light:hover{box-shadow:0 14px 40px rgba(255,255,255,.22)}
+.btn--sm{padding:.55rem 1.2rem;min-height:40px;font-size:.87rem}
+.btn-row{display:flex;flex-wrap:wrap;gap:.85rem;margin-top:2rem}
+.center .btn-row{justify-content:center}
+
+/* Flecha que avanza al pasar el ratón */
+.btn .arr{display:inline-block;transition:transform .35s var(--ease)}
+/* La barra superior necesita una etiqueta corta cuando no hay sitio. */
+.only-wide{display:none}
+.only-narrow{display:inline}
+@media(min-width:560px){.only-wide{display:inline}.only-narrow{display:none}}
+.btn:hover .arr{transform:translateX(4px)}
+
+/* =============================================================== REVELADO == */
+/* Estado inicial. `main.js` añade .in cuando el elemento entra en pantalla. */
+.rv{opacity:0;transform:translate3d(0,26px,0);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);will-change:opacity,transform}
+.rv.in{opacity:1;transform:none}
+
+/* Las fichas entran con volumen: se levantan girando sobre su borde inferior
+   en lugar de deslizarse en plano. La perspectiva la pone el contenedor, asi
+   que el giro de cada ficha se ve desde el mismo punto de vista y la fila
+   entera se lee como un solo movimiento. */
+.grid,.price{perspective:1400px;perspective-origin:50% 20%}
+.grid > .rv,.price > .rv{transform:translate3d(0,34px,0) rotateX(12deg);transform-origin:50% 100%}
+.grid > .rv.in,.price > .rv.in{transform:none}
+.rv-d1{transition-delay:.08s}.rv-d2{transition-delay:.16s}.rv-d3{transition-delay:.24s}
+.rv-d4{transition-delay:.32s}.rv-d5{transition-delay:.4s}.rv-d6{transition-delay:.48s}
+
+/* Titular que se revela línea a línea */
+.split{display:block;overflow:hidden}
+.split > span{display:block;transform:translate3d(0,105%,0);transition:transform 1.05s var(--ease)}
+.in .split > span,.split.in > span{transform:none}
+.split-d1 > span{transition-delay:.06s}
+.split-d2 > span{transition-delay:.12s}
+
+/* ================================================================== HERO === */
+.hero,.speed,.section--dark,footer{
+  /* Sobre oscuro el azul legible es el claro: 8,25:1 sobre la tinta. */
+  --accent:#7da5ff;
+  --accent-soft:#98a2b0;
+  --glow:rgba(125,165,255,.22);
+}
+
+.hero{
+  min-height:100svh;display:flex;align-items:center;
+  padding-top:calc(var(--nav-h) + 2.2rem);padding-bottom:5rem;
+  background:#000;color:#fff;overflow:hidden;
+}
+.hero__bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+/* Malla de luz: dos orbes que orbitan muy despacio. Sin imágenes. */
+.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
+  will-change:transform;transform:translate3d(0,0,0)}
+.orb--1{width:56vw;height:56vw;left:-10vw;top:-18vw;
+  background:radial-gradient(circle,rgba(47,107,255,.34),transparent 66%);
+  animation:drift1 22s var(--ease-soft) infinite alternate}
+.orb--2{width:46vw;height:46vw;right:-14vw;bottom:-20vw;
+  background:radial-gradient(circle,rgba(255,255,255,.09),transparent 68%);
+  animation:drift2 27s var(--ease-soft) infinite alternate}
+@keyframes drift1{to{transform:translate3d(9vw,7vw,0) scale(1.14)}}
+@keyframes drift2{to{transform:translate3d(-8vw,-6vw,0) scale(1.1)}}
+/* Rejilla en perspectiva: suelo tecnológico */
+/* El lienzo de particulas del hero. Se llamaba `.field`, igual que los campos
+   del formulario, y la regla de movimiento reducido que lo ocultaba se llevaba
+   por delante los seis campos: quien tuviera activado "reducir movimiento" en
+   su sistema veia un formulario SIN CAMPOS. Nombre propio para que no vuelva. */
+.hero__field{position:absolute;inset:0;width:100%;height:100%;opacity:.55;pointer-events:none}
+.hero__grid{
+  position:absolute;inset:auto 0 -10% 0;height:60%;
+  background-image:linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px);
+  background-size:70px 70px;
+  transform:perspective(420px) rotateX(64deg);
+  transform-origin:bottom center;
+  mask-image:linear-gradient(to top,#000 5%,transparent 78%);
+  -webkit-mask-image:linear-gradient(to top,#000 5%,transparent 78%);
+}
+.hero__inner{position:relative;z-index:2;display:grid;gap:3.5rem;align-items:center}
+@media(min-width:1040px){.hero__inner{grid-template-columns:1.12fr .88fr;gap:3.5rem}}
+/* Última línea del titular en azul. Es el claro (#7da5ff), no el eléctrico:
+   sobre el negro del hero da 8,25:1 y el vivo se queda en 4,43:1. Un titular
+   es texto, aunque sea grande. */
+.hero h1 .accent{color:var(--accent)}
+.hero .lead{color:rgba(255,255,255,.7);max-width:44ch}
+.hero__stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:1.4rem;margin-top:2.6rem;padding-top:1.7rem;border-top:1px solid rgba(255,255,255,.14)}
+.hero__stat b{display:block;font-family:var(--display);font-size:1.6rem;letter-spacing:-.035em;
+  line-height:1;margin-bottom:.4rem;font-variant-numeric:tabular-nums}
+.hero__stat span{font-size:.82rem;color:rgba(255,255,255,.52);line-height:1.35;display:block}
+
+/* Indicador de scroll */
+.scroll-hint{position:absolute;left:50%;bottom:1.2rem;transform:translateX(-50%);z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;
+  font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.4)}
+.scroll-hint i{width:1px;height:38px;background:linear-gradient(to bottom,rgba(255,255,255,.5),transparent);
+  animation:hint 2.4s var(--ease-soft) infinite}
+@keyframes hint{0%{transform:scaleY(0);transform-origin:top}
+  45%{transform:scaleY(1);transform-origin:top}
+  55%{transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* ============================================ MAQUETA DE NAVEGADOR EN 3D === */
+.stage{perspective:1100px;perspective-origin:50% 45%;padding:1.5rem 0}
+@media(min-width:1040px){.stage{margin-right:1.5rem}}
+.device{
+  position:relative;transform-style:preserve-3d;will-change:transform;
+  /* --rx y --ry las escribe main.js según el ratón y el scroll */
+  transform:rotateX(var(--rx,7deg)) rotateY(var(--ry,-13deg));
+  transition:transform .5s var(--ease-soft);
+}
+.device.is-live{transition:transform .12s linear}
+
+/* ---- Sólido de seis caras --------------------------------------------------
+   No es una tarjeta con perspectiva: es un volumen. Cada cara se coloca en el
+   espacio con su propia rotación y desplazamiento en Z, así que al girar se
+   ven los cantos y el objeto tiene grosor de verdad. */
+.slab{
+  position:relative;transform-style:preserve-3d;
+  --d:14px;                      /* mitad del grosor */
+  width:100%;aspect-ratio:4/3;
+}
+.slab__face{position:absolute;inset:0;backface-visibility:hidden}
+.slab__face--front{transform:translateZ(var(--d));border-radius:16px;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,.5)}
+.slab__face--back{transform:translateZ(calc(var(--d) * -1)) rotateY(180deg);
+  background:#141416;border-radius:16px;border:1px solid #232326}
+/* Los cantos: alto o ancho igual al grosor, girados 90 grados */
+.slab__face--right{width:calc(var(--d) * 2);left:auto;right:calc(var(--d) * -1);
+  transform:rotateY(90deg);background:linear-gradient(180deg,#2a2a2c,#1a1a1c)}
+.slab__face--left{width:calc(var(--d) * 2);right:auto;left:calc(var(--d) * -1);
+  transform:rotateY(-90deg);background:linear-gradient(180deg,#1a1a1c,#2a2a2c)}
+.slab__face--top{height:calc(var(--d) * 2);bottom:auto;top:calc(var(--d) * -1);
+  transform:rotateX(90deg);background:linear-gradient(90deg,#2a2a2c,#38383a,#2a2a2c)}
+.slab__face--bottom{height:calc(var(--d) * 2);top:auto;bottom:calc(var(--d) * -1);
+  transform:rotateX(-90deg);background:linear-gradient(90deg,#141416,#1f1f21,#141416)}
+/* La cara frontal lleva dentro el navegador; se le quita la sombra propia
+   porque ahora la proyecta el sólido entero. */
+.slab__face--front .browser{box-shadow:none;border:0;border-radius:16px;height:100%}
+.slab__face--front .browser__body{min-height:0;height:calc(100% - 37px)}
+.browser{
+  border-radius:16px;overflow:hidden;background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.2),0 30px 70px rgba(0,0,0,.45),0 70px 140px rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.1);
+}
+.browser__bar{display:flex;align-items:center;gap:7px;padding:.65rem .85rem;background:#f1f2f4;
+  border-bottom:1px solid #e3e5e9}
+.browser__bar i{width:9px;height:9px;border-radius:50%;background:#d3d7dd;flex:none}
+.browser__url{margin-left:.6rem;height:20px;flex:1;border-radius:999px;background:#fff;
+  border:1px solid #e3e5e9;display:flex;align-items:center;padding:0 .6rem;
+  font-size:.62rem;color:#98a2b0;font-family:var(--font);overflow:hidden;white-space:nowrap}
+.browser__body{min-height:290px;background:#fff}
+
+/* Capas flotantes con profundidad real en Z */
+/* Chips de dato. Fondo sólido: sobre la maqueta tienen que leerse, no fundirse. */
+.float{position:absolute;border-radius:14px;padding:.75rem 1.05rem;
+  background:#12151a;border:1px solid rgba(255,255,255,.12);
+  font-size:.76rem;color:#fff;white-space:nowrap;
+  box-shadow:0 20px 50px rgba(0,0,0,.55),0 2px 0 rgba(255,255,255,.05) inset;
+  will-change:transform}
+.float b{display:block;font-family:var(--display);font-size:1.05rem;letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums;line-height:1.1}
+.float span{opacity:.55;font-size:.69rem;letter-spacing:.02em}
+/* Las dos pastillas van hacia la DERECHA del escenario. Sobresalir hacia la
+   izquierda las metia encima del titular: el titular en ingles ocupa mas ancho
+   que el que tenia en castellano y llegaba hasta ellas. */
+.float--1{top:-4%;right:6%;transform:translate3d(0,0,90px)}
+.float--2{bottom:-5%;right:-8%;transform:translate3d(0,0,70px)}
+@media(max-width:1039px){.float--1{right:2%;top:-3%}.float--2{right:-2%;bottom:-3%}}
+
+/* Contenido de la maqueta: una web de cliente en miniatura */
+.mini{padding:1.1rem;display:grid;gap:.6rem}
+.mini__nav{display:flex;align-items:center;justify-content:space-between;padding-bottom:.7rem;
+  border-bottom:1px solid #eef0f3}
+.mini__logo{font-family:var(--display);font-weight:700;font-size:.72rem;color:#1d1d1f;letter-spacing:-.02em}
+.mini__links{display:flex;gap:.55rem}
+.mini__links i{width:22px;height:4px;border-radius:2px;background:#d2d2d7;display:block}
+.mini__cta{width:52px;height:15px;border-radius:999px;background:#1d1d1f}
+.mini__h{height:14px;width:72%;border-radius:4px;background:#1d1d1f;margin-top:.5rem}
+.mini__h2{height:14px;width:52%;border-radius:4px;background:#1d1d1f}
+.mini__p{height:7px;width:88%;border-radius:3px;background:#d2d2d7}
+.mini__p.s{width:64%}
+.mini__btn{height:22px;width:92px;border-radius:999px;background:#1d1d1f;margin-top:.35rem}
+.mini__cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.45rem;margin-top:.6rem}
+.mini__cards div{height:46px;border-radius:7px;background:#f5f5f7;border:1px solid #e8e8ed}
+
+/* ================================================ SECCIÓN ANTES / DESPUÉS === */
+/* El contenedor es alto; dentro, un panel pegajoso que se transforma con el scroll. */
+.morph{padding:0;background:var(--paper-2)}
+.morph__track{height:340vh;position:relative}
+.morph__stick{position:sticky;top:0;height:100svh;display:flex;align-items:center;overflow:hidden}
+.morph__inner{width:min(100% - 2.5rem,var(--w));margin-inline:auto;display:grid;gap:2.5rem;
+  align-items:center}
+@media(min-width:900px){.morph__inner{grid-template-columns:.85fr 1.15fr;gap:3.5rem}}
+
+/* En móvil no caben el título, los cuatro pasos y la tarjeta en una pantalla.
+   Se invierte el orden (manda la imagen) y solo se muestra el paso activo. */
+@media(max-width:899px){
+  .morph__inner{gap:1.5rem}
+  .morph__stage{order:-1}
+  .morph__copy h2{font-size:clamp(1.8rem,1.3rem + 2.4vw,2.4rem);margin-bottom:.3rem}
+  .morph__copy .lead{display:none}
+  .morph__steps{min-height:5.2rem}
+  .morph__step{display:none;padding:0}
+  .morph__step.on{display:block}
+  .morph__bar{margin-top:1rem}
+  .shot{min-height:300px}
+  .morph__track{height:300vh}
+}
+.morph__copy h2{margin-bottom:.6rem}
+.morph__step{opacity:.25;transition:opacity .5s var(--ease-soft);padding:.55rem 0}
+.morph__step.on{opacity:1}
+.morph__step b{font-family:var(--display);font-size:1.02rem;display:block;letter-spacing:-.02em}
+.morph__step span{font-size:.9rem;color:var(--muted)}
+.morph__bar{height:2px;background:var(--line);margin-top:1.8rem;border-radius:2px;overflow:hidden}
+.morph__fill{height:100%;background:var(--accent);width:calc(var(--p,0) * 100%);
+  transform-origin:left;border-radius:2px}
+
+.morph__stage{perspective:1500px}
+.morph__card{position:relative;transform-style:preserve-3d;
+  transform:rotateY(calc(-14deg + var(--p,0) * 14deg)) rotateX(calc(8deg - var(--p,0) * 6deg))
+            scale(calc(.94 + var(--p,0) * .06));
+  will-change:transform}
+.morph__face{border-radius:18px;overflow:hidden;box-shadow:0 34px 90px rgba(8,9,11,.22)}
+.morph__face--old{position:relative}
+/* La cara nueva se revela de arriba abajo: una web se construye por el titular. */
+.morph__face--new{position:absolute;inset:0;
+  clip-path:inset(0 0 calc((1 - var(--p,0)) * 100%) 0);
+  -webkit-clip-path:inset(0 0 calc((1 - var(--p,0)) * 100%) 0)}
+/* Línea luminosa justo en el borde del barrido */
+/* La línea del barrido va en blanco con halo oscuro: se apoya sobre la cara
+   nueva (negra) y sigue leyéndose sobre la antigua (crema). */
+.morph__scan{position:absolute;left:0;right:0;height:3px;background:#fff;
+  box-shadow:0 0 0 1px rgba(0,0,0,.5),0 0 30px 6px rgba(0,0,0,.45);border-radius:3px;
+  top:calc(var(--p,0) * 100%);opacity:calc(var(--p,0) * (1 - var(--p,0)) * 4)}
+
+.shot{background:#fff;min-height:430px;height:100%}
+.shot--old{background:#fbfbf7;font-family:'Times New Roman',serif;padding:1.3rem;display:grid;gap:.75rem;align-content:start}
+.shot--old .t{height:17px;width:56%;background:#c9c9c0;border-radius:2px}
+.shot--old .l{height:9px;background:#dedeD6;border-radius:2px}
+.shot--old .l.a{width:92%}.shot--old .l.b{width:78%}.shot--old .l.c{width:85%}
+.shot--old .box{height:96px;background:#e9e9e1;border:1px solid #d6d6cc}
+.shot--old .tbl{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#d6d6cc;border:1px solid #d6d6cc}
+.shot--old .tbl div{height:34px;background:#efefe8}
+.shot--new{background:linear-gradient(168deg,#000,#1d1d1f);padding:1.4rem;display:grid;gap:.85rem;align-content:start}
+.shot--new .t{height:19px;width:68%;border-radius:5px;
+  background:linear-gradient(90deg,#fff,rgba(255,255,255,.4))}
+.shot--new .s{height:9px;width:48%;border-radius:4px;background:rgba(255,255,255,.28)}
+.shot--new .cta{height:30px;width:120px;border-radius:999px;background:#fff;
+  box-shadow:0 10px 30px rgba(255,255,255,.18)}
+.shot--new .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-top:.5rem}
+.shot--new .cards div{height:74px;border-radius:10px;background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.1)}
+.shot--new .wide{height:52px;border-radius:10px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);margin-top:.3rem}
+
+/* ================================================== ANILLO 3D DE SECTORES === */
+/* Las tarjetas se reparten sobre un cilindro. --p (0..1) lo escribe main.js
+   desde el scroll y hace girar el conjunto una vuelta completa. */
+.ring-track{height:300vh;position:relative}
+.ring-stick{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:1.5rem;overflow:hidden}
+/* El título comparte pantalla con el anillo: más contenido, menos cuerpo. */
+.ring-head{text-align:center;width:min(92vw,640px)}
+.ring-head .eyebrow{justify-content:center;margin-bottom:.7rem}
+.ring-head h2{margin:0;font-size:clamp(1.6rem,1.15rem + 1.9vw,2.5rem);text-wrap:balance}
+.ring-stage{perspective:1600px;perspective-origin:50% 50%;width:100%;
+  display:grid;place-items:center}
+.ring{
+  position:relative;transform-style:preserve-3d;
+  width:clamp(240px,74vw,340px);height:330px;
+  /* --r es el radio del cilindro: separa las tarjetas del centro */
+  --r:390px;
+  transform:translateZ(calc(var(--r) * -1)) rotateY(calc(var(--deg,0deg) * -1));
+  will-change:transform;
+}
+.ring__card{
+  position:absolute;inset:0;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:2rem 1.8rem;
+  /* Cada tarjeta gira su porción del círculo y se empuja hacia fuera */
+  transform:rotateY(calc(var(--i) * 60deg)) translateZ(var(--r));
+  backface-visibility:hidden;
+  box-shadow:0 24px 60px rgba(8,9,11,.14);
+  /* Las que no miran de frente se atenúan: dirigen la vista a la central sin
+     ocultar que el objeto es un cilindro. --f lo calcula main.js. */
+  opacity:calc(.25 + var(--f,1) * .75);
+  transition:opacity .25s linear;
+}
+/* "Demo" va DENTRO de la tarjeta. Si la advertencia vive solo en el párrafo
+   de abajo, al girar el anillo la tarjeta se ve sin su contexto. */
+.ring__tag{display:inline-block;margin-bottom:.9rem;font-size:.62rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;padding:.28rem .6rem;border-radius:999px;
+  background:var(--paper-2);color:var(--muted);border:1px solid var(--line)}
+.ring__card h3{margin-bottom:.5rem}
+/* El titulo de cada sector abre su demo. Area de pulsacion holgada: la tarjeta
+   esta girando en 3D y acertar un enlace pequeño en movimiento es imposible.
+
+   Solo acepta el clic la tarjeta que mira de frente. Una girada de canto mide
+   unos pocos pixeles de ancho en pantalla: es imposible de pulsar a proposito
+   y facilisima de pulsar por error. `--f` lo calcula main.js y vale 1 de
+   frente y 0 de perfil. */
+/* La TARJETA siempre se puede pulsar: al hacerlo, gira hasta ponerse de
+   frente. Lo que no se puede pulsar es su ENLACE mientras esta de lado, para
+   no abrir una demo por error al intentar girar el anillo. */
+.ring__card{pointer-events:auto;cursor:pointer}
+.ring__card .ring__link{pointer-events:none}
+.ring__card.is-front{cursor:default}
+.ring__card.is-front .ring__link{pointer-events:auto}
+.ring__link{text-decoration:none;display:inline-block;padding:.15rem 0;min-height:28px}
+.ring__link:hover,.ring__link:focus-visible{color:var(--accent);text-decoration:underline;
+  text-underline-offset:4px}
+.ring__link::after{content:" \2197";font-size:.7em;opacity:.55;vertical-align:.12em}
+.ring__card p{color:var(--muted);font-size:.95em;margin:0}
+.ring__card .card__icon{margin-bottom:1rem}
+/* Controles del anillo. Existen porque lo primero que hace cualquiera al ver
+   un carrusel es intentar tocarlo, y hasta ahora solo giraba con el scroll. */
+.ring-ctrl{display:flex;gap:.9rem;justify-content:center;align-items:center;margin-top:2rem}
+.ring-ctrl button{
+  width:46px;height:46px;border-radius:50%;flex:none;cursor:pointer;
+  background:var(--paper);border:1px solid var(--line);color:var(--ink);
+  font-size:1.1rem;line-height:1;display:grid;place-items:center;
+  transition:transform .3s var(--ease),border-color .3s var(--ease-soft),box-shadow .3s var(--ease);
+}
+.ring-ctrl button:hover{transform:translateY(-2px);border-color:var(--accent);
+  box-shadow:0 10px 26px rgba(8,9,11,.13)}
+.ring-ctrl button:active{transform:translateY(0) scale(.94)}
+.ring-ctrl button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+/* Mientras gira a mano, las tarjetas no deben responder al puntero: el clic
+   se soltaria sobre una tarjeta distinta de la que se pulso. */
+.ring.is-turning .ring__card{pointer-events:none}
+.ring__hint{margin-top:1.4rem;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);opacity:.75}
+@media(min-width:900px){.ring{--r:470px;width:360px;height:300px}}
+@media(max-width:899px){.ring-head h2{font-size:clamp(1.45rem,1.1rem + 1.8vw,1.9rem)}
+  .ring-stick{gap:1rem}}
+
+/* ============================================================== TARJETAS === */
+.grid{display:grid;gap:1.3rem}
+@media(min-width:700px){.grid--2{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:940px){.grid--3{grid-template-columns:repeat(3,1fr)}
+  .grid--4{grid-template-columns:repeat(4,1fr)}}
+
+.card{
+  background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:2.1rem 1.9rem;position:relative;overflow:hidden;
+  transform-style:preserve-3d;will-change:transform;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .4s var(--ease-soft);
+}
+.card:hover{box-shadow:0 26px 70px rgba(8,9,11,.11);border-color:#d7dbe2}
+/* Brillo que sigue al cursor */
+.card::before{
+  content:"";position:absolute;inset:0;opacity:0;pointer-events:none;
+  background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),rgba(0,0,0,.05),transparent 45%);
+  transition:opacity .4s var(--ease-soft);
+}
+.card:hover::before{opacity:1}
+.card > *{transform:translateZ(22px)}
+.card p:last-child{margin-bottom:0}
+.card__num{font-family:var(--display);font-size:.78rem;font-weight:700;letter-spacing:.12em;
+  color:var(--accent);margin-bottom:1.1rem;display:block}
+/* Pie de tarjeta: dice el encaje del servicio sin competir con el cuerpo.
+   Va con `.card` delante para ganar a `.card p{color:var(--muted)}`, que si no
+   se lo come y el pie sale gris como el resto del texto. */
+.card .card__meta{margin:1.1rem 0 0;padding-top:.9rem;border-top:1px solid var(--line);
+  font-size:.8rem;font-weight:600;letter-spacing:.02em;color:var(--accent)}
+.section--dark .card__meta{border-top-color:var(--line-dark)}
+.card__icon{width:46px;height:46px;border-radius:13px;background:var(--paper-2);display:grid;
+  place-items:center;margin-bottom:1.3rem;font-size:1.25rem}
+.card p{color:var(--muted);font-size:.97em}
+
+.section--dark{background:#000;color:#fff}
+.section--dark .lead,.section--dark .muted,.section--dark .card p,
+.speed .lead,.speed .muted,
+footer .muted{color:var(--muted-dark)}
+
+/* Texto pequeno en azul sobre fondo oscuro: version aclarada por contraste. */
+.hero .eyebrow,.section--dark .eyebrow,.speed .eyebrow{color:var(--accent-soft)}
+.section--dark .card{background:#1d1d1f;border-color:var(--line-dark)}
+.section--dark .card:hover{border-color:#3a3a3c;box-shadow:0 26px 70px rgba(0,0,0,.6)}
+.section--dark .card__icon{background:rgba(255,255,255,.06)}
+.section--tint{background:var(--paper-2)}
+.head{max-width:56ch;margin-bottom:4rem}
+.center .head{margin-inline:auto}
+
+/* ============================================================== VELOCIDAD === */
+.speed{background:#000;color:#fff;overflow:hidden}
+.speed__num{
+  font-family:var(--display);font-weight:700;letter-spacing:-.06em;line-height:.82;
+  font-size:clamp(5rem,3rem + 16vw,17rem);font-variant-numeric:tabular-nums;
+  /* El extremo bajo del degradado no puede caer por debajo de 3:1 o la parte
+     inferior de la cifra deja de verse. A .18 daba 1,55:1; a .45 da 4,43:1 y
+     el efecto de desvanecido se conserva. */
+  background:linear-gradient(175deg,#fff 28%,rgba(255,255,255,.45));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.speed__unit{font-size:.22em;letter-spacing:-.02em;
+  -webkit-text-fill-color:rgba(255,255,255,.62);margin-left:.1em}
+.speed__grid{display:grid;gap:1.5rem;margin-top:3.5rem}
+@media(min-width:800px){.speed__grid{grid-template-columns:repeat(3,1fr)}}
+.speed__item{border-top:1px solid rgba(255,255,255,.14);padding-top:1.2rem}
+.speed__item b{font-family:var(--display);font-size:1.5rem;display:block;letter-spacing:-.03em}
+.speed__item span{font-size:.88rem;color:var(--muted-dark)}
+
+/* ================================================================ PROCESO === */
+.steps{position:relative}
+.steps::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1.5px;background:var(--line)}
+.section--dark .steps::before{background:var(--line-dark)}
+.steps__prog{position:absolute;left:0;top:0;width:1.5px;background:var(--accent);
+  height:calc(var(--p,0) * 100%);box-shadow:0 0 14px var(--glow)}
+.step{display:grid;gap:.5rem 2.2rem;padding:2.2rem 0 2.2rem 2.5rem;position:relative}
+@media(min-width:860px){.step{grid-template-columns:100px 1fr 1.2fr;align-items:start}}
+.step::before{content:"";position:absolute;left:-5px;top:2.9rem;width:11px;height:11px;
+  border-radius:50%;background:var(--paper);border:1.5px solid var(--line);
+  transition:background .4s var(--ease-soft),border-color .4s var(--ease-soft),transform .4s var(--ease)}
+.section--dark .step::before{background:var(--ink);border-color:var(--line-dark)}
+.step.in::before{background:var(--accent);border-color:var(--accent);transform:scale(1.25)}
+.step__n{font-family:var(--display);font-size:2.3rem;font-weight:700;letter-spacing:-.05em;
+  color:var(--accent);line-height:1;opacity:.92}
+.step__when{font-size:.78rem;color:var(--muted);font-weight:600;letter-spacing:.09em;text-transform:uppercase}
+/* Los pasos viven en la seccion oscura: ahi el gris claro, no el de fondo claro. */
+.section--dark .step__when{color:var(--muted-dark)}
+
+/* ================================================================ PRECIOS === */
+.price{display:grid;gap:1.4rem}
+@media(min-width:820px){.price{grid-template-columns:1.08fr .92fr;align-items:start}}
+/* Tres planes: a partir de 1040 px caben en fila; por debajo se apilan, porque
+   tres columnas estrechas hacen ilegible la lista de lo que incluye cada uno. */
+@media(min-width:820px){.price--3{grid-template-columns:1fr 1fr}}
+@media(min-width:1040px){.price--3{grid-template-columns:1.06fr 1fr 1fr}}
+.plan{border:1px solid var(--line);border-radius:var(--r-lg);padding:2.4rem;background:#fff;
+  position:relative;transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
+.plan{transform-style:preserve-3d}
+.plan:hover{transform:translate3d(0,-4px,0);box-shadow:0 30px 70px rgba(8,9,11,.1)}
+/* El contenido despega del plano de la ficha: al inclinarla se ve que hay un
+   hueco entre el precio y el papel. Es lo que separa una sombra de un relieve. */
+.plan > *{transform:translateZ(18px)}
+.plan__price{transform:translateZ(34px)}
+.plan__tag{transform:translateZ(46px)}
+.plan--featured{border-color:var(--ink);box-shadow:0 22px 60px rgba(8,9,11,.1)}
+.plan__tag{position:absolute;top:-12px;left:2.4rem;background:var(--ink);color:#fff;font-size:.66rem;
+  font-weight:600;letter-spacing:.14em;text-transform:uppercase;padding:.34rem .8rem;border-radius:999px}
+.plan__price{font-family:var(--display);font-size:3rem;letter-spacing:-.05em;line-height:1;
+  margin:.6rem 0 .3rem;font-variant-numeric:tabular-nums;text-wrap:balance}
+.plan__price small{font-size:.9rem;color:var(--muted);font-family:var(--font);letter-spacing:0;font-weight:400}
+/* La cuota va junto al precio de alta y con el mismo peso visual: esconderla
+   en letra pequeña es el truco que hace desconfiar de todo este sector. */
+.plan__sub{font-family:var(--display);font-size:1.35rem;letter-spacing:-.03em;
+  color:var(--accent);margin:0 0 1rem;font-weight:700;font-variant-numeric:tabular-nums}
+.plan__not{margin:1.5rem 0 0;padding-top:1.2rem;border-top:1px solid var(--line);
+  font-size:.86rem;color:var(--muted);line-height:1.5}
+.plan__not b{color:var(--ink);font-weight:600}
+.plan__when{margin:.9rem 0 0;font-size:.82rem;font-weight:600;color:var(--ink);
+  letter-spacing:-.01em}
+.checks{list-style:none;padding:0;margin:1.7rem 0 0;display:grid;gap:.65rem}
+.checks li{padding-left:1.9rem;position:relative;font-size:.95rem}
+.checks li::before{content:"";position:absolute;left:.15rem;top:.45em;width:11px;height:6px;
+  border-left:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg)}
+
+/* ================================================== AVISO Y SIGUIENTES === */
+.disclaimer{border-left:3px solid var(--accent);padding:.2rem 0 .2rem 1.6rem;max-width:64ch}
+.disclaimer p{color:var(--muted);font-size:.97rem}
+.disclaimer strong{color:var(--ink)}
+.section--dark .disclaimer strong{color:#fff}
+
+.next{list-style:none;counter-reset:n;padding:0;margin:1.6rem 0 0;display:grid;gap:1rem;max-width:52ch}
+.next li{counter-increment:n;padding-left:2.6rem;position:relative;color:var(--muted-dark);font-size:.97rem}
+.next li::before{content:counter(n,decimal-leading-zero);position:absolute;left:0;top:-.1em;
+  font-family:var(--display);font-size:.8rem;font-weight:700;letter-spacing:.06em;color:var(--accent)}
+
+/* ==================================================================== FAQ === */
+.faq{border-top:1px solid var(--line);max-width:820px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{padding:1.5rem 0;cursor:pointer;font-weight:600;font-family:var(--display);
+  font-size:1.08rem;letter-spacing:-.02em;list-style:none;display:flex;justify-content:space-between;
+  gap:1rem;align-items:center}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";width:12px;height:12px;flex:none;position:relative;
+  background:
+    linear-gradient(var(--accent),var(--accent)) center/100% 2px no-repeat,
+    linear-gradient(var(--accent),var(--accent)) center/2px 100% no-repeat;
+  transition:transform .4s var(--ease)}
+.faq details[open] summary::after{transform:rotate(135deg)}
+.faq details p{padding-bottom:1.5rem;color:var(--muted);margin:0}
+
+/* =============================================================== CONTACTO === */
+.form{display:grid;gap:1.05rem}
+@media(min-width:680px){.form{grid-template-columns:1fr 1fr}.form .full{grid-column:1/-1}}
+.field{display:grid;gap:.4rem}
+.field>span{font-size:.8rem;font-weight:600}
+.field input,.field select,.field textarea{
+  font:inherit;padding:.9rem 1.05rem;border-radius:var(--r);min-height:52px;width:100%;
+  border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.05);color:#fff;
+  transition:border-color .3s var(--ease-soft),background .3s var(--ease-soft)}
+.field input::placeholder,.field textarea::placeholder{color:rgba(255,255,255,.35)}
+.field input:focus-visible,.field textarea:focus-visible,.field select:focus-visible{
+  outline:none;border-color:var(--accent);background:rgba(255,255,255,.08)}
+.field select option{background:var(--ink);color:#fff}
+/* El campo trampa contra robots. No se usa `display:none` porque algunos
+   robots lo detectan y lo saltan; se saca de la pantalla y se oculta a los
+   lectores de pantalla con tabindex y aria-hidden en el HTML. */
+.trampa{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}
+.consent{display:flex;gap:.7rem;align-items:flex-start;font-size:.85rem;color:var(--muted-dark)}
+/* 26 px, no 24. El minimo recomendado es 24 y la caja real se quedaba en
+   23,9 por el borde: justo por debajo. Dos pixeles de margen evitan discutir
+   con el redondeo cada vez que cambia una fuente. */
+.consent input{width:26px;height:26px;min-height:0;flex:none;margin-top:0;accent-color:var(--accent)}
+.note{border-left:2px solid var(--accent);padding-left:1.1rem;font-size:.92rem;color:var(--muted)}
+.section--dark .note{color:var(--muted-dark)}
+
+/* ==================================================================== PIE === */
+footer{background:#000;color:#fff;padding:5rem 0 2.2rem;border-top:1px solid var(--line-dark)}
+.footer__grid{display:grid;gap:2.8rem}
+@media(min-width:820px){.footer__grid{grid-template-columns:2fr 1fr 1fr}}
+footer a{color:rgba(255,255,255,.62);text-decoration:none;font-size:.92rem;
+  transition:color .25s var(--ease-soft)}
+footer a:hover{color:#fff}
+/* .38 de blanco sobre el negro del pie daba 3,39:1, por debajo del minimo
+   para texto pequeño. .62 lo sube a 7,4:1 sin que el titulillo pese mas que
+   los enlaces que encabeza. */
+footer h3{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);margin-bottom:1rem;font-family:var(--font);font-weight:600}
+/* Altura minima de 28 px: un enlace de 23 px es dificil de acertar con el dedo. */
+.footer__links{display:grid;gap:.35rem}
+.footer__links a{min-height:28px;display:flex;align-items:center}
+.fine{border-top:1px solid var(--line-dark);margin-top:3.5rem;padding-top:1.6rem;
+  font-size:.8rem;color:var(--muted-dark);display:flex;flex-wrap:wrap;gap:1rem;justify-content:space-between}
+
+.skip{position:absolute;left:-9999px}
+.skip:focus{left:1rem;top:1rem;z-index:200;background:var(--accent);color:#fff;
+  padding:.8rem 1.1rem;border-radius:var(--r)}
+
+/* ============================================== MOVIMIENTO REDUCIDO ======== */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important;
+    scroll-behavior:auto!important}
+  .rv{opacity:1;transform:none}
+  .split > span{transform:none}
+  .device{transform:none}
+  .morph__track{height:auto}
+  .morph__stick{position:static;height:auto;padding:4rem 0}
+  .morph__face--new{position:static;clip-path:none;-webkit-clip-path:none;margin-top:1rem}
+  .morph__card{transform:none}
+  .orb{animation:none}
+  .hero__field{display:none}
+  .slab{aspect-ratio:auto}
+  .slab__face--back,.slab__face--right,.slab__face--left,
+  .slab__face--top,.slab__face--bottom{display:none}
+  .slab__face--front{position:static;transform:none}
+  /* El anillo pasa a ser una lista legible */
+  /* Sin movimiento el anillo es una lista: ahi los enlaces se pulsan todos. */
+  .ring__card{cursor:default}
+  .ring__card .ring__link{pointer-events:auto}
+  .ring-track{height:auto}
+  .ring-stick{position:static;height:auto;display:block;padding:2rem 0}
+  .ring-stage{perspective:none}
+  .ring{transform:none;width:auto;height:auto;display:grid;gap:1.25rem}
+  .ring__card{position:static;transform:none;inset:auto}
+  .ring__hint{display:none}
+}

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="We have received your request. We will get back to you within one working day with a draft of your website.">
+<title>Request received — Vanguard Tech</title>
+<!-- Una pagina de confirmacion no debe indexarse: no aporta nada en un
+     buscador y aparecer ahi solo confunde a quien la encuentra sin contexto. -->
+<meta name="robots" content="noindex,nofollow">
+<link rel="preload" href="/fonts/spacegrotesk-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="/brand/favicon.svg">
+<link rel="stylesheet" href="/styles.css">
+<style>
+/* Pantalla completa, sin barra de navegacion: quien llega aqui ya ha hecho lo
+   que tenia que hacer. Lo unico importante es que sepa que ha llegado y que
+   sepa que pasa despues. */
+body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items:center;
+  padding:2rem 1.25rem}
+.gracias{max-width:640px;text-align:center}
+.gracias .mark{width:64px;height:64px;margin:0 auto 2.2rem;display:block}
+.gracias .mark path:first-child{fill:#fff}
+.gracias .mark path:last-child{fill:var(--brand)}
+.gracias h1{font-size:clamp(2.2rem,1.6rem + 2.6vw,3.4rem);margin-bottom:1.1rem}
+.gracias .lead{color:var(--muted-dark);margin-inline:auto}
+.gracias .next{text-align:left;max-width:34ch;margin:2.6rem auto 0}
+.gracias .btn-row{justify-content:center;margin-top:2.8rem}
+</style>
+</head>
+<body>
+
+<main class="gracias">
+  <svg class="mark" viewBox="0 0 120 120" aria-hidden="true">
+    <path d="M24 32 L50 32 L68 90 L54 90 Z"/>
+    <path d="M96 32 L72 32 L60 66 L74 78 Z"/>
+  </svg>
+
+  <h1>Request received.</h1>
+  <p class="lead">
+    Thanks. We have your details and we are already looking your business up.
+  </p>
+
+  <ol class="next">
+    <li>We run our checks on what you have online right now.</li>
+    <li>We build a draft of your website — a real page, not a mockup image.</li>
+    <li>We send you a private link, <strong>within one working day</strong>.</li>
+    <li>You decide. If it is not for you, we delete it and that is the end of it.</li>
+  </ol>
+
+  <p class="note" style="margin-top:2.4rem;color:var(--muted-dark)">
+    Nothing is published and search engines cannot see it. Prefer to write in
+    Spanish? Go ahead — we are based in Spain and that is how we work day to day.
+  </p>
+
+  <div class="btn-row">
+    <a class="btn btn--light" href="/">Back to the site <span class="arr">→</span></a>
+    <a class="btn btn--ghost" href="/work/restaurant/">See a demo</a>
+  </div>
+</main>
+
+</body>
+</html>

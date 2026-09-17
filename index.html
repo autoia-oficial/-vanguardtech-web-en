@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vanguard Tech — Professional websites, built fast</title>
+<meta name="description" content="We build the online presence of local businesses in Spain. Professional websites from 99 € plus a monthly plan, live in days, with AI integration and automation.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#08090b">
+<!-- Tarjeta de enlace. EL DOMINIO ES UN MARCADOR: cambia vanguardtech.es por el
+     tuyo aqui, en <link rel="canonical">, en sitemap.xml y en robots.txt.
+     La imagen tiene que ser PNG o JPG y absoluta: WhatsApp, LinkedIn y X no
+     renderizan SVG en la tarjeta, y el enlace saldria sin imagen. -->
+<link rel="canonical" href="https://vanguardtech.es/">
+<meta property="og:site_name" content="Vanguard Tech">
+<meta property="og:locale" content="en_GB">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:url" content="https://vanguardtech.es/">
+<meta property="og:title" content="Vanguard Tech — Professional websites, built fast">
+<meta property="og:description" content="Your business. Better online. Premium websites without the agency overhead.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://vanguardtech.es/brand/share-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Vanguard Tech — Professional websites, built fast">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vanguard Tech — Professional websites, built fast">
+<meta name="twitter:description" content="Your business. Better online. From 99 € plus 29 €/month.">
+<meta name="twitter:image" content="https://vanguardtech.es/brand/share-card.png">
+<link rel="icon" href="/brand/favicon.svg">
+<!-- Las tipografias se sirven desde este dominio, no desde el CDN de Google:
+     asi la IP del visitante no viaja a un tercero antes de aceptar nada.
+     Se precargan las dos que pinta el primer pantallazo. -->
+<link rel="preload" href="/fonts/spacegrotesk-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/styles.css">
+<!-- Datos estructurados. Solo contiene hechos comprobables: no hay
+     valoraciones, ni numero de clientes, ni domicilio, porque no los hay.
+     Las preguntas se copian de la seccion FAQ y un test comprueba que
+     siguen coincidiendo. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://vanguardtech.es/#org",
+      "name": "Vanguard Tech",
+      "url": "https://vanguardtech.es/",
+      "logo": "https://vanguardtech.es/brand/logo-horizontal.svg",
+      "image": "https://vanguardtech.es/brand/share-card.png",
+      "description": "We build the online presence of local businesses in Spain: professional websites, AI integration and automation.",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Spain"
+      },
+      "knowsLanguage": [
+        "es",
+        "en"
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://vanguardtech.es/#web",
+      "url": "https://vanguardtech.es/",
+      "name": "Vanguard Tech",
+      "publisher": {
+        "@id": "https://vanguardtech.es/#org"
+      },
+      "inLanguage": "en"
+    },
+    {
+      "@type": "Service",
+      "name": "Website design and build for local businesses",
+      "provider": {
+        "@id": "https://vanguardtech.es/#org"
+      },
+      "areaServed": {
+        "@type": "Country",
+        "name": "Spain"
+      },
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Vanguard Start",
+          "price": "99",
+          "priceCurrency": "EUR",
+          "description": "One page, built for mobile. 99 € setup plus 29 €/month for hosting, backups and content changes."
+        },
+        {
+          "@type": "Offer",
+          "name": "Vanguard Pro",
+          "price": "249",
+          "priceCurrency": "EUR",
+          "description": "Up to 5 pages with online booking. 249 € setup plus 39 €/month."
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Why is there a monthly fee at all?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Because a website isn't a thing you buy once. It needs hosting, a security certificate, backups and someone to change the hours when they change. The 29 € covers that. We could hide it in a bigger one-off price, but then the site would go stale the moment you paid."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What does 99 € actually get me?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "One page — a good one, with every section a local business needs, built for phones. Not a multi-page site, not a shop, not online booking. If you need those, that's Vanguard Pro. We say this plainly because \"from 99 €\" is worth nothing if you find out later what it excluded."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Really live in five days?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Five working days from the moment we have your content: text, photos, services, hours and legal details. The clock starts there, not at the kick-off call. If material is missing, the clock stops and we tell you what we're waiting for."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "I don't have photos of my business.",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "That's the usual case. We'll give you a guide for shooting them yourself on a phone (it works better than you'd expect) or help you organise a session. What we won't do is use stock photos and pass them off as your premises."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I already have a website?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "We'll run our checks on it and tell you whether it's worth rebuilding or just fixing. If it's fine, we'll say so, even though that means you don't hire us."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Is the website mine?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes. The domain is in your name and the content is yours. Cancel the plan and we hand over the files so you can take it to another provider."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How did you get my details?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "From public business sources: open directories, your own website and your public business profiles. We only process professional contact details, never personal data. Tell us to stop and we remove you from our database immediately."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you build online shops?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Not as a standard plan. A shop needs payments, stock, shipping and returns, and doing that badly is worse than not doing it. If you need one, it's a Custom project and we'll tell you honestly whether we're the right people for it."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav is-dark" id="nav">
+  <div class="wrap nav__inner">
+    <a class="brand" href="/">
+      <svg class="brand__mark" viewBox="0 0 120 120" aria-hidden="true">
+        <path d="M18 24 L52 96 L68 96 L34 24 Z"/>
+        <path d="M86 24 L52 96 L68 96 L102 24 Z"/>
+      </svg>
+      Vanguard Tech
+    </a>
+    <nav class="nav__links" aria-label="Main">
+      <a href="#services">Services</a>
+      <a href="#process">Process</a>
+      <a href="#work">Work</a>
+      <a href="#pricing">Pricing</a>
+    </nav>
+    <a class="btn btn--primary btn--sm" href="#start"><span class="only-wide">Build my website</span><span class="only-narrow">Start</span> <span class="arr">→</span></a>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ══════════════════════════════════════════════════════════════ HERO ══ -->
+<section class="hero" id="top">
+  <div class="hero__bg" aria-hidden="true">
+    <div class="orb orb--1"></div>
+    <div class="orb orb--2"></div>
+    <canvas class="hero__field" id="field"></canvas>
+    <div class="hero__grid"></div>
+  </div>
+
+  <div class="wrap hero__inner">
+    <div>
+      <p class="eyebrow rv">Websites · AI · Automation</p>
+      <h1>
+        <span class="split"><span>Your business</span></span>
+        <span class="split split-d1"><span>deserves a better</span></span>
+        <span class="split split-d2"><span class="accent">digital presence.</span></span>
+      </h1>
+      <p class="lead rv rv-d3">
+        Professional websites, built fast. We design, write and publish your site —
+        then keep it running. You tell us what you do; we handle the rest.
+      </p>
+      <div class="btn-row rv rv-d4">
+        <a class="btn btn--light" href="#start">Build my website <span class="arr">→</span></a>
+        <a class="btn btn--ghost" href="#work">See our work</a>
+      </div>
+      <div class="hero__stats rv rv-d5">
+        <div class="hero__stat"><b>From 99 €</b><span>plus 29 €/month, set before we start</span></div>
+        <div class="hero__stat"><b>5 days</b><span>from your content to going live</span></div>
+        <div class="hero__stat"><b>&lt; 2 s</b><span>mobile load target</span></div>
+      </div>
+    </div>
+
+    <!-- Sólido con seis caras: gira en el espacio y tiene grosor real -->
+    <div class="stage rv rv-d3">
+      <div class="device" id="device">
+        <div class="slab">
+          <div class="slab__face slab__face--front">
+            <div class="browser">
+              <div class="browser__bar">
+                <i></i><i></i><i></i>
+                <div class="browser__url">yourbusiness.es</div>
+              </div>
+              <div class="browser__body">
+                <div class="mini">
+                  <div class="mini__nav">
+                    <span class="mini__logo">Your Business</span>
+                    <span class="mini__links"><i></i><i></i><i></i></span>
+                    <span class="mini__cta"></span>
+                  </div>
+                  <div class="mini__h"></div>
+                  <div class="mini__h2"></div>
+                  <div class="mini__p"></div>
+                  <div class="mini__p s"></div>
+                  <div class="mini__btn"></div>
+                  <div class="mini__cards"><div></div><div></div><div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="slab__face slab__face--back"></div>
+          <div class="slab__face slab__face--right"></div>
+          <div class="slab__face slab__face--left"></div>
+          <div class="slab__face slab__face--top"></div>
+          <div class="slab__face slab__face--bottom"></div>
+        </div>
+        <div class="float float--1"><b>3 ms</b><span>to generate</span></div>
+        <div class="float float--2"><b>Mobile first</b><span>built for phones</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint" aria-hidden="true"><span>Scroll</span><i></i></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ BEFORE / AFTER ══ -->
+<section class="morph" id="transformation" aria-label="Website transformation">
+  <div class="morph__track" id="morphTrack">
+    <div class="morph__stick">
+      <div class="morph__inner">
+        <div class="morph__copy">
+          <p class="eyebrow">The transformation</p>
+          <h2>From 2009<br>to today.</h2>
+          <p class="lead">This is what changes. Keep scrolling.</p>
+          <div class="morph__steps" id="morphSteps">
+            <div class="morph__step" data-step="0">
+              <b>01 · What's there</b>
+              <span>A site that doesn't load on a phone and hasn't been touched in years.</span>
+            </div>
+            <div class="morph__step" data-step="1">
+              <b>02 · The audit</b>
+              <span>13 objective technical checks. Facts, not opinions.</span>
+            </div>
+            <div class="morph__step" data-step="2">
+              <b>03 · The proposal</b>
+              <span>Built from your business's own public information.</span>
+            </div>
+            <div class="morph__step" data-step="3">
+              <b>04 · Live</b>
+              <span>Fast, on your domain, ready for Google.</span>
+            </div>
+          </div>
+          <div class="morph__bar"><div class="morph__fill"></div></div>
+        </div>
+
+        <div class="morph__stage">
+          <div class="morph__card" id="morphCard">
+            <div class="morph__face morph__face--old">
+              <div class="shot shot--old">
+                <div class="t"></div>
+                <div class="l a"></div><div class="l b"></div>
+                <div class="box"></div>
+                <div class="l c"></div><div class="l a"></div>
+                <div class="tbl"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+                <div class="l b"></div>
+              </div>
+            </div>
+            <div class="morph__face morph__face--new">
+              <div class="shot shot--new">
+                <div class="t"></div>
+                <div class="s"></div>
+                <div class="cta"></div>
+                <div class="cards"><div></div><div></div><div></div></div>
+                <div class="wide"></div>
+                <div class="wide"></div>
+              </div>
+            </div>
+            <div class="morph__scan" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ PROBLEM ══ -->
+<section class="section--tint" id="problem">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">The problem</p>
+      <h2>Your customer looks you up on their phone. And doesn't find you.</h2>
+      <p class="lead">
+        Most local businesses have one of three things: no website, a website from ten years ago,
+        or a social profile they don't control. None of them shows up when someone searches for
+        what you do plus the name of your town.
+      </p>
+    </div>
+    <div class="grid grid--2 grid--4">
+      <article class="card tilt rv rv-d1">
+        <div class="card__icon" aria-hidden="true">🔍</div>
+        <h3>You don't show up</h3>
+        <p>Without a site of your own, Google has little to show. The customer ends up next door.</p>
+      </article>
+      <article class="card tilt rv rv-d2">
+        <div class="card__icon" aria-hidden="true">📱</div>
+        <h3>It breaks on mobile</h3>
+        <p>A site that needs pinch-to-zoom loses whoever opens it. And almost everyone opens it on a phone.</p>
+      </article>
+      <article class="card tilt rv rv-d3">
+        <div class="card__icon" aria-hidden="true">⏳</div>
+        <h3>It's never the right time</h3>
+        <p>Open-ended quotes, deadlines that stretch, projects that stall halfway.</p>
+      </article>
+      <article class="card tilt rv rv-d4">
+        <div class="card__icon" aria-hidden="true">🔒</div>
+        <h3>It isn't yours</h3>
+        <p>If everything lives on a social network, your presence runs on somebody else's rules.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════════ SPEED ══ -->
+<section class="speed" id="speed">
+  <div class="wrap center">
+    <p class="eyebrow rv">Why we can move this fast</p>
+    <div class="speed__num rv rv-d1">
+      <span id="counter" data-to="3">0</span><span class="speed__unit">ms</span>
+    </div>
+    <p class="lead rv rv-d2" style="margin-top:1.5rem">
+      That's how long our system takes to generate the full structure of a website.
+      Roughly 80% of building a site is identical across businesses in the same sector.
+      We automated that part. The time we save goes into the 20% that actually makes you different.
+    </p>
+    <div class="speed__grid">
+      <div class="speed__item rv rv-d3"><b>25 sectors</b><span>each with its own layout and goal</span></div>
+      <div class="speed__item rv rv-d4"><b>13 checks</b><span>run against your current site</span></div>
+      <div class="speed__item rv rv-d5"><b>0 generic templates</b><span>a restaurant shouldn't look like a gym</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════ SERVICES ══ -->
+<section id="services">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Services</p>
+      <h2>Three things. Done properly.</h2>
+      <p class="lead">Websites are the core. AI and automation are what we add once the site is earning its keep.</p>
+    </div>
+    <div class="grid grid--3">
+      <article class="card tilt rv rv-d1">
+        <span class="card__num">01</span>
+        <h3>Websites</h3>
+        <p>Design shaped to your sector, copy written for you, photos organised, contact form, map,
+        opening hours and a call button. Legal pages included. Live on your domain.</p>
+        <p class="card__meta">The main thing we do.</p>
+      </article>
+      <article class="card tilt rv rv-d2">
+        <span class="card__num">02</span>
+        <h3>AI integration</h3>
+        <p>A chat assistant trained only on your own information, so it answers what you actually
+        offer. Draft replies to enquiries. Content written from an interview with you, not invented.</p>
+        <p class="card__meta">Added to an existing site.</p>
+      </article>
+      <article class="card tilt rv rv-d3">
+        <span class="card__num">03</span>
+        <h3>Automation</h3>
+        <p>Enquiries that land where you'll see them. Appointment reminders. Review requests after a
+        job. The repetitive admin that eats an afternoon a week.</p>
+        <p class="card__meta">Quoted per workflow.</p>
+      </article>
+    </div>
+    <p class="note rv rv-d4" style="margin-top:3rem">
+      What we <strong>don't</strong> do: complex online stores, native mobile apps or ad campaigns.
+      If that's what you need, we'll say so on the first call.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ PROCESS ══ -->
+<section class="section--dark" id="process">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">How it works</p>
+      <h2>Four steps. You always know where you stand.</h2>
+      <p class="lead">A fixed process, with the one thing we need from you stated up front.</p>
+    </div>
+    <div class="steps" id="steps">
+      <div class="steps__prog" id="stepsProg"></div>
+      <div class="step rv">
+        <span class="step__n">01</span>
+        <div><h3>Proposal</h3><p class="step__when">Before you hire us</p></div>
+        <p class="muted">We build a draft of your site from your business's public information, so you can
+        see what we're talking about. No cost, no commitment, nothing for you to write.</p>
+      </div>
+      <div class="step rv">
+        <span class="step__n">02</span>
+        <div><h3>Kick-off</h3><p class="step__when">Day 1 · 30 minutes</p></div>
+        <p class="muted">You tell us what you do, for whom, and what sets you apart. We collect your
+        photos, hours, services and legal details. Price and deadline agreed in writing.</p>
+      </div>
+      <div class="step rv">
+        <span class="step__n">03</span>
+        <div><h3>Build and review</h3><p class="step__when">Days 2 to 4</p></div>
+        <p class="muted">We assemble the site on your sector's foundation and write the copy. You get a
+        private link, tell us what to change, and we change it.</p>
+      </div>
+      <div class="step rv">
+        <span class="step__n">04</span>
+        <div><h3>Live, and after</h3><p class="step__when">Day 5 onward</p></div>
+        <p class="muted">Domain connected, certificate active, mobile and forms checked, Google profile
+        updated. From there the monthly plan covers hosting, backups and your content changes.</p>
+      </div>
+    </div>
+    <p class="note rv" style="margin-top:3rem;color:var(--muted-dark)">
+      The clock starts when <strong>you</strong> hand over the content, not when you pay. A website is
+      generated in milliseconds; gathering six real photos and your opening hours is what takes days.
+      We'd rather say that than promise a date we don't control.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ WHY ══ -->
+<section id="why">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Why Vanguard Tech</p>
+      <h2>Premium websites without the agency overhead.</h2>
+      <p class="lead">Not corners cut. Fewer middlemen, and software doing the part software is good at.</p>
+    </div>
+    <div class="grid grid--2 grid--4">
+      <article class="card tilt rv rv-d1">
+        <h3>Fixed price, in writing</h3>
+        <p>You know the total and the monthly fee before we start. No line items appearing halfway through.</p>
+      </article>
+      <article class="card tilt rv rv-d2">
+        <h3>Everything is yours</h3>
+        <p>The domain is in your name, the content is yours. Leave the plan and we hand over the files.</p>
+      </article>
+      <article class="card tilt rv rv-d3">
+        <h3>We tell you when not to hire us</h3>
+        <p>If your current site is fine, we'll say so — even though that means you don't become a customer.</p>
+      </article>
+      <article class="card tilt rv rv-d4">
+        <h3>No invented anything</h3>
+        <p>No stock photos passed off as your premises. No testimonials we didn't receive. No client logos we don't have.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════ WORK ══ -->
+<section class="section--tint" id="work">
+  <div class="wrap">
+    <div class="ring-track" id="ringTrack">
+      <div class="ring-stick">
+        <div class="ring-head">
+          <p class="eyebrow">Our work</p>
+          <h2>Every sector needs a different website.</h2>
+        </div>
+        <div class="ring-stage">
+          <div class="ring" id="ring" tabindex="0" role="group" aria-label="Sector demos">
+            <article class="ring__card" style="--i:0">
+              <span class="ring__tag">Demo</span>
+              <div class="card__icon" aria-hidden="true">🍽️</div>
+              <h3><a href="/work/restaurant/" class="ring__link">Restaurant</a></h3>
+              <p><strong>Goal: a booking.</strong> Menu, photos of the room, hours, location and a
+              table booked in two taps.</p>
+            </article>
+            <article class="ring__card" style="--i:1">
+              <span class="ring__tag">Demo</span>
+              <div class="card__icon" aria-hidden="true">✂️</div>
+              <h3><a href="/work/barber/" class="ring__link">Barber</a></h3>
+              <p><strong>Goal: an appointment.</strong> Services, the team, a gallery of real cuts and
+              a booking request.</p>
+            </article>
+            <article class="ring__card" style="--i:2">
+              <span class="ring__tag">Demo</span>
+              <div class="card__icon" aria-hidden="true">🏋️</div>
+              <h3><a href="/work/gym/" class="ring__link">Gym</a></h3>
+              <p><strong>Goal: a trial session.</strong> Memberships, class timetable and a free first
+              session booked online.</p>
+            </article>
+            <article class="ring__card" style="--i:3">
+              <span class="ring__tag">Demo</span>
+              <div class="card__icon" aria-hidden="true">🏠</div>
+              <h3><a href="/work/real-estate/" class="ring__link">Real estate</a></h3>
+              <p><strong>Goal: a viewing.</strong> Listings that load fast on a phone, filters and a
+              direct line to the agent.</p>
+            </article>
+            <article class="ring__card" style="--i:4">
+              <span class="ring__tag">Demo</span>
+              <div class="card__icon" aria-hidden="true">🦷</div>
+              <h3><a href="/work/dental-clinic/" class="ring__link">Dental clinic</a></h3>
+              <p><strong>Goal: trust, then a visit.</strong> Treatments explained plainly, the team with
+              their qualifications, and online booking.</p>
+            </article>
+            <article class="ring__card" style="--i:5">
+              <span class="ring__tag">Demo</span>
+              <div class="card__icon" aria-hidden="true">🔧</div>
+              <h3><a href="/work/local-business/" class="ring__link">Local business</a></h3>
+              <p><strong>Goal: a phone call.</strong> Plumbers, electricians, locksmiths: the number
+              always visible, service area and prices up front.</p>
+            </article>
+          </div>
+        </div>
+        <div class="ring-ctrl">
+          <button type="button" data-ring="prev" aria-label="Previous sector">&#8249;</button>
+          <button type="button" data-ring="next" aria-label="Next sector">&#8250;</button>
+        </div>
+        <p class="ring__hint">Scroll, or use the arrows. Tap the front card to open its demo.</p>
+      </div>
+    </div>
+
+    <div class="disclaimer rv" style="margin-top:3.5rem">
+      <p><strong>These six are concepts, not clients.</strong> Vanguard Tech is a new company and we
+      don't have a client portfolio yet. Every business, name, photo and figure in these demos is
+      invented, and each demo says so on the page itself.</p>
+      <p style="margin-bottom:0">We'd rather tell you that than show you logos we don't have.
+      Ask for a proposal for your own business and judge that instead.</p>
+    </div>
+
+    <div class="btn-row rv" style="margin-top:2.5rem">
+      <a class="btn btn--primary" href="#start">Get my proposal <span class="arr">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ PRICING ══ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Pricing</p>
+      <h2>Starting from 99 €.</h2>
+      <p class="lead">
+        Setup plus a monthly plan. Both numbers are here, the same size, with no asterisk —
+        because the monthly fee is the part that keeps your site alive.
+      </p>
+    </div>
+    <div class="price price--3">
+      <article class="plan tilt plan--featured rv rv-d1">
+        <span class="plan__tag">Most businesses start here</span>
+        <h3>Vanguard Start</h3>
+        <p class="plan__price">99 €<small> setup</small></p>
+        <p class="plan__sub">+ 29 € / month</p>
+        <p class="muted">One page. Done properly.</p>
+        <ul class="checks">
+          <li>A single page with every section you need</li>
+          <li>Built for mobile first</li>
+          <li>Call, WhatsApp and directions buttons</li>
+          <li>Contact form</li>
+          <li>Legal notice, privacy and cookies</li>
+          <li>Google Business Profile set up</li>
+          <li>One round of changes</li>
+          <li>Hosting, backups and updates while the plan runs</li>
+        </ul>
+        <p class="plan__not"><b>Not included:</b> domain (billed separately or you bring your own),
+        online booking, shop or payments, professional photography, more than one round of changes.</p>
+        <p class="plan__when">Live in 5 working days from receiving your content.</p>
+      </article>
+
+      <article class="plan tilt rv rv-d2">
+        <h3>Vanguard Pro</h3>
+        <p class="plan__price">249 €<small> setup</small></p>
+        <p class="plan__sub">+ 39 € / month</p>
+        <p class="muted">Several pages, and the parts that sell.</p>
+        <ul class="checks">
+          <li>Everything in Start</li>
+          <li>Up to 5 pages</li>
+          <li>Online booking or quote requests</li>
+          <li>Photo gallery</li>
+          <li>Copy written from an interview with you</li>
+          <li>Basic search optimisation</li>
+          <li>Two rounds of changes</li>
+        </ul>
+        <p class="plan__not"><b>Not included:</b> online shop, integrations with your existing systems.</p>
+        <p class="plan__when">Live in 10 working days from receiving your content.</p>
+      </article>
+
+      <article class="plan tilt rv rv-d3">
+        <h3>Vanguard Custom</h3>
+        <p class="plan__price">Let's talk</p>
+        <p class="plan__sub">Fixed quote, agreed up front</p>
+        <p class="muted">When the standard shape doesn't fit.</p>
+        <ul class="checks">
+          <li>Online shop</li>
+          <li>Integration with tools you already use</li>
+          <li>Custom automations</li>
+          <li>Multiple languages</li>
+        </ul>
+        <p class="plan__not"><b>How it works:</b> we scope it together and put the price and the
+        deadline in writing before any work starts.</p>
+        <p class="plan__when">Timeline set with the quote.</p>
+      </article>
+    </div>
+    <p class="note rv rv-d4" style="margin-top:2.5rem">
+      All prices exclude VAT. The domain is paid directly to the registrar (roughly 10–15 € a year)
+      and stays in your name. There's no lock-in: cancel the monthly plan and we hand you the files.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════════ FAQ ══ -->
+<section class="section--tint" id="faq">
+  <div class="wrap">
+    <div class="head rv">
+      <p class="eyebrow">Questions</p>
+      <h2>What people ask us.</h2>
+    </div>
+    <div class="faq rv rv-d1">
+      <details open>
+        <summary>Why is there a monthly fee at all?</summary>
+        <p>Because a website isn't a thing you buy once. It needs hosting, a security certificate,
+        backups and someone to change the hours when they change. The 29 € covers that. We could hide
+        it in a bigger one-off price, but then the site would go stale the moment you paid.</p>
+      </details>
+      <details>
+        <summary>What does 99 € actually get me?</summary>
+        <p>One page — a good one, with every section a local business needs, built for phones. Not a
+        multi-page site, not a shop, not online booking. If you need those, that's Vanguard Pro. We
+        say this plainly because "from 99 €" is worth nothing if you find out later what it excluded.</p>
+      </details>
+      <details>
+        <summary>Really live in five days?</summary>
+        <p>Five working days from the moment we have your content: text, photos, services, hours and
+        legal details. The clock starts there, not at the kick-off call. If material is missing, the
+        clock stops and we tell you what we're waiting for.</p>
+      </details>
+      <details>
+        <summary>I don't have photos of my business.</summary>
+        <p>That's the usual case. We'll give you a guide for shooting them yourself on a phone (it
+        works better than you'd expect) or help you organise a session. What we won't do is use stock
+        photos and pass them off as your premises.</p>
+      </details>
+      <details>
+        <summary>What if I already have a website?</summary>
+        <p>We'll run our checks on it and tell you whether it's worth rebuilding or just fixing. If
+        it's fine, we'll say so, even though that means you don't hire us.</p>
+      </details>
+      <details>
+        <summary>Is the website mine?</summary>
+        <p>Yes. The domain is in your name and the content is yours. Cancel the plan and we hand over
+        the files so you can take it to another provider.</p>
+      </details>
+      <details>
+        <summary>How did you get my details?</summary>
+        <p>From public business sources: open directories, your own website and your public business
+        profiles. We only process professional contact details, never personal data. Tell us to stop
+        and we remove you from our database immediately.</p>
+      </details>
+      <details>
+        <summary>Do you build online shops?</summary>
+        <p>Not as a standard plan. A shop needs payments, stock, shipping and returns, and doing that
+        badly is worse than not doing it. If you need one, it's a Custom project and we'll tell you
+        honestly whether we're the right people for it.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ═════════════════════════════════════════════════════════ FINAL CTA ══ -->
+<section class="section--dark" id="start">
+  <div class="wrap">
+    <div class="head rv center">
+      <h2>Ready to build your digital presence?</h2>
+      <p class="lead">
+        Leave us the name of your business. We'll build a draft of your website and show it to you.
+        No cost, no commitment, and nothing for you to write.
+      </p>
+    </div>
+
+    <div class="grid grid--2" style="gap:4rem;align-items:start;margin-top:3.5rem">
+      <div class="rv">
+        <p class="eyebrow">What happens next</p>
+        <ol class="next">
+          <li>We look up your business in public sources and run our checks.</li>
+          <li>We build a draft of your site — a real page, not a mockup image.</li>
+          <li>We send you a private link. It isn't published and search engines can't see it.</li>
+          <li>You decide. If it's not for you, we delete it and that's the end of it.</li>
+        </ol>
+        <p class="note" style="margin-top:2rem">
+          Prefer to write in Spanish? Go ahead — we're based in Spain and that's how we work day to day.
+        </p>
+      </div>
+
+      <form class="form rv rv-d2" name="propuesta" method="POST"
+              data-netlify="true" netlify-honeypot="empresa-web"
+              action="/gracias.html" novalidate>
+          <!-- Netlify necesita saber el nombre del formulario al recibirlo. -->
+          <input type="hidden" name="form-name" value="propuesta">
+          <!-- Trampa para robots: una persona nunca ve este campo, asi que si
+               viene relleno, el envio se descarta. Sin captcha ni cookies. -->
+          <p class="trampa" aria-hidden="true">
+            <label>No rellenes esto:
+              <input name="empresa-web" tabindex="-1" autocomplete="off">
+            </label>
+          </p>
+        <label class="field"><span>Your name</span>
+          <input name="nombre" autocomplete="name" required placeholder="First and last name"></label>
+        <label class="field"><span>Business name</span>
+          <input name="negocio" required placeholder="e.g. Sonrisa Dental Clinic"></label>
+        <label class="field"><span>Phone</span>
+          <input name="telefono" type="tel" autocomplete="tel" placeholder="600 00 00 00"></label>
+        <label class="field"><span>Email</span>
+          <input name="email" type="email" autocomplete="email" required placeholder="you@yourbusiness.es"></label>
+        <label class="field full"><span>Sector</span>
+          <select name="sector">
+            <option value="">Select…</option>
+            <option>Restaurant / hospitality</option><option>Barber / hair / beauty</option>
+            <option>Health (clinic, dentist, physio)</option><option>Trades (plumbing, electrical…)</option>
+            <option>Professional services (legal, accounting…)</option>
+            <option>Gym / studio</option><option>Real estate</option><option>Retail</option><option>Other</option>
+          </select></label>
+        <label class="field full"><span>What do you need? (optional)</span>
+          <textarea name="mensaje" rows="3" placeholder="A line or two about where you are now"></textarea></label>
+        <label class="consent full">
+          <input type="checkbox" name="consentimiento" required>
+          <span>I agree that Vanguard Tech may process my data to answer this request, as described in the
+          <a href="/privacidad.html">privacy policy</a>.</span>
+        </label>
+        <div class="full"><button class="btn btn--light" type="submit">Start your website <span class="arr">→</span></button></div>
+        <p class="full" style="font-size:.82rem;color:var(--muted-dark);margin:0">
+          We reply within one working day. See
+          <a href="/privacidad.html" style="text-decoration:underline">how we handle your data</a>.
+        </p>
+      </form>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="footer__grid">
+      <div>
+        <a class="brand" href="/" style="color:#fff">
+          <svg class="brand__mark" viewBox="0 0 120 120" aria-hidden="true">
+            <path d="M18 24 L52 96 L68 96 L34 24 Z" fill="#fff"/>
+            <path d="M86 24 L52 96 L68 96 L102 24 Z"/>
+          </svg>
+          Vanguard Tech
+        </a>
+        <p style="color:var(--muted-dark);max-width:36ch;margin-top:1.1rem;font-size:.92rem">
+          Professional websites, built fast. For local businesses in Spain.
+        </p>
+      </div>
+      <div>
+        <h3>Company</h3>
+        <div class="footer__links">
+          <a href="#services">Services</a><a href="#process">Process</a>
+          <a href="#work">Work</a><a href="#pricing">Pricing</a>
+          <a href="#faq">Questions</a><a href="#start">Start</a>
+        </div>
+      </div>
+      <div>
+        <h3>Legal</h3>
+        <div class="footer__links">
+          <a href="/aviso-legal.html">Aviso legal</a><a href="/privacidad.html">Privacidad</a>
+          <a href="/cookies.html">Cookies</a>
+        </div>
+        <p style="color:var(--muted-dark);font-size:.78rem;margin-top:.9rem;max-width:30ch">
+          Legal pages are in Spanish: they have to be readable by the customers they protect.
+        </p>
+      </div>
+    </div>
+    <div class="fine">
+      <span>© <span id="year">2026</span> Vanguard Tech. Company details pending incorporation.</span>
+      <span>Made in Spain.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="/main.js"></script>
+</body>
+</html>

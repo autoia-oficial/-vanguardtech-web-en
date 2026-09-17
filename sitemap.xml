@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EL DOMINIO ES UN MARCADOR: cambia vanguardtech.es por el tuyo.
+     Las demos de /work/ no se listan a proposito: son negocios inventados y no
+     deben competir en buscadores con negocios reales de su sector. -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://vanguardtech.es/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://vanguardtech.es/aviso-legal.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://vanguardtech.es/privacidad.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://vanguardtech.es/cookies.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+</urlset>

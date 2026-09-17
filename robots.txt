@@ -1,0 +1,10 @@
+# EL DOMINIO ES UN MARCADOR: cambia vanguardtech.es por el tuyo aqui, en
+# sitemap.xml y en las etiquetas og:/canonical de las paginas HTML.
+User-agent: *
+Allow: /
+Disallow: /crm
+Disallow: /api/
+Disallow: /demos/
+Disallow: /work/
+
+Sitemap: https://vanguardtech.es/sitemap.xml

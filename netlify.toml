@@ -1,0 +1,45 @@
+# Publicacion de la web de Vanguard Tech.
+#
+# La web es HTML, CSS y JavaScript sin dependencias: no hay nada que compilar.
+# La raiz de este repositorio ES la web, asi que no hay carpeta que indicar.
+#
+# Generado por `vt web export`. No se edita a mano: se edita en
+# WEBSITE/generator/export-site.mjs del repositorio principal.
+
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    # La web no carga nada de terceros: las tipografias se sirven desde aqui.
+    # El unico origen externo es el mapa incrustado de OpenStreetMap.
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self'; frame-src https://www.openstreetmap.org; connect-src 'self'; base-uri 'none'; form-action 'self'"
+
+# Las tipografias no cambian nunca.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/brand/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+# Las demos son negocios inventados: no deben competir en buscadores con
+# negocios reales de su sector.
+[[headers]]
+  for = "/work/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404
