@@ -234,8 +234,12 @@
     device.style.setProperty('--ry', curRy.toFixed(2) + 'deg');
 
     /* Se acerca y se centra cuando el texto deja el sitio libre. */
-    device.style.setProperty('--sc',
-      (1 + (full ? 0.17 : 0.05) * ramp(p, 0.1, 0.62) - 0.04 * ramp(p, 0.8, 1)).toFixed(3));
+    /* La escala se mueve a saltos de 0,02. Un giro solo recompone una capa ya
+       pintada, pero un cambio de escala obliga a volver a rasterizar todo el
+       subarbol — y dentro de la maqueta hay texto pequeño. A saltos, el ojo no
+       ve la diferencia y el navegador rasteriza ocho veces en vez de doscientas. */
+    var sc = 1 + (full ? 0.17 : 0.05) * ramp(p, 0.1, 0.62) - 0.04 * ramp(p, 0.8, 1);
+    device.style.setProperty('--sc', (Math.round(sc / 0.02) * 0.02).toFixed(2));
     // Se centra en la pantalla a medida que el texto se va: el objeto ocupa el
     // sitio que deja, en vez de quedarse en su columna con medio hero vacio.
     device.style.setProperty('--dx', (-Math.min(240, window.innerWidth * 0.16) * exit).toFixed(1) + 'px');
@@ -302,6 +306,14 @@
     var delta = ((i * step - turn) % 360 + 360) % 360;
     if (delta > 180) delta = 360 - delta;
     return Math.max(0, 1 - delta / span);
+  }
+
+  /* Escribe las dos versiones de la misma señal: --f continua, para la opacidad
+     (recomponer es gratis), y --fq en pasos de 0,1 para la escala (rasterizar
+     no lo es). */
+  function setFacing(el, f) {
+    el.style.setProperty('--f', f.toFixed(3));
+    el.style.setProperty('--fq', (Math.round(f * 10) / 10).toFixed(1));
   }
 
   function updateMorph() {
@@ -452,7 +464,9 @@
     var points = [];
     var w = 0;
     var h = 0;
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // 1,5 en vez de 2: son puntos difusos de menos de 3 px, y a 2x hay que
+    // pintar el doble de pixeles para no ver ninguna diferencia.
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
     function build() {
       var rect = canvas.getBoundingClientRect();
@@ -464,7 +478,7 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       // Menos puntos en pantallas pequeñas: el coste es de pintado, no de cálculo.
-      var count = w < 700 ? 70 : 160;
+      var count = w < 700 ? 60 : 120;
       points = [];
       for (var i = 0; i < count; i += 1) {
         points.push({
@@ -580,7 +594,7 @@
     var cards = ring.children;
     for (var i = 0; i < cardCount; i += 1) {
       var f = facing(i, PASO, turn, 70);
-      cards[i].style.setProperty('--f', f.toFixed(3));
+      setFacing(cards[i], f);
       /* Solo la tarjeta que mira de frente abre su demo. Una girada de canto
          mide unos pocos píxeles en pantalla: imposible de pulsar a propósito y
          facilísima de pulsar por error. Las demás sí se pueden pulsar, pero
@@ -641,7 +655,7 @@
     var turn = stepTurn(eased, showCards.length, 120);
     showRing.style.setProperty('--deg', turn.toFixed(2) + 'deg');
     for (var i = 0; i < showCards.length; i += 1) {
-      showCards[i].style.setProperty('--f', facing(i, 120, turn, 64).toFixed(3));
+      setFacing(showCards[i], facing(i, 120, turn, 64));
     }
 
     var active = Math.min(showCards.length - 1, Math.round(turn / 120));

@@ -250,17 +250,22 @@ section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
   background:#000;color:#fff;overflow:hidden;
 }
 .hero__bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
-/* Malla de luz: dos orbes que orbitan muy despacio. Sin imágenes. */
-.orb{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;
+/* Malla de luz: dos orbes que orbitan muy despacio. Sin imágenes.
+   SIN `filter:blur()`: el degradado radial ya es difuso, y un desenfoque de
+   90 px sobre una caja de 56vw hay que recalcularlo entero cada vez que la
+   caja cambia de tamaño. Con la escala en la animacion eso pasaba en CADA
+   fotograma del hero: era la mitad del coste de la primera pantalla.
+   Ahora solo se desplazan, que es una recomposicion y sale gratis. */
+.orb{position:absolute;border-radius:50%;opacity:.85;
   will-change:transform;transform:translate3d(0,0,0)}
 .orb--1{width:56vw;height:56vw;left:-10vw;top:-18vw;
   background:radial-gradient(circle,rgba(255,255,255,.16),transparent 66%);
-  animation:drift1 22s var(--ease-soft) infinite alternate}
+  animation:drift1 26s var(--ease-soft) infinite alternate}
 .orb--2{width:46vw;height:46vw;right:-14vw;bottom:-20vw;
   background:radial-gradient(circle,rgba(255,255,255,.09),transparent 68%);
   animation:drift2 27s var(--ease-soft) infinite alternate}
-@keyframes drift1{to{transform:translate3d(9vw,7vw,0) scale(1.14)}}
-@keyframes drift2{to{transform:translate3d(-8vw,-6vw,0) scale(1.1)}}
+@keyframes drift1{to{transform:translate3d(9vw,7vw,0)}}
+@keyframes drift2{to{transform:translate3d(-8vw,-6vw,0)}}
 /* Rejilla en perspectiva: suelo tecnológico */
 /* El lienzo de particulas del hero. Se llamaba `.field`, igual que los campos
    del formulario, y la regla de movimiento reducido que lo ocultaba se llevaba
@@ -499,8 +504,11 @@ section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
   background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);
   padding:2rem 1.8rem;
   /* Cada tarjeta gira su porción del círculo y se empuja hacia fuera */
+  /* La escala usa --fq (la misma señal, en pasos) y no --f: girar recompone
+     una capa ya pintada, pero escalar obliga a rasterizarla otra vez, y aqui
+     dentro hay una web en miniatura con texto. */
   transform:rotateY(calc(var(--i) * 60deg)) translateZ(var(--r))
-            scale(calc(.9 + var(--f,1) * .1));
+            scale(calc(.9 + var(--fq,1) * .1));
   backface-visibility:hidden;
   box-shadow:0 24px 60px rgba(8,9,11,.14);
   /* Las que no miran de frente se atenúan: dirigen la vista a la central sin
@@ -777,9 +785,12 @@ footer h3{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
   position:fixed;left:0;top:0;width:760px;height:760px;margin:-380px 0 0 -380px;
   z-index:5;pointer-events:none;opacity:0;
   transition:opacity .7s var(--ease-soft);
-  mix-blend-mode:screen;
+  /* Sin `mix-blend-mode`. Sobre negro, una capa blanca al 8% en fusion normal
+     se ve igual que en `screen`, y el modo de fusion obliga al navegador a
+     recomponer la ventana entera cada vez que la luz se mueve. Sobre el texto
+     blanco, blanco sobre blanco sigue siendo blanco: no lo apaga. */
   background:radial-gradient(circle closest-side,
-    rgba(255,255,255,.085),rgba(226,231,240,.04) 46%,transparent 72%);
+    rgba(255,255,255,.075),rgba(226,231,240,.035) 46%,transparent 72%);
   transform:translate3d(var(--sx,-999px),var(--sy,-999px),0);
   will-change:transform;
 }
@@ -1393,7 +1404,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
 .show-card{
   position:absolute;inset:0;border-radius:16px;overflow:hidden;background:#fff;
   transform:rotateY(calc(var(--i) * 120deg)) translateZ(var(--rad))
-            scale(calc(.88 + var(--f,1) * .12));
+            scale(calc(.88 + var(--fq,1) * .12));
   backface-visibility:hidden;
   box-shadow:0 34px 90px rgba(8,9,11,.28);
   opacity:calc(.14 + var(--f,1) * .86);
