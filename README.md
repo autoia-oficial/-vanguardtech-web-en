@@ -49,6 +49,19 @@ npm run vt -- web export
 No edites estos ficheros a mano: el siguiente export los sobreescribe. Los
 cambios se hacen en `VANGUARD TECH/WEBSITE/site/` del proyecto principal.
 
+## Actualizar la web publicada
+
+El export borra esta carpeta entera salvo `.git`, asi que el remoto y el
+historial sobreviven. Tras tocar la web en el proyecto principal:
+
+```bash
+npm run vt -- web export
+cd ../vanguardtech-web-en
+git add -A && git commit -m "Actualizar la web" && git push
+```
+
+Netlify despliega solo al recibir el push.
+
 ## Pendiente
 
 - El dominio es un marcador (`vanguardtech.es`) en las etiquetas canonical,
