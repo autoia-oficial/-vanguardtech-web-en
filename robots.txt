@@ -2,9 +2,10 @@
 # sitemap.xml y en las etiquetas og:/canonical de las paginas HTML.
 User-agent: *
 Allow: /
-Disallow: /crm
-Disallow: /api/
-Disallow: /demos/
+
+# Las demos son negocios inventados: no deben competir en buscadores con
+# negocios reales de su sector. `netlify.toml` ademas les pone la cabecera
+# X-Robots-Tag: noindex, nofollow.
 Disallow: /work/
 
 Sitemap: https://vanguardtech.es/sitemap.xml

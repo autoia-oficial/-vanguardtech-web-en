@@ -1,103 +1,119 @@
 # Vanguard Tech — web
 
-Sitio estatico de Vanguard Tech, en ingles.
+Sitio oficial de Vanguard Tech, en ingles, con las paginas legales y las demos
+de sector en castellano.
 
 ## Que es esto
 
-HTML, CSS y JavaScript escritos a mano. **Cero dependencias y ningun paso de
-construccion**: lo que hay en este repositorio es exactamente lo que se sirve.
+**Once ficheros HTML y nada mas.** Cada pagina se basta a si misma: el CSS, el
+JavaScript, las tipografias, el isotipo y las fotografias viajan dentro del
+propio documento como `data:` URI.
 
-- No hay `npm install`.
-- No hay framework.
-- Las imagenes son webp servidos desde `/photos/`, con `srcset` de tres anchos.
-- Las tipografias se sirven desde `/fonts/`, no desde Google Fonts: asi la IP
-  del visitante no viaja a un tercero antes de que acepte nada.
-- El formulario lo procesa Netlify. Los envios llegan al panel del sitio.
+- No hay `npm install`, ni framework, ni paso de construccion.
+- No hay `styles.css` ni `main.js`: estan dentro de cada pagina.
+- No se carga **nada** de terceros. Abrir cualquier pagina hace **una sola
+  peticion de red**: la del propio documento.
+- Lo que hay en este repositorio es exactamente lo que se sirve.
 
 ## Verlo en local
 
-Al abrir `index.html` con doble clic se vera **sin estilos**, porque las rutas
-son absolutas (`/styles.css`). Hace falta servirlo:
+Un doble clic sobre `index.html` funciona: no hay rutas relativas que resolver.
+Para probar los enlaces entre paginas hace falta servirlo:
 
 ```bash
 python3 -m http.server 8000
-# o
-npx serve .
+# y abrir http://localhost:8000/
 ```
-
-Y abrir http://localhost:8000/
 
 ## Estructura
 
 | Ruta | Que es |
 |---|---|
-| `index.html` | La web |
+| `index.html` | La web. Autocontenida |
 | `gracias.html` | Donde aterriza el formulario |
 | `aviso-legal.html`, `privacidad.html`, `cookies.html` | Paginas legales, en castellano |
-| `styles.css` | Toda la hoja de estilos de la portada |
-| `main.js` | Todo el movimiento de la portada. Va en fichero aparte **porque la CSP del sitio (`script-src 'self'`) bloquea el JavaScript en linea** |
-| `work/` | Seis demos de sector. **Negocios inventados**, cada una lo dice en su cabecera |
-| `brand/` | Isotipo oficial (`logo-mark.png` y su webp), iconos de pestaña y tarjeta de enlace |
-| `photos/` | Las seis fotografias de sector, en webp y en tres anchos (400 / 800 / 1376) |
-| `fonts/` | Inter y Space Grotesk, con sus licencias OFL, y `fonts.css` con las cinco `@font-face` |
+| `work/<sector>/index.html` | Seis demos de sector. **Negocios inventados**, cada una lo dice en su cabecera |
+| `brand/logo-mark.png` | El isotipo oficial. Original del que salen todos los tamaños |
+| `brand/share-card.png` | Tarjeta de enlace para redes (`og:image`) |
+| `fonts/OFL-*.txt` | Licencias de Inter y Space Grotesk |
+| `netlify.toml` | Cabeceras y politica de seguridad |
+| `robots.txt`, `sitemap.xml` | Indexacion |
 
-## De donde sale
+### Por que estos cuatro ficheros no estan empotrados
 
-Este repositorio se **genera** desde el proyecto principal, donde viven el
-motor, el CRM, las plantillas de las demos y los tests:
+- **`brand/share-card.png`** — WhatsApp, LinkedIn y X no leen un `data:` URI en
+  la tarjeta de enlace. Tiene que ser una URL de verdad.
+- **`brand/logo-mark.png`** — es el original del isotipo y la URL a la que
+  apuntan los datos estructurados (`"logo"` del JSON-LD). Para cambiar de
+  logotipo se sustituye **este** fichero y se regeneran los tamaños.
+- **`fonts/OFL-*.txt`** — Inter y Space Grotesk se distribuyen bajo SIL Open
+  Font License 1.1, que **obliga** a que la licencia viaje con la tipografia.
+  Van empotradas en cada pagina, asi que la licencia tiene que estar aqui.
+
+## Publicacion
+
+Netlify, sitio estatico, sin compilar nada:
+
+| Ajuste | Valor |
+|---|---|
+| Production branch | `main` |
+| Base directory | *(vacio)* |
+| Build command | *(vacio)* |
+| Publish directory | `.` |
+| Functions directory | *(vacio)* |
+| Environment variables | *(ninguna)* |
+
+Netlify despliega solo al recibir un push a `main`.
+
+## Politica de seguridad — leer antes de tocar el HTML
+
+`netlify.toml` no usa `script-src 'unsafe-inline'`: el unico script ejecutable
+del sitio se autoriza **por su huella SHA-256**, y es el mismo en las cuatro
+paginas que lo llevan (portada, aviso legal, privacidad y cookies).
+
+**Si se edita ese JavaScript, la huella deja de coincidir y el navegador bloquea
+el script en silencio: la web se ve pero no se mueve.** Hay que recalcularla y
+actualizar `netlify.toml`:
 
 ```bash
-npm run vt -- web export
+python3 - <<'EOF'
+import base64, hashlib, io, re
+s = io.open('index.html', encoding='utf-8').read()
+m = re.search(r'<script(?![^>]*\btype=)[^>]*>(.*?)</script>', s, re.S)
+print('sha256-' + base64.b64encode(hashlib.sha256(m.group(1).encode()).digest()).decode())
+EOF
 ```
 
-No edites estos ficheros a mano: el siguiente export los sobreescribe. Los
-cambios se hacen en `VANGUARD TECH/WEBSITE/site/` del proyecto principal.
+## Formulario
 
-## Actualizar la web publicada
+Lo procesa **Netlify Forms**. El markup ya lleva lo que Netlify necesita:
+`name="propuesta"`, `data-netlify="true"`, el campo oculto `form-name` y un
+honeypot (`netlify-honeypot="empresa-web"`). Los envios llegan al panel del
+sitio y el visitante aterriza en `/gracias.html`.
 
-El export borra esta carpeta entera salvo `.git`, asi que el remoto y el
-historial sobreviven. Tras tocar la web en el proyecto principal:
-
-```bash
-npm run vt -- web export
-cd ../vanguardtech-web-en
-git add -A && git commit -m "Actualizar la web" && git push
-```
-
-Netlify despliega solo al recibir el push.
-
-## El isotipo
-
-El logotipo vive en **un solo sitio**: `brand/logo-mark.png` (y `logo-mark.webp`,
-que es lo que carga el navegador). La barra de navegacion, el pie, las paginas
-legales, la de gracias, los iconos de pestaña y la tarjeta de enlace salen todos
-de ese fichero. Se usa **tal cual**: solo se escala, y proporcionalmente.
-
-Para cambiar de logotipo se sustituye ese fichero y se vuelven a generar los
-derivados (los tamaños de icono y la tarjeta de enlace). No hay una segunda
-version dibujada a mano en ningun sitio.
+**No añadas JavaScript que cancele el `submit`**: eso deja el formulario muerto.
 
 ## Las fotografias
 
-Una por sector, en `photos/<sector>-<ancho>.webp`. El encuadre **no** esta
-recortado en el fichero: lo decide `--pos` (y `--pos-sm` por debajo de 700 px)
-sobre `object-position`, asi que la misma imagen sirve para la tira apaisada de
-la cabecera, para una miniatura y para la vista ampliada. Cambiar un encuadre es
-cambiar dos numeros, no reexportar una imagen.
+Seis, una por sector, empotradas en las paginas que las usan. El encuadre **no**
+esta recortado en el fichero: lo deciden `--pos` y `--pos-sm` sobre
+`background-position`. Cambiar un encuadre es cambiar dos numeros.
 
-El nombre lleva el ancho, asi que una foto nueva es un fichero nuevo: por eso
-`/photos/*` se cachea un año en `netlify.toml`.
+Dentro de cada pagina cada foto se declara **una sola vez** como variable CSS en
+`:root` y los `<img>` la pintan de fondo. Sin eso, la portada pesaria cuatro
+veces mas: la foto del restaurante aparece treinta veces entre la cabecera, el
+anillo, el escaparate y las miniaturas.
 
 ## Moneda
 
-La web en ingles cotiza en **dolares**, incluidas las cifras que aparecen dentro
-de las maquetas de las demos y en las seis paginas de `work/`. Es a proposito:
-mezclar euros y dolares en la misma pagina se lee como un descuido. Si la version
-en ingles pasa a dirigirse solo a España, hay que cambiarlo en los tres sitios a
-la vez (`index.html`, `work/*/index.html` y los datos estructurados).
+Toda la web cotiza en **dolares**, incluidas las cifras dentro de las maquetas y
+de las seis demos. Mezclar euros y dolares se lee como un descuido.
 
 ## Pendiente
 
-- El dominio es un marcador (`vanguardtech.es`) en las etiquetas canonical,
-  og: y en `sitemap.xml`.
+- El dominio es un marcador (`vanguardtech.es`) en las etiquetas `canonical`,
+  `og:` y en `sitemap.xml`. Hay que cambiarlo por el definitivo.
 - Las paginas legales necesitan los datos fiscales reales.
+- En los datos estructurados de `index.html` quedan dos `"priceCurrency": "EUR"`
+  que deberian decir `"USD"`, para que Google no lea una moneda distinta de la
+  que muestra la pagina.
