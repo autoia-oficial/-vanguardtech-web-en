@@ -19,9 +19,8 @@
 body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items:center;
   padding:2rem 1.25rem}
 .gracias{max-width:640px;text-align:center}
-.gracias .mark{width:64px;height:64px;margin:0 auto 2.2rem;display:block}
-.gracias .mark path:first-child{fill:#fff}
-.gracias .mark path:last-child{fill:var(--brand)}
+.gracias .brand__img--big{width:64px;height:64px;margin:0 auto 2.2rem}
+
 .gracias h1{font-size:clamp(2.2rem,1.6rem + 2.6vw,3.4rem);margin-bottom:1.1rem}
 .gracias .lead{color:var(--muted-dark);margin-inline:auto}
 .gracias .next{text-align:left;max-width:34ch;margin:2.6rem auto 0}
@@ -31,10 +30,9 @@ body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items
 <body>
 
 <main class="gracias">
-  <svg class="mark" viewBox="0 0 120 120" aria-hidden="true">
-    <path d="M24 32 L50 32 L68 90 L54 90 Z"/>
-    <path d="M96 32 L72 32 L60 66 L74 78 Z"/>
-  </svg>
+  <!-- El logotipo, del mismo fichero que el resto de la web. -->
+  <img class="brand__img brand__img--big" src="/brand/logo-mark.svg" alt="" width="64" height="64">
+  
 
   <h1>Request received.</h1>
   <p class="lead">
@@ -59,5 +57,9 @@ body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items
   </div>
 </main>
 
+<!-- Solo por el hueco del logotipo: es el mismo fichero que ya trae la
+     portada, asi que viene de cache. Todo lo demas de main.js no encuentra
+     nada que hacer en esta pagina y sale por donde entro. -->
+<script src="/main.js" defer></script>
 </body>
 </html>

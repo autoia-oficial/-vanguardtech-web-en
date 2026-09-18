@@ -138,15 +138,19 @@ section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
 .brand{display:flex;align-items:center;gap:.6rem;font-family:var(--display);font-weight:700;
   font-size:1.05rem;letter-spacing:-.035em;text-decoration:none;white-space:nowrap;flex:none}
 @media(max-width:420px){.brand{font-size:.95rem;gap:.45rem}}
-/* 26 px, no 21. Los brazos del isotipo miden 16 de 120 unidades: a 21 px eso
-   son 2,8 px y el brazo oscuro se lava con el antialiasing, de modo que la
-   marca se lee como una barra "/" en vez de como una V. A 26 px vuelve a
-   leerse. Comprobado comparando 21/24/26/28/32 px sobre claro y sobre oscuro. */
-.brand__mark{width:26px;height:26px;flex:none}
-/* Primer brazo: el color del texto de alrededor. Segundo: el azul de marca.
-   Es gráfica, no texto, así que aquí sí va el azul eléctrico puro. */
-.brand__mark path:first-child{fill:currentColor}
-.brand__mark path:last-child{fill:var(--brand)}
+/* EL LOGOTIPO — UN SOLO FICHERO
+   `brand/logo-mark.svg`. Se usa tal cual y solo se escala, proporcionalmente:
+   el dibujo, la separacion entre las dos barras, el angulo, el grosor y los
+   cantos redondeados son los del fichero, no de aqui. Para cambiar de
+   logotipo se cambia ESE fichero y nada mas.
+   28 px, no 21: por debajo de 26 los brazos del isotipo se lavan con el
+   antialiasing y la marca se lee como una barra en vez de como una V.
+   Comprobado a 21/24/26/28/32 px sobre claro y sobre oscuro. */
+.brand__img{width:28px;height:28px;flex:none;object-fit:contain;display:block}
+@media(max-width:420px){.brand__img{width:25px;height:25px}}
+/* La version grande de gracias.html: el mismo fichero, otro tamaño. */
+.brand__img--big{width:64px;height:64px;margin:0 auto 2.2rem}
+
 /* En movil los enlaces bajan a una segunda fila que se desliza en horizontal.
    Antes se ocultaban por completo por debajo de 960 px: con doce secciones,
    quien entraba desde el movil no tenia forma de llegar a Pricing salvo
@@ -533,9 +537,12 @@ section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
    frente. Lo que no se puede pulsar es su ENLACE mientras esta de lado, para
    no abrir una demo por error al intentar girar el anillo. */
 .ring__card{pointer-events:auto;cursor:pointer}
-.ring__card .ring__link{pointer-events:none}
+/* Una tarjeta girada de canto mide unos pocos pixeles: su boton es imposible
+   de pulsar a proposito y facilisimo de pulsar por error. Pulsarla la trae al
+   frente; solo la de delante abre su demo. */
+.ring__card .ring__link,.ring__card .demo-btn{pointer-events:none}
 .ring__card.is-front{cursor:default}
-.ring__card.is-front .ring__link{pointer-events:auto}
+.ring__card.is-front .ring__link,.ring__card.is-front .demo-btn{pointer-events:auto}
 .ring__link{text-decoration:none;display:inline-block;padding:.15rem 0;min-height:28px}
 .ring__link:hover,.ring__link:focus-visible{color:var(--accent);text-decoration:underline;
   text-underline-offset:4px}
@@ -558,6 +565,7 @@ section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
 /* Mientras gira a mano, las tarjetas no deben responder al puntero: el clic
    se soltaria sobre una tarjeta distinta de la que se pulso. */
 .ring.is-turning .ring__card{pointer-events:none}
+.ring__txt .demo-btn{margin-top:.9rem}
 .ring__hint{margin-top:1.4rem;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;
   color:var(--muted);opacity:.75}
 @media(min-width:900px){.ring{--r:470px;width:360px;height:300px}}
@@ -1007,15 +1015,18 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
 .mock__photo--food .mock__shape::after{width:32%;height:32%;left:14%;top:-34%;
   background:radial-gradient(circle,rgba(255,214,150,.4),transparent 70%)}
 .mock__photo--hair{background:
-  radial-gradient(46% 56% at 66% 38%,rgba(196,204,216,.42),transparent 70%),
-  radial-gradient(40% 44% at 22% 70%,rgba(120,128,142,.35),transparent 72%),
-  linear-gradient(168deg,#1c1f25,#0b0c0f)}
+  radial-gradient(28% 34% at 78% 22%,rgba(226,214,190,.3),transparent 66%),
+  radial-gradient(46% 56% at 62% 40%,rgba(196,204,216,.34),transparent 70%),
+  radial-gradient(52% 40% at 18% 78%,rgba(120,128,142,.34),transparent 72%),
+  linear-gradient(168deg,#1e2228,#0a0b0e)}
 .mock__photo--hair .mock__shape{width:4.2em;height:5.6em;left:58%;bottom:0;
   border-radius:2.1em 2.1em 0 0;
   background:linear-gradient(to top,rgba(10,11,13,.9),rgba(150,158,172,.3))}
 /* Barberia: el espejo de la pared y el brillo del sillon. */
-.mock__photo--hair .mock__shape::before{width:120%;height:70%;left:-150%;top:-10%;
-  border-radius:.4em;background:linear-gradient(160deg,rgba(226,232,240,.14),transparent 70%)}
+.mock__photo--hair .mock__shape::before{width:150%;height:78%;left:-185%;top:-14%;
+  border-radius:.4em;background:linear-gradient(160deg,rgba(226,232,240,.2),
+    rgba(226,232,240,.05) 46%,transparent 72%);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
 .mock__photo--hair .mock__shape::after{width:70%;height:18%;left:-20%;top:78%;
   background:radial-gradient(ellipse,rgba(255,255,255,.16),transparent 70%)}
 .mock__photo--gym{background:
@@ -1031,16 +1042,19 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
 .mock__photo--gym .mock__shape::after{width:3.4em;height:3.4em;left:80%;top:-3.4em;
   background:radial-gradient(circle,rgba(190,225,205,.3),transparent 70%)}
 .mock__photo--home{background:
-  radial-gradient(50% 54% at 70% 32%,rgba(168,160,200,.38),transparent 70%),
-  radial-gradient(42% 46% at 24% 72%,rgba(108,112,132,.4),transparent 72%),
-  linear-gradient(166deg,#1a1b22,#0a0b0e)}
+  radial-gradient(30% 36% at 20% 22%,rgba(226,220,240,.24),transparent 66%),
+  radial-gradient(50% 54% at 68% 34%,rgba(168,160,200,.34),transparent 70%),
+  radial-gradient(46% 50% at 26% 76%,rgba(108,112,132,.4),transparent 72%),
+  linear-gradient(166deg,#1c1d24,#090a0d)}
 .mock__photo--home .mock__shape{width:0;height:0;left:26%;top:26%;
   border-left:3.2em solid transparent;border-right:3.2em solid transparent;
   border-bottom:2.2em solid rgba(255,255,255,.22)}
+/* Clinica: blanco, grafito y beige. Nada de azul medico. */
 .mock__photo--tooth{background:
-  radial-gradient(48% 56% at 40% 36%,rgba(206,216,224,.45),transparent 70%),
-  radial-gradient(36% 40% at 76% 70%,rgba(140,158,168,.34),transparent 72%),
-  linear-gradient(170deg,#181d20,#0a0c0d)}
+  radial-gradient(34% 40% at 72% 26%,rgba(232,222,204,.34),transparent 68%),
+  radial-gradient(48% 56% at 38% 40%,rgba(224,226,222,.4),transparent 70%),
+  radial-gradient(40% 44% at 78% 76%,rgba(150,158,146,.3),transparent 72%),
+  linear-gradient(170deg,#1d1f1c,#0b0c0b)}
 .mock__photo--tooth .mock__shape{width:3.4em;height:4.2em;left:30%;top:22%;
   border-radius:1.7em 1.7em .9em .9em/2.2em 2.2em 1.4em 1.4em;
   background:linear-gradient(to bottom,rgba(255,255,255,.55),rgba(255,255,255,.12))}
@@ -1397,7 +1411,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
   position:relative;transform-style:preserve-3d;
   --cw:clamp(260px,86vw,620px);
   --rad:calc(var(--cw) * .64);
-  width:var(--cw);height:calc(var(--cw) * .63);
+  width:var(--cw);height:calc(var(--cw) * .68);
   transform:translateZ(calc(var(--rad) * -1)) rotateY(calc(var(--deg,0deg) * -1));
   will-change:transform;
 }
@@ -1422,7 +1436,10 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
 .chrome--dark .chrome__url{background:rgba(255,255,255,.08);border-color:transparent;
   color:rgba(255,255,255,.7)}
 .show-card__in{position:absolute;inset:0;display:flex;flex-direction:column}
-.show-card .mock{flex:1;min-height:0}
+/* Igual en el escaparate: alto natural y recorte. La ventana ensena la parte
+   de arriba de la portada; el resto se ve en la vista ampliada, que si se
+   puede desplazar. */
+.show-card .mock{flex:0 0 auto;height:auto}
 /* En el escaparate la etiqueta vive en la barra del navegador, que es el unico
    sitio que esta siempre libre; el cromo le reserva el hueco. */
 .chrome{padding-right:4.4rem}
@@ -1470,16 +1487,17 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
 .ring__card{padding:0;display:flex;flex-direction:column;overflow:hidden}
 .ring__shot{position:relative;flex:1 1 auto;min-height:0;overflow:hidden;
   border-bottom:1px solid var(--line);background:#0b0d10}
-.ring__shot .mock{position:absolute;inset:0;height:100%}
-/* En la miniatura la cabecera ocupa lo que sobra: lo que se ve es el primer
-   pantallazo de la web, que es justo lo que decide si alguien se queda. */
-.ring__shot .mock__hero{height:auto;flex:1 1 auto}
+.ring__shot .mock{position:absolute;inset:0 0 auto 0;height:auto}
+/* La tarjeta tiene 26 px de esquina redondeada y la franja de aviso empieza
+   justo ahi: sin este hueco, la curva se comia las dos primeras cifras del
+   telefono. */
+.ring__shot .mock__bar{padding-left:2.4em;padding-right:2.4em}
 .ring__txt{flex:none;padding:1.1rem 1.25rem 1.3rem}
 .ring__card h3{margin:.55rem 0 .35rem;font-size:1.15rem}
 .ring__card p{font-size:.84rem;line-height:1.45}
 /* La etiqueta "Demo" va sobre la FOTO, no sobre la barra de la maqueta: ahi
    pisaba el nombre del negocio. 1.9rem es justo debajo de esa barra. */
-.ring__tag{position:absolute;z-index:3;top:1.9rem;left:.7rem;margin:0}
+.ring__tag{position:absolute;z-index:3;top:3.1rem;right:.7rem;left:auto;margin:0}
 .ring__card .card__icon{display:none}
 
 /* ===========================================================================
@@ -1499,6 +1517,307 @@ input:focus-visible,select:focus-visible,textarea:focus-visible,
   font-weight:700;color:var(--muted-dark);opacity:0;transition:opacity .4s var(--ease-soft);
   display:block;margin-top:.5rem}
 .step.is-active .step__state{opacity:1;color:#fff}
+
+
+/* ===========================================================================
+   MAQUETA v2 — de "pantallazo" a PORTADA
+   ---------------------------------------------------------------------------
+   La maqueta ya tenia navegacion, foto y contenido. Lo que le faltaba para
+   parecer una web de verdad era lo de alrededor: la franja de aviso de arriba,
+   el titular con peso editorial, un mapa con direccion y un pie con columnas.
+   Son las piezas que tiene cualquier portada y que, si faltan, hacen que el
+   conjunto se lea como una tarjeta.
+
+   Sigue siendo el mismo componente y la misma variable de tamaño (--mfs): se
+   usa igual en una miniatura del anillo, en el escaparate y a pantalla
+   completa en la vista ampliada.
+   =========================================================================== */
+
+/* Franja de aviso: telefono, horario y un enlace. Lo primero de casi cualquier
+   web de negocio local. */
+.mock__bar{display:flex;align-items:center;gap:1em;padding:.4em 1.1em;flex:none;
+  background:var(--tone);color:var(--tone-ink);font-size:.68em;letter-spacing:.01em;
+  /* Tres datos en una franja de 20 px: si no caben, se recortan por el final
+     y no desbordan la maqueta. */
+  white-space:nowrap;overflow:hidden}
+.mock__bar b{flex:none}
+.mock__bar span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.mock__bar b{font-weight:600}
+.mock__bar span:last-child{margin-left:auto;opacity:.85}
+
+/* Cabecera editorial: rotulo pequeño en versalitas, titular a tres lineas y
+   dos botones. El titular manda: es lo unico que se lee de verdad en una
+   miniatura de 6 px de letra. */
+.mock__hero{height:11.5em}
+.mock__eyebrow{position:relative;z-index:2;display:block;font-size:.62em;font-weight:700;
+  letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:.5em}
+.mock__htext b{font-size:1.85em;line-height:1.02;letter-spacing:-.04em;max-width:18em}
+.mock__hero--tall{height:13em}
+.mock__htext b em{font-style:normal;display:block}
+.mock__htext .mock__ctas{display:flex;align-items:center;gap:.6em;margin-top:.8em;
+  opacity:1;max-width:none}
+.mock__htext .mock__ctas .mock__btn{margin-top:0}
+.mock__htext .mock__eyebrow{opacity:1;margin-top:0;max-width:none}
+/* Con mapa y pie debajo, el `margin-top:auto` de la franja la empujaba contra
+   ellos y aplastaba el cuerpo. */
+.mock__band{margin-top:0}
+
+/* Mapa: una retícula de calles en diagonal con su chincheta. No es un mapa
+   real — es la forma de un mapa, que es lo que hace falta aqui. */
+.mock__map{position:relative;flex:none;height:3.6em;overflow:hidden;
+  background:#e9ebee;display:flex;align-items:flex-end;padding:.5em .7em}
+.mock--dark .mock__map{background:#15181d}
+.mock__map::before{content:"";position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(64deg,rgba(8,9,11,.07) 0 1px,transparent 1px 22px),
+    repeating-linear-gradient(-28deg,rgba(8,9,11,.05) 0 1px,transparent 1px 16px),
+    linear-gradient(120deg,rgba(8,9,11,.05),transparent)}
+.mock--dark .mock__map::before{
+  background:
+    repeating-linear-gradient(64deg,rgba(255,255,255,.08) 0 1px,transparent 1px 22px),
+    repeating-linear-gradient(-28deg,rgba(255,255,255,.05) 0 1px,transparent 1px 16px)}
+.mock__pin{position:absolute;left:38%;top:34%;width:.8em;height:.8em;border-radius:50%;
+  background:var(--tone);box-shadow:0 0 0 .28em rgba(255,255,255,.55)}
+.mock--dark .mock__pin{box-shadow:0 0 0 .28em rgba(255,255,255,.14)}
+.mock__map span{position:relative;z-index:2;font-size:.72em;font-weight:600;
+  background:rgba(255,255,255,.88);padding:.2em .5em;border-radius:.3em}
+.mock--dark .mock__map span{background:rgba(8,9,11,.7);color:#fff}
+
+/* Pie con columnas: cierra la pagina. Sin esto la maqueta se corta en seco y
+   se nota que no es una portada entera. */
+.mock__foot{flex:none;display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:1em;
+  padding:.8em 1.1em;background:#14171b;color:rgba(255,255,255,.62);font-size:.68em}
+.mock__foot b{display:block;color:#fff;font-family:var(--display);font-size:1.15em;
+  letter-spacing:-.02em;margin-bottom:.25em}
+.mock__foot i{display:block;font-style:normal;line-height:1.5}
+.mock__foot u{text-decoration:none;display:block;opacity:.75}
+
+/* Lista de servicios con precio: el precio va en el tono de la demo, que es el
+   unico color con funcion dentro de la maqueta. */
+.mock__list--lead .mock__row{padding-bottom:.55em}
+.mock__row em{white-space:nowrap}
+
+/* La vista ampliada da mucho mas alto: ahi el cuerpo respira en vez de
+   quedarse todo apelotonado arriba. */
+.mock--full .mock__body{align-content:space-between;gap:1.2em}
+
+/* ===========================================================================
+   VISTA AMPLIADA DE UNA DEMO
+   ---------------------------------------------------------------------------
+   "View demo" no lleva a un dominio inventado: abre la misma maqueta a tamaño
+   grande, dentro de un navegador, con su nota de demo y el enlace a la pagina
+   de ejemplo que SI existe en este sitio. El contenido se clona del propio
+   escaparate, asi que no hay una segunda copia que se pueda desincronizar.
+   =========================================================================== */
+.peek{
+  position:fixed;inset:0;z-index:300;display:none;
+  align-items:center;justify-content:center;padding:clamp(.75rem,3vw,2.5rem);
+  background:rgba(6,7,9,.82);backdrop-filter:blur(14px) saturate(120%);
+  -webkit-backdrop-filter:blur(14px) saturate(120%);
+  opacity:0;transition:opacity .35s var(--ease-soft);
+}
+.peek.is-open{display:flex;opacity:1}
+.peek__panel{
+  position:relative;width:min(100%,1180px);max-height:100%;
+  display:flex;flex-direction:column;
+  border-radius:16px;overflow:hidden;background:#fff;
+  box-shadow:0 40px 120px rgba(0,0,0,.6);
+  transform:translate3d(0,14px,0) scale(.985);
+  transition:transform .45s var(--ease);
+}
+.peek.is-open .peek__panel{transform:none}
+.peek__frame{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;display:block;background:#fff}
+.peek__frame .mock{--mfs:clamp(9px,1.15vw,15px);height:auto;min-height:100%}
+.peek__foot{flex:none;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+  padding:.9rem 1.2rem;background:#0b0d10;color:rgba(255,255,255,.66);font-size:.82rem}
+.peek__foot b{color:#fff;font-family:var(--display);letter-spacing:-.02em;font-size:.95rem}
+.peek__foot .peek__note{max-width:46ch}
+.peek__foot a{margin-left:auto;color:#fff;font-weight:600;text-decoration:none;
+  border-bottom:1px solid rgba(255,255,255,.4);padding-bottom:1px;white-space:nowrap}
+.peek__foot a::after{content:" \2197";opacity:.6}
+.peek__chrome{flex:none;padding:.6rem .7rem;gap:7px}
+.peek__chrome .chrome__url{max-width:22rem}
+.peek__close{
+  margin-left:auto;z-index:4;width:30px;height:30px;min-height:0;flex:none;
+  padding:0;border-radius:50%;border:1px solid #d8dce3;cursor:pointer;
+  background:#fff;color:var(--ink);font-size:.9rem;line-height:1;
+  display:grid;place-items:center;
+  transition:transform .3s var(--ease),background .3s var(--ease-soft),color .3s var(--ease-soft);
+}
+.peek__close:hover{transform:scale(1.1);background:var(--ink);color:#fff}
+@media(max-width:720px){
+  .peek__panel{width:100%}
+  .peek__foot{font-size:.76rem;padding:.8rem 1rem}
+  .peek__foot a{margin-left:0}
+}
+/* Mientras la vista ampliada esta abierta, el fondo no se desplaza. */
+body.peek-open{overflow:hidden}
+
+/* Boton de "ver demo": el mismo en la tarjeta del anillo y en el escaparate. */
+.demo-btn{
+  display:inline-flex;align-items:center;gap:.4rem;cursor:pointer;
+  font-family:var(--font);font-size:.82rem;font-weight:600;letter-spacing:.01em;
+  padding:.5rem .95rem;min-height:38px;border-radius:99em;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);
+  transform:translate3d(var(--tx,0),var(--ty,0),0);
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease),border-color .3s var(--ease-soft);
+}
+.demo-btn:hover{box-shadow:0 12px 30px rgba(8,9,11,.12);border-color:#cfd4dc}
+.demo-btn .arr{transition:transform .35s var(--ease)}
+.demo-btn:hover .arr{transform:translateX(3px)}
+
+/* ===========================================================================
+   ESCAPARATE — mas producto, menos tarjeta
+   ---------------------------------------------------------------------------
+   Lo que estaba: tres webs girando con opacidad y escala. Lo que faltaba para
+   que pareciesen productos: que lo que no esta de frente se vaya DE VERDAD al
+   fondo — mas pequeño, mas apagado y desenfocado — y que la de delante tenga
+   sombra de contacto y un reflejo por debajo.
+   =========================================================================== */
+.show-ring{--cw:clamp(260px,86vw,660px)}
+.show-card{
+  box-shadow:0 34px 90px rgba(8,9,11,.28),0 4px 14px rgba(8,9,11,.14);
+}
+/* PROFUNDIDAD SIN DESENFOQUE
+   Lo natural aqui seria un `filter:blur()` en las tarjetas que no miran de
+   frente. Medido: cualquier filtro distinto de `none` sobre un subarbol que
+   gira y escala obliga a una pasada de filtro POR FOTOGRAMA, y dentro de cada
+   tarjeta hay una web entera con texto de 10 px. Con blur, el 10% peor de los
+   fotogramas de esta seccion se iba a 33 ms; sin el, se queda en 17.
+
+   La distancia la dan entonces la escala, la opacidad y una penumbra: un velo
+   del color del fondo que se cierra sobre la tarjeta a medida que se gira. Solo
+   cambia `opacity`, que el navegador recompone sin repintar nada — y ademas se
+   lee mejor que un desenfoque, porque parece que la de delante esta iluminada.
+   El desenfoque de verdad se usa donde si sale gratis: el fondo de la vista
+   ampliada, que es un solo elemento y no se mueve. */
+.show-card::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:radial-gradient(120% 100% at 50% 0%,#12151a,#05060700 70%),#0b0d10;
+  opacity:calc((1 - var(--f,1)) * .62);
+}
+/* Sombra de contacto: una elipse tenue bajo la tarjeta de delante. Es lo que
+   la pega al suelo en vez de dejarla flotando en el vacio. */
+.show-stage{position:relative}
+.show-stage::after{
+  content:"";position:absolute;left:50%;bottom:-2.2rem;transform:translateX(-50%);
+  width:min(70%,460px);height:2.6rem;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(8,9,11,.16),transparent 70%);
+  opacity:var(--ground,1);transition:opacity .4s var(--ease-soft);
+}
+@media(prefers-reduced-motion:reduce){.show-stage::after{display:none}}
+
+/* ===========================================================================
+   EL PRECIO — HAZ DE LUZ CONTROLADO POR EL SCROLL
+   ---------------------------------------------------------------------------
+   Es el unico momento de color de la web, y esta donde tiene que estar: en el
+   numero que decide si alguien escribe o se va. El scroll dibuja la escena en
+   un lienzo: los trazos nacen juntos en el centro, se abren, se separan del
+   todo, vuelven a ordenarse y acaban formando un halo que deja el precio en
+   medio. No es "aparecen, se van, sale el precio": es una sola transformacion
+   continua, y si se para a media altura se queda a medias.
+
+   La banda es oscura a proposito. El mismo color sobre blanco se lee como una
+   fiesta; sobre negro se lee como luz, que es lo que se pretende. Encaja con
+   el ritmo claro/oscuro que ya tenia la pagina.
+   =========================================================================== */
+.burst{background:#08090b;color:#fff;padding:0;overflow:clip}
+.burst__track{position:relative}
+.burst__stick{
+  position:relative;min-height:100svh;overflow:hidden;
+  display:grid;place-items:center;padding:calc(var(--nav-h) + 2rem) 0 4rem;
+}
+@media(min-height:620px){
+  .burst__track{height:230vh}
+  /* En movil el recorrido es mas corto: el haz cuenta lo mismo en 180vh y la
+     pagina no se hace interminable en una pantalla estrecha. */
+  @media(max-width:760px){.burst__track{height:180vh}}
+  .burst__stick{position:sticky;top:0;height:100svh;min-height:0;
+    padding:calc(var(--nav-h) * .8) 0 2rem}
+}
+.burst__canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.burst__center{
+  position:relative;z-index:2;text-align:center;
+  width:min(100% - 2.5rem,var(--w));
+}
+/* `text-align:center` centra el texto DENTRO de cada parrafo, pero un parrafo
+   con `max-width:62ch` sigue pegado a la izquierda del contenedor. Sin esto,
+   el rotulo y la pista salian descentrados respecto al numero. */
+.burst__center p{margin-inline:auto}
+.burst__center .eyebrow{justify-content:center;
+  opacity:calc(1 - var(--bp,0) * 1.6);transition:opacity .3s linear}
+/* El bloque del precio: entra con la escena, no despues. Sube de opacidad y de
+   tamaño a la vez que los trazos se ordenan, asi que cuando el haz se cierra
+   el numero ya esta ahi, no aparece de la nada. */
+.burst__h2{
+  margin:0;display:grid;justify-items:center;gap:.1em;
+  transform:scale(calc(.58 + var(--bp,0) * .42));
+  transform-origin:50% 45%;
+}
+.burst__from{
+  display:block;font-family:var(--font);font-size:clamp(.78rem,.7rem + .3vw,.95rem);
+  font-weight:600;letter-spacing:.22em;text-transform:uppercase;
+  color:rgba(255,255,255,.62);
+  opacity:calc(.25 + var(--bp,0) * .75);
+}
+.burst__num{
+  display:block;font-size:clamp(5.5rem,3rem + 18vw,16rem);line-height:.86;
+  letter-spacing:-.06em;font-variant-numeric:tabular-nums;
+  /* Metal, el mismo del titular del hero: es la unica "textura" de la marca. */
+  color:#fff;
+  background:linear-gradient(104deg,#ffffff 6%,#c3c9d3 34%,#ffffff 58%,#9aa2ae 100%);
+  -webkit-background-clip:text;background-clip:text;
+  opacity:calc(.28 + var(--bp,0) * .72);
+}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  .burst__num{-webkit-text-fill-color:transparent}
+}
+.burst__num i{font-style:normal;font-size:.42em;letter-spacing:-.03em;margin-left:.06em;
+  vertical-align:.24em}
+.burst__sub{
+  margin:1.4rem auto 0;max-width:40ch;font-size:clamp(.95rem,.9rem + .3vw,1.12rem);
+  color:rgba(255,255,255,.66);
+  opacity:calc(var(--bp,0) * var(--bp,0));
+  transform:translate3d(0,calc((1 - var(--bp,0)) * 14px),0);
+}
+.burst__sub b{color:#fff;font-weight:600}
+/* Las dos cifras juntas y del mismo peso: la cuota no se esconde. */
+.burst__pair{display:flex;align-items:baseline;justify-content:center;gap:1.2rem;
+  flex-wrap:wrap;margin-top:.4rem;
+  opacity:calc(var(--bp,0) * var(--bp,0))}
+/* La cuota no se esconde: va junto al numero grande y con peso propio. El
+   "setup" va en versalitas porque el numero gigante ya ES el alta. */
+.burst__pair{gap:1.6rem}
+/* En pantalla estrecha las dos piezas del precio se apilan: en una linea
+   quedaban pegadas a los bordes y el haz les pasaba por encima. */
+@media(max-width:520px){
+  .burst__pair{flex-direction:column;gap:.3rem}
+  .burst__tag{order:2}
+}
+.burst__tag{font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.5)}
+.burst__mo{font-family:var(--display);font-size:clamp(1.3rem,1rem + 1.1vw,2.2rem);
+  letter-spacing:-.035em;color:rgba(255,255,255,.72)}
+.burst__mo b{color:#fff;font-weight:700}
+.burst__hint{margin:2.2rem 0 0;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,255,255,.34);opacity:calc(1 - var(--bp,0) * 2)}
+
+/* Sin movimiento: la escena se dibuja una sola vez en su estado final y el
+   precio se lee entero. Ni recorrido, ni panel pegajoso, ni lienzo animado. */
+@media(prefers-reduced-motion:reduce){
+  .burst__track{height:auto}
+  .burst__stick{position:static;height:auto;min-height:0;padding:5rem 0}
+  .burst__num,.burst__from,.burst__sub,.burst__pair{opacity:1}
+  .burst__h2{transform:none}
+  .burst__sub{transform:none}
+  .burst__hint{display:none}
+}
+@media(max-height:560px){
+  .burst__track{height:auto}
+  .burst__stick{position:static;height:auto;min-height:0;padding:4rem 0}
+  .burst__hint{display:none}
+}
 
 /* ===========================================================================
    PANTALLAS MUY BAJAS (movil en horizontal, ventanas cortas)

@@ -174,16 +174,15 @@
 
 <header class="nav is-dark" id="nav">
   <div class="wrap nav__inner">
-    <!-- ISOTIPO. Es la geometria oficial de brand/simbolo.svg, en monocromo:
-         el primer brazo toma el color del texto de alrededor y el segundo es
-         plata (--brand). Para poner el archivo oficial en su lugar basta con
-         sustituir estos dos `path` por los del SVG definitivo, aqui y en el
-         pie; nada mas depende de la forma. -->
+    <!-- ISOTIPO — UN SOLO FICHERO
+         El logotipo vive en `brand/logo-mark.svg` y se usa TAL CUAL: mismo
+         dibujo, misma separacion entre las dos barras, mismos cantos, sin
+         recolorear y sin recortar. Solo se escala, y proporcionalmente.
+         Para cambiarlo, se sustituye ESE fichero: la barra, el pie, las
+         paginas legales y la de gracias lo cogen de ahi. Nada mas depende de
+         la forma del isotipo. -->
     <a class="brand" href="/">
-      <svg class="brand__mark" viewBox="0 0 120 120" aria-hidden="true">
-        <path d="M24 32 L50 32 L68 90 L54 90 Z"/>
-        <path d="M96 32 L72 32 L60 66 L74 78 Z"/>
-      </svg>
+      <img class="brand__img" src="/brand/logo-mark.svg" alt="" width="28" height="28" decoding="async">
       Vanguard Tech
     </a>
     <nav class="nav__links" aria-label="Main">
@@ -266,7 +265,7 @@
                 <div class="browser">
                   <div class="browser__bar">
                     <i></i><i></i><i></i>
-                    <div class="browser__url">casaribera.es</div>
+                    <div class="browser__url">yourbusiness.es</div>
                   </div>
                   <div class="browser__body">
                     <!-- Maqueta de web. Negocio INVENTADO: lleva su etiqueta. -->
@@ -410,7 +409,7 @@
             <article class="stg" style="--i:1">
               <div class="audit">
                 <div class="audit__top">
-                  <b>talleresbergara.es</b>
+                  <b>yourbusiness.es</b>
                   <span class="audit__score"><b>2</b><span>/ 13 passed</span></span>
                 </div>
                 <div class="audit__list">
@@ -462,7 +461,7 @@
               <div class="live">
                 <div class="live__bar">
                   <i></i><i></i><i></i>
-                  <span class="live__url">talleresbergara.es</span>
+                  <span class="live__url">yourbusiness.es</span>
                 </div>
                 <div class="live__screens">
                   <div class="live__desk">
@@ -714,142 +713,256 @@
         </div>
         <div class="ring-stage">
           <div class="ring" id="ring" tabindex="0" role="group" aria-label="Sector demos">
-            <article class="ring__card" style="--i:0">
+            <article class="ring__card" style="--i:0" data-demo="restaurant">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" style="--tone:#a86f3c">
+                  <div class="mock__bar"><b>941 00 00 01</b><span>Open Tuesday to Sunday</span><span>Booking in two taps</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">La Sobremesa</span>
-                    <span class="mock__menu"><span>Menu</span><span>The room</span><span>Find us</span></span>
-                    <span class="mock__cta">Book</span>
+                    <span class="mock__menu"><span>Menu</span><span>The room</span><span>Wine</span><span>Find us</span></span>
+                    <span class="mock__cta">Book a table</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--food"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Cocina de siempre, in the old town.</b><span>Logroño · Tuesday to Sunday</span>
-                      <span class="mock__btn">Book a table</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Restaurant · Logroño</span>
+                      <b><em>Cuisine rooted in tradition,</em><em>in the heart of the old town.</em></b>
+                      <span>Logroño · Tuesday to Sunday</span>
+                      <span class="mock__ctas"><span class="mock__btn">Book a table →</span>
+                        <span class="mock__btn mock__btn--ghost">See the menu</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>13:30 – 16:00</span><span><b>941 00 00 01</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>13:30 – 16:00</span><span><b>Twelve tables</b></span></div>
+                  <div class="mock__body">
+                    <p class="mock__h">This week's menu</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Pochas with quail</b><i>White beans, slow cooked</i><em>14 €</em></div><div class="mock__row"><b>Grilled hake</b><i>Garlic and sweet pepper</i><em>19 €</em></div><div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>The room</b><span>Twelve tables</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Wine list</b><span>40 references</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Private</b><span>Up to 20</span></p></div></div>
+                  </div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>C/ Laurel 14 · Logroño</span></div>
+                  <div class="mock__band"><b>Table for two tonight?</b><span class="mock__btn">Book a table →</span></div>
+                  <div class="mock__foot">
+                    <div><b>La Sobremesa</b><i>Cocina de siempre, since 1994.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>941 00 00 01</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
               <div class="ring__txt">
-                <h3><a href="/work/restaurant/" class="ring__link">Restaurant</a></h3>
+                <h3>Restaurant</h3>
                 <p><strong>Goal: a booking.</strong> Menu, photos of the room, hours, location and a
                   table booked in two taps.</p>
+                <button type="button" class="demo-btn" data-peek="restaurant">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:1">
+            <article class="ring__card" style="--i:1" data-demo="barber">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" style="--tone:#4a4f58">
+                  <div class="mock__bar"><b>960 00 00 02</b><span>Tuesday to Saturday, 10:00 – 20:30</span><span>Walk-ins when there is a chair</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Navaja Barber Club</span>
-                    <span class="mock__menu"><span>Services</span><span>Team</span><span>Gallery</span></span>
-                    <span class="mock__cta">Book</span>
+                    <span class="mock__menu"><span>Services</span><span>The team</span><span>Gallery</span><span>Book</span></span>
+                    <span class="mock__cta">Book an appointment</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--hair"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Cut and straight-razor shave, by appointment.</b><span>Valencia · Tuesday to Saturday</span>
-                      <span class="mock__btn">Get an appointment</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Barber · Valencia</span>
+                      <b><em>Precise cuts.</em><em>Style without noise.</em></b>
+                      <span>Valencia · Tuesday to Saturday</span>
+                      <span class="mock__ctas"><span class="mock__btn">Book an appointment →</span>
+                        <span class="mock__btn mock__btn--ghost">Our space</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Slots today</span><span>Cut 16 €</span><span><b>960 00 00 02</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Slots today</span><span>10:00 – 20:30</span><span><b>Six chairs</b></span></div>
+                  <div class="mock__body">
+                    <p class="mock__h">Services</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Cut</b><i>Wash, cut and finish</i><em>from 25 €</em></div><div class="mock__row"><b>Cut and beard</b><i>The full thing, 45 min</i><em>from 35 €</em></div><div class="mock__row"><b>Beard</b><i>Hot towel and razor</i><em>from 18 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>The team</b><span>Four barbers</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Our space</b><span>Six chairs</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Gallery</b><span>60 real cuts</span></p></div></div>
+                  </div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>C/ Cadirers 8 · Valencia</span></div>
+                  <div class="mock__band"><b>Free chair at 18:00 today</b><span class="mock__btn">Book an appointment →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Navaja Barber Club</b><i>Barbering, without the noise.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>960 00 00 02</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
               <div class="ring__txt">
-                <h3><a href="/work/barber/" class="ring__link">Barber</a></h3>
+                <h3>Barber</h3>
                 <p><strong>Goal: an appointment.</strong> Services, the team, a gallery of real cuts and
                   a booking request.</p>
+                <button type="button" class="demo-btn" data-peek="barber">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:2">
+            <article class="ring__card" style="--i:2" data-demo="gym">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" style="--tone:#4f7a5e">
+                  <div class="mock__bar"><b>976 00 00 03</b><span>Open 7:00 – 22:00</span><span>First session free</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Forja Entrenamiento</span>
-                    <span class="mock__menu"><span>Classes</span><span>Prices</span><span>Team</span></span>
-                    <span class="mock__cta">Free trial</span>
+                    <span class="mock__menu"><span>Classes</span><span>Prices</span><span>The team</span><span>Trial</span></span>
+                    <span class="mock__cta">Start training</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--gym"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Train with a plan, not with a machine.</b><span>Zaragoza · 7:00 – 22:00</span>
-                      <span class="mock__btn">First session free</span></div>
+                    <div class="mock__htext mock__htext--caps">
+                      <span class="mock__eyebrow">Gym · Zaragoza</span>
+                      <b><em>Train</em><em>to become</em><em>stronger.</em></b>
+                      <span>Training · Strength · Performance</span>
+                      <span class="mock__ctas"><span class="mock__btn">Start training →</span>
+                        <span class="mock__btn mock__btn--ghost">See the timetable</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>Next class 18:30</span><span><b>976 00 00 03</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>Next class 18:30</span><span><b>Small groups</b></span></div>
+                  <div class="mock__body">
+                    <p class="mock__h">Memberships</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Personal training</b><i>Two sessions a week</i><em>89 €/mo</em></div><div class="mock__row"><b>Classes</b><i>Eight a week, small groups</i><em>39 €/mo</em></div><div class="mock__row"><b>Open gym</b><i>Free access, no classes</i><em>29 €/mo</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Strength</b><span>Mon · Wed · Fri</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Conditioning</b><span>Tue · Thu</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Mobility</b><span>Saturday</span></p></div></div>
+                  </div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>Av. Navarra 120 · Zaragoza</span></div>
+                  <div class="mock__band"><b>First session is free</b><span class="mock__btn">Start training →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Forja Entrenamiento</b><i>Train with a plan, not with a machine.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>976 00 00 03</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
               <div class="ring__txt">
-                <h3><a href="/work/gym/" class="ring__link">Gym</a></h3>
+                <h3>Gym</h3>
                 <p><strong>Goal: a trial session.</strong> Memberships, class timetable and a free first
                   session booked online.</p>
+                <button type="button" class="demo-btn" data-peek="gym">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:3">
+            <article class="ring__card" style="--i:3" data-demo="real-estate">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" style="--tone:#6a5f8f">
+                  <div class="mock__bar"><b>951 00 00 04</b><span>34 listings · 6 new this week</span><span>Viewings seven days a week</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Llave Maestra</span>
-                    <span class="mock__menu"><span>Listings</span><span>Sell</span><span>Contact</span></span>
-                    <span class="mock__cta">Viewings</span>
+                    <span class="mock__menu"><span>Buy</span><span>Sell</span><span>Areas</span><span>Contact</span></span>
+                    <span class="mock__cta">View properties</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--home"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Sell your home with someone who answers the phone.</b><span>Málaga · 34 listings</span>
-                      <span class="mock__btn">Book a viewing</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Real estate · Málaga</span>
+                      <b><em>Spaces worth seeing.</em></b>
+                      <span>Málaga · Marbella · Estepona</span>
+                      <span class="mock__ctas"><span class="mock__btn">View properties →</span>
+                        <span class="mock__btn mock__btn--ghost">Sell with us</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">New today</span><span>3 bed · 118 m²</span><span><b>951 00 00 04</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">New today</span><span>34 listings</span><span><b>Own photography</b></span></div>
+                  <div class="mock__body">
+                    <p class="mock__h">Featured properties</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Penthouse · El Limonar</b><i>3 bed · 2 bath · 148 m² · terrace</i><em>1.250.000 €</em></div><div class="mock__row"><b>Townhouse · Pedregalejo</b><i>4 bed · 210 m² · garden</i><em>890.000 €</em></div><div class="mock__row"><b>Flat · Centro histórico</b><i>2 bed · 96 m² · lift</i><em>415.000 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Terrace</b><span>40 m², facing south</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Parking</b><span>Two spaces</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Views</b><span>Sea and port</span></p></div></div>
+                  </div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>Paseo de Reding 3 · Málaga</span></div>
+                  <div class="mock__band"><b>Book a viewing this week</b><span class="mock__btn">View properties →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Llave Maestra</b><i>Spaces worth seeing.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>951 00 00 04</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
               <div class="ring__txt">
-                <h3><a href="/work/real-estate/" class="ring__link">Real estate</a></h3>
+                <h3>Real estate</h3>
                 <p><strong>Goal: a viewing.</strong> Listings that load fast on a phone, filters and a
                   direct line to the agent.</p>
+                <button type="button" class="demo-btn" data-peek="real-estate">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:4">
+            <article class="ring__card" style="--i:4" data-demo="dental-clinic">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
-                <div class="mock" style="--tone:#5c7f86">
+                <div class="mock" style="--tone:#6e7a66">
+                  <div class="mock__bar"><b>923 00 00 05</b><span>Monday to Friday, 9:00 – 20:00</span><span>First visit free, with X-ray</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Clínica Dental Árbol</span>
-                    <span class="mock__menu"><span>Treatments</span><span>Team</span><span>Prices</span></span>
-                    <span class="mock__cta">Book</span>
+                    <span class="mock__menu"><span>Treatments</span><span>The team</span><span>Prices</span><span>Contact</span></span>
+                    <span class="mock__cta">Book an appointment</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--tooth"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Dentistry explained before it is done.</b><span>Salamanca · no waiting list</span>
-                      <span class="mock__btn">Ask for an appointment</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Dental clinic · Salamanca</span>
+                      <b><em>A healthier smile.</em><em>A different kind of care.</em></b>
+                      <span>Salamanca · No waiting list</span>
+                      <span class="mock__ctas"><span class="mock__btn">Book an appointment →</span>
+                        <span class="mock__btn mock__btn--ghost">First visit</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>First visit free</span><span><b>923 00 00 05</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>9:00 – 20:00</span><span><b>No waiting list</b></span></div>
+                  <div class="mock__body">
+                    <p class="mock__h">Treatments</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Implantology</b><i>Planned in 3D before we start</i><em>from 950 €</em></div><div class="mock__row"><b>Orthodontics</b><i>Clear aligners, reviewed monthly</i><em>from 2.400 €</em></div><div class="mock__row"><b>Hygiene</b><i>Twice a year, 40 minutes</i><em>45 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Cosmetic</b><span>Whitening and veneers</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Digital</b><span>Intraoral scanner</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>First visit</b><span>Free, with X-ray</span></p></div></div>
+                  </div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>C/ Zamora 22 · Salamanca</span></div>
+                  <div class="mock__band"><b>First visit is free</b><span class="mock__btn">Book an appointment →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Clínica Dental Árbol</b><i>Dentistry explained before it is done.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>923 00 00 05</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
               <div class="ring__txt">
-                <h3><a href="/work/dental-clinic/" class="ring__link">Dental clinic</a></h3>
+                <h3>Dental clinic</h3>
                 <p><strong>Goal: trust, then a visit.</strong> Treatments explained plainly, the team with
                   their qualifications, and online booking.</p>
+                <button type="button" class="demo-btn" data-peek="dental-clinic">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:5">
+            <article class="ring__card" style="--i:5" data-demo="local-business">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" style="--tone:#9c4f3f">
+                  <div class="mock__bar"><b>984 00 00 06</b><span>24 h call-outs</span><span>Fixed price before we start</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Fontanería Robles</span>
-                    <span class="mock__menu"><span>Services</span><span>Area</span><span>Prices</span></span>
+                    <span class="mock__menu"><span>Services</span><span>Service area</span><span>Prices</span><span>Contact</span></span>
                     <span class="mock__cta">Call now</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--tools"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Leak today? We come today.</b><span>Gijón · 24 h call-outs</span>
-                      <span class="mock__btn">984 00 00 06</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Local business · Gijón</span>
+                      <b><em>A leak today?</em><em>We come today.</em></b>
+                      <span>Gijón · Since 1998</span>
+                      <span class="mock__ctas"><span class="mock__btn">Call now →</span>
+                        <span class="mock__btn mock__btn--ghost">Get directions</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Available now</span><span>Call-out 35 €</span><span><b>984 00 00 06</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Available now</span><span>24 h call-outs</span><span><b>Since 1998</b></span></div>
+                  <div class="mock__body">
+                    <p class="mock__h">Services</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Call-out</b><i>Same day, fixed price</i><em>35 €</em></div><div class="mock__row"><b>Boiler service</b><i>Annual check and certificate</i><em>65 €</em></div><div class="mock__row"><b>Bathroom refit</b><i>Quoted on site, in writing</i><em>from 1.200 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Opening hours</b><span>Mon–Sat 8:00–20:00</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Service area</b><span>Gijón and Villaviciosa</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Contact</b><span>Phone and WhatsApp</span></p></div></div>
+                  </div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>C/ Magnus Blikstad 40 · Gijón</span></div>
+                  <div class="mock__band"><b>Need someone today?</b><span class="mock__btn">Call now →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Fontanería Robles</b><i>Plumbing in Gijón since 1998.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>984 00 00 06</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
               <div class="ring__txt">
-                <h3><a href="/work/local-business/" class="ring__link">Local business</a></h3>
+                <h3>Local business</h3>
                 <p><strong>Goal: a phone call.</strong> Plumbers, electricians, locksmiths: the number
                   always visible, service area and prices up front.</p>
+                <button type="button" class="demo-btn" data-peek="local-business">View demo <span class="arr">→</span></button>
               </div>
             </article>
           </div>
@@ -858,15 +971,15 @@
           <button type="button" data-ring="prev" aria-label="Previous sector">&#8249;</button>
           <button type="button" data-ring="next" aria-label="Next sector">&#8250;</button>
         </div>
-        <p class="ring__hint">Scroll, or use the arrows. Tap the front card to open its demo.</p>
+        <p class="ring__hint">Scroll, or use the arrows. Open the front one to see it full size.</p>
       </div>
     </div>
 
-    <!-- ESCAPARATE 3D — tres webs completas sobre un eje central. El scroll las
-         hace girar: la de delante es la que se lee, las otras dos se van de
-         canto. Es el MISMO objeto girando, no un pase de imagenes.
-         Las pastillas de color cambian el acento de LA DEMO, no el de Vanguard
-         Tech: el color es del cliente, y es lo que de verdad se elige. -->
+    <!-- ESCAPARATE 3D — las tres principales, a tamaño de producto. El scroll
+         las hace girar: la de delante crece, se aclara y enfoca; las otras dos
+         se van al fondo, se apagan y se desenfocan. Es el MISMO objeto
+         girando, no un pase de imagenes. Las pastillas de color cambian el
+         acento de LA DEMO, no el de Vanguard Tech. -->
     <div class="show-track" id="showTrack">
       <div class="show-stick">
         <div class="show-head">
@@ -876,81 +989,117 @@
 
         <div class="show-stage">
           <div class="show-ring" id="showRing">
-            <article class="show-card" style="--i:0">
+            <article class="show-card" style="--i:0" data-demo="restaurant">
               <div class="show-card__in" aria-hidden="true">
                 <div class="chrome"><i></i><i></i><i></i>
-                  <span class="chrome__url">lasobremesa.es</span></div>
+                  <span class="chrome__url">yourbusiness.es</span></div>
                 <span class="show-card__demo">Demo</span>
                 <div class="mock" style="--tone:#a86f3c">
+                  <div class="mock__bar"><b>941 00 00 01</b><span>Open Tuesday to Sunday</span><span>Booking in two taps</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">La Sobremesa</span>
-                    <span class="mock__menu"><span>Menu</span><span>The room</span><span>Find us</span></span>
+                    <span class="mock__menu"><span>Menu</span><span>The room</span><span>Wine</span><span>Find us</span></span>
                     <span class="mock__cta">Book a table</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--food"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Cocina de siempre, in the old town.</b><span>Logroño · Tuesday to Sunday</span>
-                      <span class="mock__btn">Book a table</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Restaurant · Logroño</span>
+                      <b><em>Cuisine rooted in tradition,</em><em>in the heart of the old town.</em></b>
+                      <span>Logroño · Tuesday to Sunday</span>
+                      <span class="mock__ctas"><span class="mock__btn">Book a table →</span>
+                        <span class="mock__btn mock__btn--ghost">See the menu</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>13:30 – 16:00</span><span><b>941 00 00 01</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>13:30 – 16:00</span><span><b>Twelve tables</b></span></div>
                   <div class="mock__body">
-                    <p class="mock__h">This week’s menu</p>
-                    <div class="mock__list"><div class="mock__row"><b>Pochas with quail</b><i>White beans, slow cooked</i><em>14 €</em></div><div class="mock__row"><b>Grilled hake</b><i>Garlic and sweet pepper</i><em>19 €</em></div><div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div></div>
+                    <p class="mock__h">This week's menu</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Pochas with quail</b><i>White beans, slow cooked</i><em>14 €</em></div><div class="mock__row"><b>Grilled hake</b><i>Garlic and sweet pepper</i><em>19 €</em></div><div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div></div>
                     <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>The room</b><span>Twelve tables</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Wine list</b><span>40 references</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Private</b><span>Up to 20</span></p></div></div>
                   </div>
-                  <div class="mock__band"><b>Table for two tonight?</b><span class="mock__btn">Book a table</span></div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>C/ Laurel 14 · Logroño</span></div>
+                  <div class="mock__band"><b>Table for two tonight?</b><span class="mock__btn">Book a table →</span></div>
+                  <div class="mock__foot">
+                    <div><b>La Sobremesa</b><i>Cocina de siempre, since 1994.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>941 00 00 01</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
             </article>
-            <article class="show-card" style="--i:1">
+            <article class="show-card" style="--i:1" data-demo="barber">
               <div class="show-card__in" aria-hidden="true">
                 <div class="chrome"><i></i><i></i><i></i>
-                  <span class="chrome__url">navajabarberclub.es</span></div>
+                  <span class="chrome__url">yourbusiness.es</span></div>
                 <span class="show-card__demo">Demo</span>
                 <div class="mock" style="--tone:#4a4f58">
+                  <div class="mock__bar"><b>960 00 00 02</b><span>Tuesday to Saturday, 10:00 – 20:30</span><span>Walk-ins when there is a chair</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Navaja Barber Club</span>
-                    <span class="mock__menu"><span>Services</span><span>The team</span><span>Gallery</span></span>
-                    <span class="mock__cta">Get an appointment</span>
+                    <span class="mock__menu"><span>Services</span><span>The team</span><span>Gallery</span><span>Book</span></span>
+                    <span class="mock__cta">Book an appointment</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--hair"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Cut and straight-razor shave, by appointment.</b><span>Valencia · Tuesday to Saturday</span>
-                      <span class="mock__btn">Book a chair</span></div>
+                    <div class="mock__htext">
+                      <span class="mock__eyebrow">Barber · Valencia</span>
+                      <b><em>Precise cuts.</em><em>Style without noise.</em></b>
+                      <span>Valencia · Tuesday to Saturday</span>
+                      <span class="mock__ctas"><span class="mock__btn">Book an appointment →</span>
+                        <span class="mock__btn mock__btn--ghost">Our space</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Slots today</span><span>10:00 – 20:30</span><span><b>960 00 00 02</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Slots today</span><span>10:00 – 20:30</span><span><b>Six chairs</b></span></div>
                   <div class="mock__body">
                     <p class="mock__h">Services</p>
-                    <div class="mock__list"><div class="mock__row"><b>Cut</b><i>Wash, cut and finish</i><em>16 €</em></div><div class="mock__row"><b>Cut and beard</b><i>The full thing, 45 min</i><em>24 €</em></div><div class="mock__row"><b>Straight-razor shave</b><i>Hot towel</i><em>14 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Álvaro</b><span>12 years</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Nacho</b><span>Beard work</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Gallery</b><span>60 cuts</span></p></div></div>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Cut</b><i>Wash, cut and finish</i><em>from 25 €</em></div><div class="mock__row"><b>Cut and beard</b><i>The full thing, 45 min</i><em>from 35 €</em></div><div class="mock__row"><b>Beard</b><i>Hot towel and razor</i><em>from 18 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>The team</b><span>Four barbers</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Our space</b><span>Six chairs</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Gallery</b><span>60 real cuts</span></p></div></div>
                   </div>
-                  <div class="mock__band"><b>Free slot at 18:00 today</b><span class="mock__btn">Get an appointment</span></div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>C/ Cadirers 8 · Valencia</span></div>
+                  <div class="mock__band"><b>Free chair at 18:00 today</b><span class="mock__btn">Book an appointment →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Navaja Barber Club</b><i>Barbering, without the noise.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>960 00 00 02</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
             </article>
-            <article class="show-card" style="--i:2">
+            <article class="show-card" style="--i:2" data-demo="gym">
               <div class="show-card__in" aria-hidden="true">
                 <div class="chrome"><i></i><i></i><i></i>
-                  <span class="chrome__url">forjaentrenamiento.es</span></div>
+                  <span class="chrome__url">yourbusiness.es</span></div>
                 <span class="show-card__demo">Demo</span>
                 <div class="mock" style="--tone:#4f7a5e">
+                  <div class="mock__bar"><b>976 00 00 03</b><span>Open 7:00 – 22:00</span><span>First session free</span></div>
                   <div class="mock__nav">
                     <span class="mock__logo">Forja Entrenamiento</span>
-                    <span class="mock__menu"><span>Classes</span><span>Prices</span><span>The team</span></span>
-                    <span class="mock__cta">Free trial</span>
+                    <span class="mock__menu"><span>Classes</span><span>Prices</span><span>The team</span><span>Trial</span></span>
+                    <span class="mock__cta">Start training</span>
                   </div>
-                  <div class="mock__hero">
+                  <div class="mock__hero mock__hero--tall">
                     <div class="mock__photo mock__photo--gym"><span class="mock__shape"></span></div>
-                    <div class="mock__htext"><b>Train with a plan, not with a machine.</b><span>Zaragoza · 7:00 – 22:00</span>
-                      <span class="mock__btn">Book a free session</span></div>
+                    <div class="mock__htext mock__htext--caps">
+                      <span class="mock__eyebrow">Gym · Zaragoza</span>
+                      <b><em>Train</em><em>to become</em><em>stronger.</em></b>
+                      <span>Training · Strength · Performance</span>
+                      <span class="mock__ctas"><span class="mock__btn">Start training →</span>
+                        <span class="mock__btn mock__btn--ghost">See the timetable</span></span>
+                    </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>Next class 18:30</span><span><b>976 00 00 03</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>Next class 18:30</span><span><b>Small groups</b></span></div>
                   <div class="mock__body">
                     <p class="mock__h">Memberships</p>
-                    <div class="mock__list"><div class="mock__row"><b>Open gym</b><i>Free access, no classes</i><em>29 €/mo</em></div><div class="mock__row"><b>Classes</b><i>Eight a week, small groups</i><em>39 €/mo</em></div><div class="mock__row"><b>One to one</b><i>Two sessions a week</i><em>89 €/mo</em></div></div>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Personal training</b><i>Two sessions a week</i><em>89 €/mo</em></div><div class="mock__row"><b>Classes</b><i>Eight a week, small groups</i><em>39 €/mo</em></div><div class="mock__row"><b>Open gym</b><i>Free access, no classes</i><em>29 €/mo</em></div></div>
                     <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Strength</b><span>Mon · Wed · Fri</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Conditioning</b><span>Tue · Thu</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Mobility</b><span>Saturday</span></p></div></div>
                   </div>
-                  <div class="mock__band"><b>First session is free</b><span class="mock__btn">Free trial</span></div>
+                  <div class="mock__map"><span class="mock__pin"></span><span>Av. Navarra 120 · Zaragoza</span></div>
+                  <div class="mock__band"><b>First session is free</b><span class="mock__btn">Start training →</span></div>
+                  <div class="mock__foot">
+                    <div><b>Forja Entrenamiento</b><i>Train with a plan, not with a machine.</i></div>
+                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><i>976 00 00 03</i><u>Legal notice</u><u>Privacy</u></div>
+                  </div>
                 </div>
               </div>
             </article>
@@ -962,7 +1111,7 @@
             <h4>01 · Restaurant</h4>
             <p>The whole page works towards one thing: a table booked. Menu, room and hours above the fold, the phone one tap away.</p>
             <div class="show-meta__row">
-              <a class="show-link" href="/work/restaurant/">Open the restaurant demo</a>
+              <button type="button" class="demo-btn" data-peek="restaurant">View demo <span class="arr">→</span></button>
               <span class="tone" role="group" aria-label="Demo accent colour">
                 <span class="tone__lbl">Accent</span>
                 <button type="button" data-tone="#a86f3c" style="--t:#a86f3c" aria-pressed="true" aria-label="Warm"></button>
@@ -976,26 +1125,26 @@
             <h4>02 · Barber</h4>
             <p>The price list and the team carry the trust; everything else pushes towards the booking request. Built for a phone held in one hand.</p>
             <div class="show-meta__row">
-              <a class="show-link" href="/work/barber/">Open the barber demo</a>
+              <button type="button" class="demo-btn" data-peek="barber">View demo <span class="arr">→</span></button>
               <span class="tone" role="group" aria-label="Demo accent colour">
                 <span class="tone__lbl">Accent</span>
-                <button type="button" data-tone="#4a4f58" style="--t:#4a4f58" aria-pressed="true" aria-label="Graphite"></button>
+                <button type="button" data-tone="#4a4f58" style="--t:#4a4f58" aria-pressed="true" aria-label="Demo accent"></button>
                 <button type="button" data-tone="#a86f3c" style="--t:#a86f3c" aria-pressed="false" aria-label="Warm"></button>
+                <button type="button" data-tone="#3a3f47" style="--t:#3a3f47" aria-pressed="false" aria-label="Graphite"></button>
                 <button type="button" data-tone="#4f7a5e" style="--t:#4f7a5e" aria-pressed="false" aria-label="Green"></button>
-                <button type="button" data-tone="#6a5f8f" style="--t:#6a5f8f" aria-pressed="false" aria-label="Purple"></button>
               </span>
             </div>
           </div>
           <div class="show-meta__item" data-meta="2">
             <h4>03 · Gym</h4>
-            <p>Timetable and memberships without asking anyone to call first, and a free first session that can be booked at midnight.</p>
+            <p>A campaign headline, the timetable without calling anyone, and a free first session that can be booked at midnight.</p>
             <div class="show-meta__row">
-              <a class="show-link" href="/work/gym/">Open the gym demo</a>
+              <button type="button" class="demo-btn" data-peek="gym">View demo <span class="arr">→</span></button>
               <span class="tone" role="group" aria-label="Demo accent colour">
                 <span class="tone__lbl">Accent</span>
                 <button type="button" data-tone="#4f7a5e" style="--t:#4f7a5e" aria-pressed="true" aria-label="Green"></button>
-                <button type="button" data-tone="#3a3f47" style="--t:#3a3f47" aria-pressed="false" aria-label="Graphite"></button>
                 <button type="button" data-tone="#a86f3c" style="--t:#a86f3c" aria-pressed="false" aria-label="Warm"></button>
+                <button type="button" data-tone="#3a3f47" style="--t:#3a3f47" aria-pressed="false" aria-label="Graphite"></button>
                 <button type="button" data-tone="#6a5f8f" style="--t:#6a5f8f" aria-pressed="false" aria-label="Purple"></button>
               </span>
             </div>
@@ -1021,16 +1170,39 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════════════ PRICING ══ -->
-<section id="pricing">
-  <div class="wrap">
-    <div class="head rv">
-      <p class="eyebrow">Pricing</p>
-      <h2>Starting from 99 €.</h2>
-      <p class="lead">
-        Setup plus a monthly plan. Both numbers are here, the same size, with no asterisk —
-        because the monthly fee is the part that keeps your site alive.
-      </p>
+<!-- EL PRECIO. El unico momento de color de la web, y esta donde decide algo.
+     El scroll dibuja la escena en un lienzo: los trazos nacen juntos en el
+     centro, se abren, se separan del todo, se vuelven a ordenar y acaban
+     formando un halo que deja el numero en medio. Una sola transformacion
+     continua: si se para a media altura, se queda a medias.
+     El titular sigue siendo "Starting from 99 €": el h2 no se toca, solo se
+     reparte en dos lineas para poder animarlas por separado. -->
+<section class="burst" id="pricing" aria-labelledby="priceTitle">
+  <div class="burst__track" id="burstTrack">
+    <div class="burst__stick">
+      <canvas class="burst__canvas" id="burstCanvas" aria-hidden="true"></canvas>
+      <div class="burst__center">
+        <p class="eyebrow">Pricing</p>
+        <h2 class="burst__h2" id="priceTitle">
+          <span class="burst__from">Starting from</span>
+          <span class="burst__num">99<i>€</i></span>
+        </h2>
+        <div class="burst__pair">
+          <span class="burst__tag">setup, one payment</span>
+          <span class="burst__mo"><b>+ 29 €</b> / month</span>
+        </div>
+        <p class="burst__sub">
+          Setup plus a monthly plan. Both numbers are here, the same size, with no asterisk —
+          <b>because the monthly fee is the part that keeps your site alive.</b>
+        </p>
+        <p class="burst__hint" aria-hidden="true">Keep scrolling</p>
+      </div>
     </div>
+  </div>
+</section>
+
+<section id="plans">
+  <div class="wrap">
     <div class="price price--3">
       <article class="plan tilt plan--featured rv rv-d1">
         <span class="plan__tag">Most businesses start here</span>
@@ -1229,10 +1401,7 @@
     <div class="footer__grid">
       <div>
         <a class="brand" href="/" style="color:#fff">
-          <svg class="brand__mark" viewBox="0 0 120 120" aria-hidden="true">
-            <path d="M24 32 L50 32 L68 90 L54 90 Z" fill="#fff"/>
-            <path d="M96 32 L72 32 L60 66 L74 78 Z"/>
-          </svg>
+          <img class="brand__img" src="/brand/logo-mark.svg" alt="" width="28" height="28" decoding="async">
           Vanguard Tech
         </a>
         <p style="color:var(--muted-dark);max-width:36ch;margin-top:1.1rem;font-size:.92rem">
@@ -1264,6 +1433,26 @@
     </div>
   </div>
 </footer>
+
+<!-- Vista ampliada de una demo. El contenido lo clona main.js de la propia
+     tarjeta: una sola fuente, nada que se pueda desincronizar. -->
+<div class="peek" id="peek" role="dialog" aria-modal="true" aria-labelledby="peekTitle" hidden>
+  <div class="peek__panel">
+    <!-- Cromo propio: da a la vista ampliada la forma de una ventana y le pone
+         al boton de cerrar un sitio donde no tapa la maqueta. -->
+    <div class="chrome peek__chrome">
+      <i></i><i></i><i></i>
+      <span class="chrome__url">yourbusiness.es</span>
+      <button type="button" class="peek__close" id="peekClose" aria-label="Close preview">&#10005;</button>
+    </div>
+    <div class="peek__frame" id="peekFrame"></div>
+    <div class="peek__foot">
+      <b id="peekTitle">Demo</b>
+      <span class="peek__note">Invented business, built as a concept. Not a Vanguard Tech client.</span>
+      <a id="peekLink" href="/work/restaurant/">Open the full sample site</a>
+    </div>
+  </div>
+</div>
 
 <!-- La luz que sigue al cursor. Va al final del body para pintarse por encima
      de las secciones y poder iluminarlas en modo `screen`; main.js la enciende

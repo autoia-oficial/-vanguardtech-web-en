@@ -70,6 +70,14 @@
      medir. Sin esto, cada fotograma media siete contenedores aunque solo se
      vea uno. */
   var seen = {};
+  /* Cuando una seccion ENTRA en pantalla hay que recalcularla aunque el scroll
+     no se haya movido desde el ultimo fotograma. Pasa siempre que se llega de
+     un salto — pulsar "Pricing" en el menu, abrir la pagina con un ancla, o un
+     arrastre rapido en el que el observador avisa despues del ultimo evento de
+     scroll. Sin esta bandera, el bucle veia "misma posicion que antes", se
+     saltaba la pasada y la seccion se quedaba sin pintar hasta que el usuario
+     moviese la rueda un pixel. */
+  var needPass = false;
 
   function watch(el, key) {
     if (!el) return;
@@ -77,7 +85,11 @@
     if (!('IntersectionObserver' in window)) return;
     seen[key] = false;
     new IntersectionObserver(function (entries) {
-      entries.forEach(function (e) { seen[key] = e.isIntersecting; });
+      entries.forEach(function (e) {
+        if (seen[key] === e.isIntersecting) return;
+        seen[key] = e.isIntersecting;
+        if (e.isIntersecting) needPass = true;
+      });
       schedule();
     }, { rootMargin: '10% 0px' }).observe(el);
   }
@@ -86,7 +98,7 @@
      Se vuelve sólida al bajar y cambia a claro u oscuro según la sección
      que tenga detrás, para que el logo siempre se lea. */
   var nav = $('#nav');
-  var darkSections = $$('.hero, .section--dark, .speed, footer');
+  var darkSections = $$('.hero, .section--dark, .speed, .burst, footer');
 
   function overDark(y) {
     return darkSections.some(function (el) {
@@ -640,6 +652,7 @@
      =========================================================================== */
   var showTrack = $('#showTrack');
   var showRing = $('#showRing');
+  var showStage = $('.show-stage');
   var showCards = showRing ? Array.prototype.slice.call(showRing.children) : [];
   var showMetas = $$('#showMeta .show-meta__item');
   var showProg = $$('#showProg i');
@@ -654,9 +667,15 @@
 
     var turn = stepTurn(eased, showCards.length, 120);
     showRing.style.setProperty('--deg', turn.toFixed(2) + 'deg');
+    var maxF = 0;
     for (var i = 0; i < showCards.length; i += 1) {
-      setFacing(showCards[i], facing(i, 120, turn, 64));
+      var f = facing(i, 120, turn, 64);
+      if (f > maxF) maxF = f;
+      setFacing(showCards[i], f);
     }
+    // La sombra de contacto sigue a la tarjeta de delante: si ninguna esta de
+    // frente (a media vuelta) casi desaparece, como pasaria de verdad.
+    if (showStage) showStage.style.setProperty('--ground', (0.25 + 0.75 * maxF).toFixed(2));
 
     var active = Math.min(showCards.length - 1, Math.round(turn / 120));
     if (active === showActive) return;
@@ -684,6 +703,281 @@
     });
   }
 
+
+  /* ===========================================================================
+     EL PRECIO — HAZ DE LUZ CONTROLADO POR EL SCROLL
+     Un lienzo, entre treinta y cuarenta y seis trazos, y una sola funcion:
+     posicion del scroll -> geometria. No hay temporizadores ni estados: si se
+     para a media altura, la escena se queda exactamente ahi, y al subir se
+     deshace por el mismo camino.
+
+     Tres tramos que se solapan: nacer (los trazos aparecen juntos en el
+     centro), abrirse (se separan hasta la maxima dispersion) y recogerse (se
+     ordenan en un halo corto alrededor del numero). El numero sube de opacidad
+     con el tercero, asi que cuando el haz se cierra ya esta ahi: no aparece de
+     la nada.
+
+     Los tonos son apagados y dos de cada siete son plata, para que el conjunto
+     no se lea como un arcoiris. Cada trazo se pinta dos veces — uno ancho y
+     casi transparente, otro fino y solido — que es la forma barata de tener
+     borde suave sin `shadowBlur`.
+     =========================================================================== */
+  var burstTrack = $('#burstTrack');
+  var burstCanvas = $('#burstCanvas');
+  var burstStick = burstCanvas ? burstCanvas.parentElement : null;
+  var burstCenter = $('.burst__center');
+  var safeX = 0;
+  var safeY = 0;
+  var burstCtx = null;
+  var rays = [];
+  var burstW = 0;
+  var burstH = 0;
+  var burstLast = -1;
+
+  var RAY_COLORS = [
+    '#d98a4f',   /* naranja apagado */
+    '#c6648a',   /* rosa */
+    '#8f6fa8',   /* morado */
+    '#d9715e',   /* coral */
+    '#d9a94f',   /* amarillo cálido */
+    '#9aa2ae',   /* plata */
+    '#8d949f'    /* plata */
+  ];
+
+  function buildBurst() {
+    if (!burstCanvas) return;
+    var r = burstCanvas.getBoundingClientRect();
+    if (!r.width || !r.height) return;
+    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    burstW = r.width;
+    burstH = r.height;
+    burstCanvas.width = Math.round(burstW * dpr);
+    burstCanvas.height = Math.round(burstH * dpr);
+    burstCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    /* Rectangulo que ocupan el precio y su texto. Al recogerse, ningun trazo
+       entra aqui: el numero no compite con el haz. Se mide una vez por
+       tamaño de ventana, no en cada fotograma. */
+    if (burstCenter) {
+      var box = burstCenter.getBoundingClientRect();
+      safeX = box.width / 2 + 26;
+      safeY = box.height / 2 + 18;
+    }
+
+    var n = burstW < 700 ? 26 : 44;
+    rays = [];
+    for (var i = 0; i < n; i += 1) {
+      // Reparto regular con un poco de desorden: un abanico perfecto parece
+      // una rueda de bicicleta, y uno al azar parece ruido.
+      var a = (i / n) * Math.PI * 2 + (Math.random() - 0.5) * 0.14;
+      rays.push({
+        a: a,
+        spin: (Math.random() - 0.5) * 0.7,
+        len: 0.55 + Math.random() * 0.55,
+        wd: (burstW < 700 ? 4 : 6) + Math.random() * (burstW < 700 ? 5 : 8),
+        col: RAY_COLORS[i % RAY_COLORS.length]
+      });
+    }
+    burstLast = -1;
+  }
+
+  function drawBurst(p) {
+    if (!burstCtx) return;
+    burstCtx.clearRect(0, 0, burstW, burstH);
+
+    var cx = burstW / 2;
+    var cy = burstH / 2;
+    var R = Math.max(burstW, burstH) * 0.62;
+
+    var born = ramp(p, 0.02, 0.20);
+    var grow = ramp(p, 0.04, 0.44);
+    var pull = ramp(p, 0.46, 0.92);
+
+    // Agujero central: crece al recogerse, asi que el halo final nunca pisa el
+    // numero. El numero va encima del lienzo, pero un trazo cruzandolo por
+    // detras al final restaria legibilidad.
+    var hole = lerp(0.0, 0.3, pull) * R;
+
+    burstCtx.lineCap = 'round';
+    for (var i = 0; i < rays.length; i += 1) {
+      var ray = rays[i];
+      // Nacen en un anillo apretado (0,12 R), no en el punto exacto: en el
+      // centro los taparia el numero y no se veria nacer nada.
+      // La maxima dispersion es 0,72 R, no 0,95: por encima de eso los trazos
+      // se van todos fuera del encuadre y queda un fotograma vacio justo entre
+      // la explosion y la recogida — un agujero en el relato.
+      var spread = lerp(lerp(0.12, 0.72, grow), 0.32, pull);
+      var len = lerp(lerp(0.05, 0.34, grow), 0.13, pull) * (0.6 + 0.8 * ray.len);
+      var alpha = lerp(born * 0.9, 0.55, pull);
+      if (alpha <= 0.004) continue;
+
+      // Giran al abrirse y deshacen el giro al ordenarse: el movimiento no es
+      // solo radial, tiene inercia.
+      var ang = ray.a + ray.spin * (grow * 0.55 - pull * 0.5);
+      var ca = Math.cos(ang);
+      var sa = Math.sin(ang);
+      /* Distancia del centro al borde del rectangulo del precio en ESTA
+         direccion. Al recogerse (pull = 1) es el suelo del trazo, asi que el
+         halo final rodea el texto en vez de cruzarlo — y funciona igual con un
+         bloque ancho de escritorio o alto de movil. */
+      var rSafe = Math.min(safeX / Math.max(Math.abs(ca), 1e-4),
+                           safeY / Math.max(Math.abs(sa), 1e-4));
+      // El agujero es un SUELO, no un desplazamiento: si se suma, al recogerse
+      // los trazos se van al borde en vez de cerrarse alrededor del numero.
+      var r0 = Math.max(hole, rSafe * pull, spread * R * (0.3 + 0.7 * ray.len));
+      var r1 = r0 + len * R;
+
+      burstCtx.strokeStyle = ray.col;
+      burstCtx.beginPath();
+      burstCtx.moveTo(cx + ca * r0, cy + sa * r0);
+      burstCtx.lineTo(cx + ca * r1, cy + sa * r1);
+      burstCtx.globalAlpha = alpha * 0.2;
+      burstCtx.lineWidth = ray.wd * 2.8;
+      burstCtx.stroke();
+      burstCtx.globalAlpha = alpha;
+      burstCtx.lineWidth = ray.wd;
+      burstCtx.stroke();
+    }
+
+    // Luz de fondo detras del numero: lo separa del haz sin taparlo.
+    var lift = ramp(p, 0.3, 0.95);
+    if (lift > 0.01) {
+      var g = burstCtx.createRadialGradient(cx, cy, 0, cx, cy, R * 0.5);
+      g.addColorStop(0, 'rgba(255,255,255,' + (0.07 * lift).toFixed(3) + ')');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      burstCtx.globalAlpha = 1;
+      burstCtx.fillStyle = g;
+      burstCtx.fillRect(0, 0, burstW, burstH);
+    }
+    burstCtx.globalAlpha = 1;
+  }
+
+  function updateBurst() {
+    if (!burstTrack || !burstCtx) return;
+    if (reduced) return;
+    if (!seen.burst) return;
+    var r = burstTrack.getBoundingClientRect();
+    var total = r.height - window.innerHeight;
+    // Sin recorrido (pantalla baja): se pinta la escena ya resuelta.
+    var p = total <= 8 ? 0.95 : clamp(-r.top / total, 0, 1);
+    if (Math.abs(p - burstLast) < 0.0015) return;
+    burstLast = p;
+    drawBurst(p);
+    if (burstStick) burstStick.style.setProperty('--bp', ramp(p, 0.42, 0.9).toFixed(3));
+  }
+
+  function setupBurst() {
+    if (!burstCanvas) return;
+    burstCtx = burstCanvas.getContext('2d', { alpha: true });
+    if (!burstCtx) return;
+    buildBurst();
+    // Con movimiento reducido no hay recorrido: una sola pasada, ya resuelta.
+    if (reduced) {
+      drawBurst(0.95);
+      if (burstStick) burstStick.style.setProperty('--bp', '1');
+    }
+    window.addEventListener('resize', function () {
+      buildBurst();
+      if (reduced) drawBurst(0.95);
+      else updateBurst();
+    }, { passive: true });
+  }
+
+  /* ===========================================================================
+     VISTA AMPLIADA DE UNA DEMO
+     "View demo" no lleva a un dominio inventado: abre la misma maqueta a
+     tamaño grande. El contenido se CLONA de la tarjeta que se ha pulsado, asi
+     que no hay una segunda copia del contenido que se pueda desincronizar — y
+     si las pastillas de color han cambiado el acento, la copia lo lleva.
+     =========================================================================== */
+  function setupPeek() {
+    var peek = $('#peek');
+    var frame = $('#peekFrame');
+    var closeBtn = $('#peekClose');
+    var link = $('#peekLink');
+    var title = $('#peekTitle');
+    if (!peek || !frame) return;
+
+    // Nombre de cada sector: se lee del propio anillo, no se repite aqui.
+    var labels = {};
+    $$('.ring__card[data-demo]').forEach(function (card) {
+      var h = $('h3', card);
+      labels[card.getAttribute('data-demo')] = h ? h.textContent.trim() : 'Demo';
+    });
+
+    var lastFocus = null;
+    var openKey = null;
+
+    function open(key, source) {
+      var mock = $('.mock', source);
+      if (!mock) return;
+      var clone = mock.cloneNode(true);
+      clone.classList.add('mock--full');
+      frame.innerHTML = '';
+      frame.appendChild(clone);
+
+      title.textContent = (labels[key] || 'Demo') + ' · demo';
+      link.setAttribute('href', '/work/' + key + '/');
+      openKey = key;
+      lastFocus = document.activeElement;
+
+      peek.hidden = false;
+      document.body.classList.add('peek-open');
+      // Un fotograma entre quitar `hidden` y poner la clase: si no, no hay
+      // estado inicial desde el que transicionar y la vista aparece de golpe.
+      requestAnimationFrame(function () {
+        peek.classList.add('is-open');
+        closeBtn.focus();
+      });
+    }
+
+    function close() {
+      if (!openKey) return;
+      openKey = null;
+      peek.classList.remove('is-open');
+      document.body.classList.remove('peek-open');
+      if (lastFocus && lastFocus.focus) lastFocus.focus();
+      // Se vacia al acabar la transicion: quitarlo antes deja el panel vacio
+      // durante el desvanecido.
+      window.setTimeout(function () {
+        if (!openKey) { peek.hidden = true; frame.innerHTML = ''; }
+      }, reduced ? 0 : 380);
+    }
+
+    $$('[data-peek]').forEach(function (btn) {
+      btn.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();           // no llega al giro del anillo
+        var key = btn.getAttribute('data-peek');
+        var host = btn.closest('.ring__card, .show-card');
+        /* El boton del pie del escaparate vive fuera de la tarjeta: se coge la
+           del escaparate de ese sector, no la del anillo. Importa: es la que
+           lleva el acento que hayan elegido en las pastillas de color. */
+        if (!host) {
+          host = $('.show-card[data-demo="' + key + '"]')
+              || $('.ring__card[data-demo="' + key + '"]');
+        }
+        if (host) open(key, host);
+      });
+    });
+
+    closeBtn.addEventListener('click', close);
+    peek.addEventListener('click', function (e) {
+      if (e.target === peek) close();          // fondo
+    });
+    document.addEventListener('keydown', function (e) {
+      if (!openKey) return;
+      if (e.key === 'Escape') { close(); return; }
+      if (e.key !== 'Tab') return;
+      // Solo hay dos elementos enfocables dentro: el cierre y el enlace. Se
+      // hace el ciclo a mano para que el foco no salga a la pagina de detras.
+      var first = closeBtn;
+      var last = link;
+      if (e.shiftKey && document.activeElement === first) { last.focus(); e.preventDefault(); }
+      else if (!e.shiftKey && document.activeElement === last) { first.focus(); e.preventDefault(); }
+    });
+  }
+
   /* ===========================================================================
      BUCLE UNICO
      Un fotograma hace dos pasadas: la del scroll (solo si el scroll o el
@@ -702,6 +996,7 @@
     updateSteps();
     updateRing();
     updateShow();
+    updateBurst();
     updateFloats();
   }
 
@@ -713,8 +1008,10 @@
     lastY = y;
     lastW = w;
 
-    if (moved) scrollPass();
-    else { updateRing(); updateHero(); }      // inercias: giro a mano y raton
+    if (moved || needPass) {
+      needPass = false;
+      scrollPass();
+    } else { updateRing(); updateHero(); }    // inercias: giro a mano y raton
 
     var busy = updateSpot();
     if (energy > 0) energy -= 1;
@@ -752,10 +1049,13 @@
   watch(steps, 'steps');
   watch(ringTrack, 'ring');
   watch(showTrack, 'show');
+  watch(burstTrack, 'burst');
 
   setupReveal();
   setupRingClicks();
   setupTones();
+  setupPeek();
+  setupBurst();
   setupField();
   setupDeviceTilt();
   setupCardTilt();
