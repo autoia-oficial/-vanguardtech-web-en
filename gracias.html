@@ -10,18 +10,28 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="preload" href="/fonts/spacegrotesk-700.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="/brand/favicon.svg">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/brand/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="shortcut icon" href="/brand/favicon.ico">
 <link rel="stylesheet" href="/styles.css">
 <style>
 /* Pantalla completa, sin barra de navegacion: quien llega aqui ya ha hecho lo
    que tenia que hacer. Lo unico importante es que sepa que ha llegado y que
    sepa que pasa despues. */
 body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items:center;
-  padding:2rem 1.25rem}
+  padding:2rem 1.25rem;
+  /* Esta pagina es oscura pero no lleva ninguna de las clases que cambian el
+     acento (`.section--dark`, `.hero`…), asi que heredaba el acento del tema
+     claro: tinta sobre tinta. Los numeros 01–04 de la lista se pintaban en
+     #08090b sobre #08090b y NO SE VEIAN. Sobre oscuro el acento es el blanco. */
+  --accent:#ffffff;
+  --accent-soft:#98a2b0;
+  --glow:rgba(255,255,255,.34)}
 .gracias{max-width:640px;text-align:center}
-.gracias .mark{width:64px;height:64px;margin:0 auto 2.2rem;display:block}
-.gracias .mark path:first-child{fill:#fff}
-.gracias .mark path:last-child{fill:var(--brand)}
+/* El isotipo oficial, del mismo fichero que la barra de navegacion. Aqui a
+   68 px: es lo primero que se ve al aterrizar y tiene que leerse como marca,
+   no como icono. El anillo de un pixel le devuelve el borde sobre negro. */
 .gracias h1{font-size:clamp(2.2rem,1.6rem + 2.6vw,3.4rem);margin-bottom:1.1rem}
 .gracias .lead{color:var(--muted-dark);margin-inline:auto}
 .gracias .next{text-align:left;max-width:34ch;margin:2.6rem auto 0}
@@ -31,10 +41,8 @@ body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items
 <body>
 
 <main class="gracias">
-  <svg class="mark" viewBox="0 0 120 120" aria-hidden="true">
-    <path d="M24 32 L50 32 L68 90 L54 90 Z"/>
-    <path d="M96 32 L72 32 L60 66 L74 78 Z"/>
-  </svg>
+  <img class="brand__img brand__img--big" src="/brand/logo-mark-256.webp"
+       alt="Vanguard Tech" width="256" height="256" decoding="async">
 
   <h1>Request received.</h1>
   <p class="lead">

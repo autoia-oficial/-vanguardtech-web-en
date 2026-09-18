@@ -9,15 +9,18 @@
 <meta property="og:title" content="Forja Entrenamiento | Gimnasio en Zaragoza">
 <meta property="og:description" content="Entrena en Zaragoza. Consulta horarios y tarifas. Telefono +34 976 00 00 03.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#d8ff3e">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%23d8ff3e%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20font-family%3D%22sans-serif%22%20font-size%3D%2217%22%20font-weight%3D%22700%22%20fill%3D%22%230f1115%22%20text-anchor%3D%22middle%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Inter:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#121814">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<!-- Las dos familias del sitio, servidas desde este dominio. Antes venian del
+     CDN de Google y la politica de seguridad las bloqueaba: ver /fonts/fonts.css. -->
+<link rel="preload" href="/fonts/spacegrotesk-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>:root{
 --bg:#0f1115;--surface:#171a20;--ink:#f4f6f8;--muted:#9aa4b0;
---brand:#d8ff3e;--brand-ink:#0f1115;--accent:#ff5a36;--line:#262b33;--dark:#0a0c0f;
---font-h:'Archivo', system-ui, sans-serif;--font-b:'Inter', system-ui, sans-serif;
+--brand:#a9c2b1;--brand-ink:#121814;--accent:#7e9686;--line:#262b33;--dark:#0a0c0f;
+--font-h:'Space Grotesk','Inter',system-ui,sans-serif;--font-b:'Inter',system-ui,-apple-system,sans-serif;
 --r-sm:6px;--r-md:12px;--r-lg:20px;--r-xl:28px;
 --sh-sm:0 1px 2px rgba(15,23,42,.06);--sh-md:0 4px 16px rgba(15,23,42,.08);--sh-lg:0 18px 48px rgba(15,23,42,.12);
 --w:1140px;
@@ -109,7 +112,39 @@ body:has(.sticky-cta){padding-bottom:5rem}
 border-radius:var(--r-sm);padding:.1em .45em;font-size:.9em}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .skip{position:absolute;left:-9999px}
-.skip:focus{left:1rem;top:1rem;z-index:100;background:var(--brand);color:var(--brand-ink);padding:.75rem 1rem;border-radius:var(--r-sm)}</style>
+.skip:focus{left:1rem;top:1rem;z-index:100;background:var(--brand);color:var(--brand-ink);padding:.75rem 1rem;border-radius:var(--r-sm)}
+/* ---------------------------------------------------------------- FOTOGRAFIA
+   El hueco del heroe llevaba un degradado y un rotulo que decia "aqui va la
+   foto del negocio". Ya hay foto: entra como <img> con su encuadre, y el velo
+   que garantizaba el contraste del nombre se queda, porque ahora hace falta
+   mas, no menos. */
+.hero__visual{background:#15181d;overflow:hidden}
+.hero__visual img,.shot img{position:absolute;inset:0;width:100%;height:100%;z-index:0;
+object-fit:cover;object-position:var(--pos,50% 50%);filter:saturate(.92) contrast(1.04)}
+/* Velo por encima de la foto (z-index 1) y texto por encima del velo (2). Sin
+   esto la imagen tapaba el velo, porque `::before` es el primer hijo. */
+/* Sin texto encima, el velo pasa de garantizar contraste a dar cuerpo: una
+   sombra corta abajo, donde se apoya el rotulo, y nada en el resto. La foto
+   se ve. */
+.hero__visual::before{z-index:1;mix-blend-mode:normal;
+background:linear-gradient(to top,rgba(6,7,9,.55),rgba(6,7,9,.10) 46%,rgba(6,7,9,.04))}
+.hero__slot{z-index:2}
+.hero__slot{background:rgba(8,9,11,.72)}
+/* Galeria: la misma fotografia en seis encuadres, que es lo que sale de una
+   sesion de fotos de verdad. Antes eran seis rectangulos vacios. */
+.shot{position:relative;aspect-ratio:4/3;border-radius:var(--r-lg);overflow:hidden;
+background:#15181d;border:1px solid var(--line)}
+.shot img{transform:scale(var(--zoom,1));transform-origin:var(--pos,50% 50%)}
+.shot::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+background:linear-gradient(to top,rgba(8,9,11,.5),transparent 42%)}
+.shot figcaption{position:absolute;left:.7rem;bottom:.7rem;z-index:2;font-size:.74rem;
+font-weight:600;letter-spacing:.04em;color:#fff;background:rgba(8,9,11,.66);
+padding:.3rem .6rem;border-radius:var(--r-sm)}
+
+/* Telefono, email y redes son enlaces SUELTOS, no dentro de una frase: tienen
+   que medir 24 px de alto como minimo para poder pulsarlos con el dedo. */
+.contact-grid a,.site-footer a{display:inline-block;padding-block:.2rem;min-height:24px}
+</style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Forja Entrenamiento","telephone":"+34 976 00 00 03","email":"hola@forja-demo.es","address":{"@type":"PostalAddress","streetAddress":"Avenida Goya 132","addressLocality":"Zaragoza","addressRegion":"Zaragoza","postalCode":"50006","addressCountry":"ES"}}</script>
 </head>
 <body>
@@ -145,9 +180,9 @@ No es un cliente y no describe ningun resultado real.
 <a class="btn btn--ghost" href="#servicios">Ver tarifas</a>
 </div>
 </div>
-<div class="hero__visual" role="img" aria-label="Espacio reservado para una foto real del negocio">
-<span>Forja Entrenamiento</span>
-<em class="hero__slot">Aqui va la foto del negocio</em>
+<div class="hero__visual">
+<img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:900px) 92vw, 46vw" width="1376" height="768" fetchpriority="high" style="--pos:48% 34%" alt="Una persona descansando entre series en la sala de entrenamiento.">
+<em class="hero__slot">Foto de concepto</em>
 </div>
 </div>
 </section>
@@ -159,15 +194,15 @@ No es un cliente y no describe ningun resultado real.
 <div class="grid grid--3" style="margin-top:2.5rem">
 <article class="card">
 <h3>Plan basico</h3>
-<p>Sala libre en horario completo. 29 EUR al mes, sin permanencia.</p>
+<p>Sala libre en horario completo. 33 USD al mes, sin permanencia.</p>
 </article>
 <article class="card">
 <h3>Plan completo</h3>
-<p>Sala libre mas cuatro clases en grupo al mes. 45 EUR al mes.</p>
+<p>Sala libre mas cuatro clases en grupo al mes. 44 USD al mes.</p>
 </article>
 <article class="card">
 <h3>Plan anual</h3>
-<p>Todo incluido, pagando el ano por adelantado. 390 EUR, dos meses de regalo.</p>
+<p>Todo incluido, pagando el ano por adelantado. 440 USD, dos meses de regalo.</p>
 </article>
 </div>
 </div>
@@ -201,26 +236,14 @@ No es un cliente y no describe ningun resultado real.
 <div class="wrap">
 <p class="eyebrow">Imagenes</p>
 <h2>Nuestro espacio</h2>
-<p class="lead">Espacios reservados para fotografias reales del negocio. No usamos imagenes de archivo haciendolas pasar por suyas.</p>
+<p class="lead">La galeria, montada con fotografia de concepto. En un proyecto real van las fotos del propio negocio: no usamos imagenes de archivo haciendolas pasar por suyas.</p>
 <div class="grid grid--2 grid--3" style="margin-top:2.5rem">
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Recepcion</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Gabinete 1</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Gabinete 2</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">El equipo</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Sala de espera</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Escaner 3D</span>
-</div>
+<figure class="shot" style="margin:0"><img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:50% 50%;--zoom:1" alt=""><figcaption>La sala</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:30% 58%;--zoom:1.75" alt=""><figcaption>Zona de fuerza</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:74% 36%;--zoom:1.5" alt=""><figcaption>Clase en grupo</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:20% 34%;--zoom:1.85" alt=""><figcaption>Los entrenadores</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:58% 74%;--zoom:1.3" alt=""><figcaption>Vestuarios</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/gym-800.webp" srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:86% 52%;--zoom:1.6" alt=""><figcaption>Material</figcaption></figure>
 </div>
 </div>
 </section>
@@ -288,7 +311,7 @@ Zaragoza, Zaragoza</p>
 <p style="opacity:.8;font-size:.92rem">Aviso legal · Privacidad · Cookies<br>
 <span class="ph">[datos fiscales (razon social, NIF, domicilio)]</span></p>
 </div>
-<p class="fine">© 2026 Forja Entrenamiento. Mapa: © colaboradores de OpenStreetMap.</p>
+<p class="fine">© 2026 Forja Entrenamiento.</p>
 </div>
 </footer>
 <div class="sticky-cta">

@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Fontaneria Robles | Fontaneria en Gijon — propuesta</title>
-<meta name="description" content="Fontaneria en Gijon. Llama y te damos hora. Telefono +34 984 00 00 06.">
+<title>Casa Olmo | Menaje y ceramica en Gijon — propuesta</title>
+<meta name="description" content="Menaje y ceramica en Gijon. Ven a verlo, o escribenos. Telefono +34 984 00 00 06.">
 <meta name="robots" content="noindex,nofollow,noarchive">
-<meta property="og:title" content="Fontaneria Robles | Fontaneria en Gijon">
-<meta property="og:description" content="Fontaneria en Gijon. Llama y te damos hora. Telefono +34 984 00 00 06.">
+<meta property="og:title" content="Casa Olmo | Menaje y ceramica en Gijon">
+<meta property="og:description" content="Menaje y ceramica en Gijon. Ven a verlo, o escribenos. Telefono +34 984 00 00 06.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#1b56c4">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%231b56c4%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20font-family%3D%22sans-serif%22%20font-size%3D%2217%22%20font-weight%3D%22700%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%3EF%3C%2Ftext%3E%3C%2Fsvg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#7f6049">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<!-- Las dos familias del sitio, servidas desde este dominio. Antes venian del
+     CDN de Google y la politica de seguridad las bloqueaba: ver /fonts/fonts.css. -->
+<link rel="preload" href="/fonts/spacegrotesk-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>:root{
 --bg:#f7f8f9;--surface:#ffffff;--ink:#12161a;--muted:#586470;
---brand:#1b56c4;--brand-ink:#ffffff;--accent:#f5a524;--line:#e2e6ea;--dark:#0f1519;
---font-h:'Barlow Condensed', Impact, sans-serif;--font-b:'Inter', system-ui, sans-serif;
+--brand:#7f6049;--brand-ink:#ffffff;--accent:#c0a68f;--line:#e2e6ea;--dark:#0f1519;
+--font-h:'Space Grotesk','Inter',system-ui,sans-serif;--font-b:'Inter',system-ui,-apple-system,sans-serif;
 --r-sm:6px;--r-md:12px;--r-lg:20px;--r-xl:28px;
 --sh-sm:0 1px 2px rgba(15,23,42,.06);--sh-md:0 4px 16px rgba(15,23,42,.08);--sh-lg:0 18px 48px rgba(15,23,42,.12);
 --w:1140px;
@@ -109,78 +112,110 @@ body:has(.sticky-cta){padding-bottom:5rem}
 border-radius:var(--r-sm);padding:.1em .45em;font-size:.9em}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .skip{position:absolute;left:-9999px}
-.skip:focus{left:1rem;top:1rem;z-index:100;background:var(--brand);color:var(--brand-ink);padding:.75rem 1rem;border-radius:var(--r-sm)}</style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Fontaneria Robles","telephone":"+34 984 00 00 06","email":"hola@fontaneriarobles-demo.es","address":{"@type":"PostalAddress","streetAddress":"Calle Corrida 41","addressLocality":"Gijon","addressRegion":"Asturias","postalCode":"33206","addressCountry":"ES"}}</script>
+.skip:focus{left:1rem;top:1rem;z-index:100;background:var(--brand);color:var(--brand-ink);padding:.75rem 1rem;border-radius:var(--r-sm)}
+/* ---------------------------------------------------------------- FOTOGRAFIA
+   El hueco del heroe llevaba un degradado y un rotulo que decia "aqui va la
+   foto del negocio". Ya hay foto: entra como <img> con su encuadre, y el velo
+   que garantizaba el contraste del nombre se queda, porque ahora hace falta
+   mas, no menos. */
+.hero__visual{background:#15181d;overflow:hidden}
+.hero__visual img,.shot img{position:absolute;inset:0;width:100%;height:100%;z-index:0;
+object-fit:cover;object-position:var(--pos,50% 50%);filter:saturate(.92) contrast(1.04)}
+/* Velo por encima de la foto (z-index 1) y texto por encima del velo (2). Sin
+   esto la imagen tapaba el velo, porque `::before` es el primer hijo. */
+/* Sin texto encima, el velo pasa de garantizar contraste a dar cuerpo: una
+   sombra corta abajo, donde se apoya el rotulo, y nada en el resto. La foto
+   se ve. */
+.hero__visual::before{z-index:1;mix-blend-mode:normal;
+background:linear-gradient(to top,rgba(6,7,9,.55),rgba(6,7,9,.10) 46%,rgba(6,7,9,.04))}
+.hero__slot{z-index:2}
+.hero__slot{background:rgba(8,9,11,.72)}
+/* Galeria: la misma fotografia en seis encuadres, que es lo que sale de una
+   sesion de fotos de verdad. Antes eran seis rectangulos vacios. */
+.shot{position:relative;aspect-ratio:4/3;border-radius:var(--r-lg);overflow:hidden;
+background:#15181d;border:1px solid var(--line)}
+.shot img{transform:scale(var(--zoom,1));transform-origin:var(--pos,50% 50%)}
+.shot::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+background:linear-gradient(to top,rgba(8,9,11,.5),transparent 42%)}
+.shot figcaption{position:absolute;left:.7rem;bottom:.7rem;z-index:2;font-size:.74rem;
+font-weight:600;letter-spacing:.04em;color:#fff;background:rgba(8,9,11,.66);
+padding:.3rem .6rem;border-radius:var(--r-sm)}
+
+/* Telefono, email y redes son enlaces SUELTOS, no dentro de una frase: tienen
+   que medir 24 px de alto como minimo para poder pulsarlos con el dedo. */
+.contact-grid a,.site-footer a{display:inline-block;padding-block:.2rem;min-height:24px}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Casa Olmo","telephone":"+34 984 00 00 06","email":"hola@casaolmo-demo.es","address":{"@type":"PostalAddress","streetAddress":"Calle Magnus Blikstad 40","addressLocality":"Gijon","addressRegion":"Asturias","postalCode":"33206","addressCountry":"ES"}}</script>
 </head>
 <body>
 <a class="skip" href="#inicio">Saltar al contenido</a>
 <div style="background:#08090b;color:#fff;padding:.85rem 1rem;font-size:.85rem;text-align:center;line-height:1.55">
-<strong style="letter-spacing:.14em">DEMO · CONCEPTO</strong> — Fontaneria Robles no existe.
+<strong style="letter-spacing:.14em">DEMO · CONCEPTO</strong> — Casa Olmo no existe.
 Es un negocio inventado por Vanguard Tech para ensenar como quedaria una web de este sector.
 El nombre, los textos, los horarios, los precios y las opiniones son ficticios.
 No es un cliente y no describe ningun resultado real.
 </div>
 <header class="site-header">
 <div class="wrap nav">
-<a class="brand" href="#inicio">Fontaneria Robles</a>
+<a class="brand" href="#inicio">Casa Olmo</a>
 <nav class="nav-links" aria-label="Principal">
 <a href="#servicios">Servicios</a>
 <a href="#como-funciona">Como funciona</a>
 <a href="#contacto">Contacto</a>
 </nav>
-<a class="btn btn--primary" href="tel:+34 984 00 00 06">Llamar ahora</a>
+<a class="btn btn--primary" href="tel:+34 984 00 00 06">Planifica tu visita</a>
 </div>
 </header>
 <section class="hero" id="inicio">
 <div class="wrap hero__inner">
 <div>
-<p class="eyebrow">Fontaneria · Gijon</p>
-<h1>Fontaneria Robles</h1>
-<p class="lead">Fontaneria en Gijon. Llama y te damos hora.</p>
+<p class="eyebrow">Tienda de barrio · Gijon</p>
+<h1>Casa Olmo</h1>
+<p class="lead">Menaje y ceramica en Gijon. Ven a verlo, o escribenos.</p>
 <ul class="list"><li>Atencion directa en el +34 984 00 00 06</li>
 <li>En Gijon (Asturias)</li>
-<li>Urgencias en menos de una hora</li></ul>
+<li>Abierto de martes a sabado, de 10:00 a 20:00</li></ul>
 <div class="btn-row">
-<a class="btn btn--primary" href="tel:+34 984 00 00 06">Llamar ahora</a>
-<a class="btn btn--ghost" href="#servicios">Ver servicios</a>
+<a class="btn btn--primary" href="tel:+34 984 00 00 06">Planifica tu visita</a>
+<a class="btn btn--ghost" href="#servicios">Ver la tienda</a>
 </div>
 </div>
-<div class="hero__visual" role="img" aria-label="Espacio reservado para una foto real del negocio">
-<span>Fontaneria Robles</span>
-<em class="hero__slot">Aqui va la foto del negocio</em>
+<div class="hero__visual">
+<img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:900px) 92vw, 46vw" width="1376" height="768" fetchpriority="high" style="--pos:62% 42%" alt="La propietaria de la tienda, junto al mostrador.">
+<em class="hero__slot">Foto de concepto</em>
 </div>
 </div>
 </section>
 <section class="sec sec--tint" id="servicios">
 <div class="wrap">
-<p class="eyebrow">Que hacemos</p>
-<h2>Servicios</h2>
-<p class="lead">Esto es lo que ofrece Fontaneria Robles. Ajustable al detalle antes de publicar.</p>
+<p class="eyebrow">Que vendemos</p>
+<h2>En la tienda</h2>
+<p class="lead">Esto es lo que ofrece Casa Olmo. Ajustable al detalle antes de publicar.</p>
 <div class="grid grid--2 grid--4" style="margin-top:2.5rem">
 <article class="card">
-<h3>Averias y fugas</h3>
-<p>Salida en menos de una hora en Gijon. Presupuesto antes de empezar.</p>
+<h3>Ceramica de Asturias</h3>
+<p>Platos, cuencos y jarras de talleres de la region. Desde 19 USD.</p>
 </article>
 <article class="card">
-<h3>Instalacion de banos</h3>
-<p>Reforma completa, coordinando alicatado y electricidad.</p>
+<h3>Lino lavado</h3>
+<p>Mantel, servilletas y pano de cocina, en seis colores. Desde 36 USD.</p>
 </article>
 <article class="card">
-<h3>Calderas y termos</h3>
-<p>Sustitucion y mantenimiento, con material incluido en el presupuesto.</p>
+<h3>Taller de alfareria</h3>
+<p>Sabados por la manana, seis plazas por sesion. 48 USD.</p>
 </article>
 <article class="card">
-<h3>Desatascos</h3>
-<p>Desatasco con maquina, sin romper nada si se puede evitar.</p>
+<h3>Envoltorio para regalo</h3>
+<p>Papel, cinta y tarjeta escrita a mano. Sin coste, siempre.</p>
 </article>
 </div>
 </div>
 </section>
 <section class="sec" id="zona">
 <div class="wrap" style="max-width:720px">
-<p class="eyebrow">Zona de trabajo</p>
-<h2>Donde trabajamos</h2>
-<p class="lead">Gijon y alrededores. Gijon, Villaviciosa, Carreno y Siero.</p>
+<p class="eyebrow">Donde estamos</p>
+<h2>Como llegar</h2>
+<p class="lead">En el centro de Gijon. Envio gratuito en la ciudad y a Villaviciosa, Carreno y Siero.</p>
 </div>
 </section>
 <section class="sec" id="como-funciona">
@@ -190,18 +225,18 @@ No es un cliente y no describe ningun resultado real.
 <div class="grid grid--3" style="margin-top:2.5rem">
 <article class="card">
 <p class="eyebrow">Paso 1</p>
-<h3>Cuentanos el problema</h3>
-<p>Una llamada basta para entender la averia.</p>
+<h3>Mira lo que hay</h3>
+<p>Lo que entra cada mes esta publicado, con su precio.</p>
 </article>
 <article class="card">
 <p class="eyebrow">Paso 2</p>
-<h3>Te damos hora</h3>
-<p>Te indicamos cuando podemos pasar.</p>
+<h3>Reserva o pasate</h3>
+<p>Guardamos una pieza o una plaza de taller a tu nombre.</p>
 </article>
 <article class="card">
 <p class="eyebrow">Paso 3</p>
-<h3>Lo resolvemos</h3>
-<p>Trabajo terminado y explicado.</p>
+<h3>Te lo envolvemos</h3>
+<p>Listo para llevar, o enviado a casa sin coste en Gijon.</p>
 </article>
 </div>
 </div>
@@ -212,9 +247,9 @@ No es un cliente y no describe ningun resultado real.
 <h2>Por que confiar</h2>
 <p class="lead">Esta seccion se rellena solo con hechos verificables del negocio: colegiacion, seguros, anos en activo o certificaciones reales. No se publica nada sin justificante.</p>
 <div class="grid grid--3" style="margin-top:2rem">
-<article class="card"><h3>Acreditaciones</h3><p>Instalador autorizado. Numero pendiente de verificar.</p></article>
-<article class="card"><h3>Seguro de responsabilidad</h3><p>Responsabilidad civil en vigor. Poliza pendiente de verificar.</p></article>
-<article class="card"><h3>Anos en activo</h3><p>Veinte anos trabajando en Gijon.</p></article>
+<article class="card"><h3>Quien hace las piezas</h3><p>Talleres con nombre y apellidos. Listado pendiente de verificar.</p></article>
+<article class="card"><h3>Devoluciones</h3><p>Treinta dias, con el ticket. Condiciones pendientes de verificar.</p></article>
+<article class="card"><h3>Anos abiertos</h3><p>Desde 2014 en la misma calle.</p></article>
 </div>
 </div>
 </section>
@@ -222,26 +257,14 @@ No es un cliente y no describe ningun resultado real.
 <div class="wrap">
 <p class="eyebrow">Imagenes</p>
 <h2>Nuestro espacio</h2>
-<p class="lead">Espacios reservados para fotografias reales del negocio. No usamos imagenes de archivo haciendolas pasar por suyas.</p>
+<p class="lead">La galeria, montada con fotografia de concepto. En un proyecto real van las fotos del propio negocio: no usamos imagenes de archivo haciendolas pasar por suyas.</p>
 <div class="grid grid--2 grid--3" style="margin-top:2.5rem">
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">La furgoneta</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">El equipo</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Bano reformado</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Cambio de caldera</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Herramienta</span>
-</div>
-<div class="card" style="aspect-ratio:4/3;display:grid;place-items:center;text-align:center">
-<span class="ph ph--ok">Trabajo terminado</span>
-</div>
+<figure class="shot" style="margin:0"><img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:50% 50%;--zoom:1" alt=""><figcaption>La tienda</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:30% 58%;--zoom:1.75" alt=""><figcaption>Quien esta detras</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:74% 36%;--zoom:1.5" alt=""><figcaption>Ceramica</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:20% 34%;--zoom:1.85" alt=""><figcaption>Mesa puesta</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:58% 74%;--zoom:1.3" alt=""><figcaption>El taller</figcaption></figure>
+<figure class="shot" style="margin:0"><img src="/photos/local-business-800.webp" srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w" sizes="(max-width:700px) 92vw, 46vw" width="1376" height="768" loading="lazy" decoding="async" style="--pos:86% 52%;--zoom:1.6" alt=""><figcaption>Envoltorio</figcaption></figure>
 </div>
 </div>
 </section>
@@ -249,16 +272,16 @@ No es un cliente y no describe ningun resultado real.
 <div class="wrap">
 <p class="eyebrow">Hablemos</p>
 <h2>Contacto</h2>
-<p class="lead">Escribenos o llama para llamarnos.</p>
+<p class="lead">Escribenos, o llama si prefieres que te guardemos algo.</p>
 <div class="contact-grid" style="margin-top:2rem">
 <div>
 <p><strong>Telefono</strong><br><a href="tel:+34 984 00 00 06">+34 984 00 00 06</a></p>
-<p><strong>Email</strong><br><a href="mailto:hola@fontaneriarobles-demo.es">hola@fontaneriarobles-demo.es</a></p>
+<p><strong>Email</strong><br><a href="mailto:hola@casaolmo-demo.es">hola@casaolmo-demo.es</a></p>
 </div>
 <form class="contact-form" method="post" action="#" novalidate>
 <div class="field"><label for="f-nombre">Nombre</label><input id="f-nombre" name="nombre" autocomplete="name" required></div>
 <div class="field"><label for="f-tel">Telefono</label><input id="f-tel" name="telefono" type="tel" autocomplete="tel"></div>
-<div class="field"><label for="f-msg">Que necesitas</label><textarea id="f-msg" name="mensaje" rows="4"></textarea></div>
+<div class="field"><label for="f-msg">Que estas buscando</label><textarea id="f-msg" name="mensaje" rows="4"></textarea></div>
 <button class="btn btn--primary" type="submit">Enviar</button>
 <p style="font-size:.8rem;color:var(--muted);margin-top:.75rem">El formulario queda conectado al email del negocio en la version final.</p>
 </form>
@@ -268,22 +291,22 @@ No es un cliente y no describe ningun resultado real.
 <footer class="site-footer">
 <div class="wrap">
 <div>
-<p class="brand" style="color:#fff">Fontaneria Robles</p>
-<p style="opacity:.8;font-size:.92rem">Calle Corrida 41 · Gijon · Asturias</p>
+<p class="brand" style="color:#fff">Casa Olmo</p>
+<p style="opacity:.8;font-size:.92rem">Calle Magnus Blikstad 40 · Gijon · Asturias</p>
 </div>
 <div>
 <p><a href="tel:+34 984 00 00 06">+34 984 00 00 06</a></p>
-<p><a href="mailto:hola@fontaneriarobles-demo.es">hola@fontaneriarobles-demo.es</a></p>
+<p><a href="mailto:hola@casaolmo-demo.es">hola@casaolmo-demo.es</a></p>
 </div>
 <div>
 <p style="opacity:.8;font-size:.92rem">Aviso legal · Privacidad · Cookies<br>
 <span class="ph">[datos fiscales (razon social, NIF, domicilio)]</span></p>
 </div>
-<p class="fine">© 2026 Fontaneria Robles. Mapa: © colaboradores de OpenStreetMap.</p>
+<p class="fine">© 2026 Casa Olmo.</p>
 </div>
 </footer>
 <div class="sticky-cta">
-<a class="btn btn--primary" href="tel:+34 984 00 00 06">Llamar ahora</a>
+<a class="btn btn--primary" href="tel:+34 984 00 00 06">Planifica tu visita</a>
 </div>
 </body>
 </html>

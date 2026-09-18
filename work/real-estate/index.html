@@ -9,15 +9,18 @@
 <meta property="og:title" content="Llave Maestra Inmobiliaria | Inmobiliaria en Malaga">
 <meta property="og:description" content="Inmobiliaria en Malaga. Vende o alquila con acompanamiento. Telefono +34 951 00 00 04.">
 <meta property="og:type" content="website">
-<meta name="theme-color" content="#0d6f9e">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230d6f9e%22%2F%3E%3Ctext%20x%3D%2216%22%20y%3D%2222%22%20font-family%3D%22sans-serif%22%20font-size%3D%2217%22%20font-weight%3D%22700%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%3EL%3C%2Ftext%3E%3C%2Fsvg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#635889">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<!-- Las dos familias del sitio, servidas desde este dominio. Antes venian del
+     CDN de Google y la politica de seguridad las bloqueaba: ver /fonts/fonts.css. -->
+<link rel="preload" href="/fonts/spacegrotesk-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/fonts.css">
 <style>:root{
---bg:#f8fbfd;--surface:#ffffff;--ink:#0f1e2b;--muted:#5a7183;
---brand:#0d6f9e;--brand-ink:#ffffff;--accent:#4bc0b0;--line:#dceaf2;--dark:#0d1f2b;
---font-h:'Plus Jakarta Sans', system-ui, sans-serif;--font-b:'Inter', system-ui, sans-serif;
+--bg:#f8f8fa;--surface:#ffffff;--ink:#17181d;--muted:#5f6470;
+--brand:#635889;--brand-ink:#ffffff;--accent:#a49cc0;--line:#e4e5e9;--dark:#141519;
+--font-h:'Space Grotesk','Inter',system-ui,sans-serif;--font-b:'Inter',system-ui,-apple-system,sans-serif;
 --r-sm:6px;--r-md:12px;--r-lg:20px;--r-xl:28px;
 --sh-sm:0 1px 2px rgba(15,23,42,.06);--sh-md:0 4px 16px rgba(15,23,42,.08);--sh-lg:0 18px 48px rgba(15,23,42,.12);
 --w:1140px;
@@ -109,7 +112,39 @@ body:has(.sticky-cta){padding-bottom:5rem}
 border-radius:var(--r-sm);padding:.1em .45em;font-size:.9em}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .skip{position:absolute;left:-9999px}
-.skip:focus{left:1rem;top:1rem;z-index:100;background:var(--brand);color:var(--brand-ink);padding:.75rem 1rem;border-radius:var(--r-sm)}</style>
+.skip:focus{left:1rem;top:1rem;z-index:100;background:var(--brand);color:var(--brand-ink);padding:.75rem 1rem;border-radius:var(--r-sm)}
+/* ---------------------------------------------------------------- FOTOGRAFIA
+   El hueco del heroe llevaba un degradado y un rotulo que decia "aqui va la
+   foto del negocio". Ya hay foto: entra como <img> con su encuadre, y el velo
+   que garantizaba el contraste del nombre se queda, porque ahora hace falta
+   mas, no menos. */
+.hero__visual{background:#15181d;overflow:hidden}
+.hero__visual img,.shot img{position:absolute;inset:0;width:100%;height:100%;z-index:0;
+object-fit:cover;object-position:var(--pos,50% 50%);filter:saturate(.92) contrast(1.04)}
+/* Velo por encima de la foto (z-index 1) y texto por encima del velo (2). Sin
+   esto la imagen tapaba el velo, porque `::before` es el primer hijo. */
+/* Sin texto encima, el velo pasa de garantizar contraste a dar cuerpo: una
+   sombra corta abajo, donde se apoya el rotulo, y nada en el resto. La foto
+   se ve. */
+.hero__visual::before{z-index:1;mix-blend-mode:normal;
+background:linear-gradient(to top,rgba(6,7,9,.55),rgba(6,7,9,.10) 46%,rgba(6,7,9,.04))}
+.hero__slot{z-index:2}
+.hero__slot{background:rgba(8,9,11,.72)}
+/* Galeria: la misma fotografia en seis encuadres, que es lo que sale de una
+   sesion de fotos de verdad. Antes eran seis rectangulos vacios. */
+.shot{position:relative;aspect-ratio:4/3;border-radius:var(--r-lg);overflow:hidden;
+background:#15181d;border:1px solid var(--line)}
+.shot img{transform:scale(var(--zoom,1));transform-origin:var(--pos,50% 50%)}
+.shot::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+background:linear-gradient(to top,rgba(8,9,11,.5),transparent 42%)}
+.shot figcaption{position:absolute;left:.7rem;bottom:.7rem;z-index:2;font-size:.74rem;
+font-weight:600;letter-spacing:.04em;color:#fff;background:rgba(8,9,11,.66);
+padding:.3rem .6rem;border-radius:var(--r-sm)}
+
+/* Telefono, email y redes son enlaces SUELTOS, no dentro de una frase: tienen
+   que medir 24 px de alto como minimo para poder pulsarlos con el dedo. */
+.contact-grid a,.site-footer a{display:inline-block;padding-block:.2rem;min-height:24px}
+</style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"LocalBusiness","name":"Llave Maestra Inmobiliaria","telephone":"+34 951 00 00 04","email":"hola@llavemaestra-demo.es","address":{"@type":"PostalAddress","streetAddress":"Calle Larios 22","addressLocality":"Malaga","addressRegion":"Malaga","postalCode":"29015","addressCountry":"ES"}}</script>
 </head>
 <body>
@@ -145,9 +180,9 @@ No es un cliente y no describe ningun resultado real.
 <a class="btn btn--ghost" href="#servicios">Ver servicios</a>
 </div>
 </div>
-<div class="hero__visual" role="img" aria-label="Espacio reservado para una foto real del negocio">
-<span>Llave Maestra Inmobiliaria</span>
-<em class="hero__slot">Aqui va la foto del negocio</em>
+<div class="hero__visual">
+<img src="/photos/real-estate-800.webp" srcset="/photos/real-estate-400.webp 400w, /photos/real-estate-800.webp 800w, /photos/real-estate-1376.webp 1376w" sizes="(max-width:900px) 92vw, 46vw" width="1376" height="768" fetchpriority="high" style="--pos:54% 50%" alt="Salon diafano con ventanales de suelo a techo.">
+<em class="hero__slot">Foto de concepto</em>
 </div>
 </div>
 </section>
@@ -264,7 +299,7 @@ Malaga, Malaga</p>
 <p style="opacity:.8;font-size:.92rem">Aviso legal · Privacidad · Cookies<br>
 <span class="ph">[datos fiscales (razon social, NIF, domicilio)]</span></p>
 </div>
-<p class="fine">© 2026 Llave Maestra Inmobiliaria. Mapa: © colaboradores de OpenStreetMap.</p>
+<p class="fine">© 2026 Llave Maestra Inmobiliaria.</p>
 </div>
 </footer>
 <div class="sticky-cta">

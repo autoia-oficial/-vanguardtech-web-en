@@ -17,9 +17,12 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    # La web no carga nada de terceros: las tipografias se sirven desde aqui.
-    # El unico origen externo es el mapa incrustado de OpenStreetMap.
-    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self'; frame-src https://www.openstreetmap.org; connect-src 'self'; base-uri 'none'; form-action 'self'"
+    # La web no carga NADA de terceros: tipografias, fotografias y scripts
+    # salen de este dominio. `script-src 'self'` implica que el JavaScript no
+    # puede ir en linea: por eso la portada carga /main.js, y las seis demos
+    # cargan /fonts/fonts.css en vez de la hoja del CDN de Google, que esta
+    # politica bloqueaba sin que se notase.
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self'; frame-src 'none'; connect-src 'self'; base-uri 'none'; form-action 'self'"
 
 # Las tipografias no cambian nunca.
 [[headers]]
@@ -31,6 +34,13 @@
   for = "/brand/*"
   [headers.values]
     Cache-Control = "public, max-age=604800"
+
+# Las fotografias llevan el ancho en el nombre (gym-800.webp), asi que cambiar
+# una foto es publicar un fichero distinto: se pueden cachear para siempre.
+[[headers]]
+  for = "/photos/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 # Las demos son negocios inventados: no deben competir en buscadores con
 # negocios reales de su sector.

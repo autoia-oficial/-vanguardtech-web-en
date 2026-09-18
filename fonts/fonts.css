@@ -1,0 +1,30 @@
+/* ===========================================================================
+   LAS DOS FAMILIAS, SERVIDAS DESDE ESTE DOMINIO
+   ---------------------------------------------------------------------------
+   Las seis demos de /work/ cargaban cada una su propia tipografia de display
+   del CDN de Google: Archivo, Cormorant Garamond, Barlow Condensed, Plus
+   Jakarta Sans y DM Serif Display. Eso eran tres problemas a la vez:
+
+     1. La politica de seguridad de este sitio (`style-src 'self'`) BLOQUEA una
+        hoja de estilos externa, asi que en produccion esas paginas se veian
+        con la tipografia del sistema. No era una decision de diseno: estaba
+        roto y no se notaba.
+     2. La IP del visitante viajaba a un tercero antes de aceptar nada, que es
+        justo lo que el resto del sitio evita a proposito.
+     3. Cinco familias de display sueltas no son un sistema tipografico.
+
+   Ahora las demos usan las MISMAS dos familias que la portada, con licencia
+   SIL OFL 1.1 (las licencias viajan en esta carpeta). Lo que distingue a un
+   sector de otro pasa a ser el peso, la caja y el interletrado, que es como se
+   diferencian de verdad las marcas.
+   =========================================================================== */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;
+  src:url('/fonts/inter-400.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;
+  src:url('/fonts/inter-500.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
+  src:url('/fonts/inter-600.woff2') format('woff2')}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:500;font-display:swap;
+  src:url('/fonts/spacegrotesk-500.woff2') format('woff2')}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:700;font-display:swap;
+  src:url('/fonts/spacegrotesk-700.woff2') format('woff2')}
