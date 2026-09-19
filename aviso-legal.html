@@ -7,7 +7,7 @@
 <title>Aviso legal — Vanguard Tech</title>
 <meta name="robots" content="noindex,follow">
 <!-- Tipografias servidas desde este dominio: la IP del visitante no viaja a
-     un tercero antes de que acepte nada. Ver /fonts/ y styles.css. -->
+     un tercero antes de que acepte nada. Ver /fonts/ y la hoja de estilo de esta pagina. -->
 <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="icon" href="/brand/favicon.svg">
 <link rel="canonical" href="https://vanguardtech.es/aviso-legal.html">
@@ -17,8 +17,115 @@
 <meta property="og:title" content="Aviso legal — Vanguard Tech">
 <meta property="og:image" content="https://vanguardtech.es/brand/share-card.png">
 
-<link rel="stylesheet" href="/styles.css">
 <style>
+/* ===========================================================================
+   VANGUARD TECH — hoja minima de las paginas sueltas
+   ---------------------------------------------------------------------------
+   Las paginas legales y la de gracias no tienen relato, ni 3D, ni idiomas:
+   son texto. Llevan aqui lo justo para leerse — tipografias, escala, barra y
+   pie — en lugar de cargar la hoja completa de la portada. Misma identidad,
+   una fraccion del peso, y ningun fichero CSS compartido que mantener.
+   =========================================================================== */
+@font-face{font-family:'Inter';font-style:normal;font-weight:400;font-display:swap;
+  src:url('/fonts/inter-400.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:500;font-display:swap;
+  src:url('/fonts/inter-500.woff2') format('woff2')}
+@font-face{font-family:'Inter';font-style:normal;font-weight:600;font-display:swap;
+  src:url('/fonts/inter-600.woff2') format('woff2')}
+@font-face{font-family:'Space Grotesk';font-style:normal;font-weight:700;font-display:swap;
+  src:url('/fonts/spacegrotesk-700.woff2') format('woff2')}
+
+:root{
+  --ink:#08090b;--paper:#ffffff;--paper-2:#f5f6f8;
+  --muted:#656d7a;--muted-dark:#98a2b0;--line:#e6e8ec;--line-dark:#22262d;
+  --accent:#08090b;--accent-soft:#6d7684;
+  --font-display:'Space Grotesk','Inter',system-ui,sans-serif;
+  --font-label:var(--font-display);
+  --font-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --label-weight:700;--label-track:.16em;
+  --radius-sm:12px;--radius-md:18px;--radius-lg:26px;
+  --w:1200px;--nav-h:76px;
+  --ease:cubic-bezier(.22,1,.36,1);--ease-soft:cubic-bezier(.4,0,.2,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--font-body);
+  font-size:clamp(1rem,.95rem + .22vw,1.09rem);line-height:1.6;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;margin:0 0 .6em}
+h1{font-size:clamp(2rem,1.5rem + 2vw,2.8rem);line-height:1.05}
+h2{font-size:clamp(1.15rem,1rem + .6vw,1.4rem);margin-top:2.4rem}
+p{margin:0 0 1.1em;max-width:70ch}
+.wrap{width:min(100% - 2.5rem,var(--w));margin-inline:auto}
+.eyebrow{font-family:var(--font-label);font-size:.74rem;font-weight:var(--label-weight);
+  letter-spacing:var(--label-track);text-transform:uppercase;color:var(--accent-soft);
+  margin:0 0 1.2rem;display:flex;align-items:center;gap:.7rem}
+.eyebrow::before{content:"";width:26px;height:1.5px;background:var(--accent);flex:none}
+.lead{font-size:clamp(1.05rem,1rem + .4vw,1.25rem);color:var(--muted);line-height:1.5}
+
+/* --- barra superior ------------------------------------------------------- */
+.nav{position:fixed;inset:0 0 auto 0;z-index:100;background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
+.nav__inner{display:flex;align-items:center;gap:1rem;padding:.9rem 0}
+.brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-display);
+  font-weight:700;font-size:1.05rem;letter-spacing:-.035em;text-decoration:none;
+  white-space:nowrap;flex:none}
+.brand__img{width:28px;height:28px;flex:none;object-fit:contain;display:block}
+.brand__img--big{width:64px;height:64px;margin:0 auto 2.2rem}
+
+/* --- botones -------------------------------------------------------------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55rem;
+  padding:.92rem 1.7rem;border-radius:999px;font-weight:600;font-size:.97rem;
+  text-decoration:none;border:1.5px solid transparent;cursor:pointer;min-height:52px;
+  font-family:inherit;color:inherit;background:transparent;
+  transition:transform .4s var(--ease),box-shadow .5s var(--ease),opacity .35s var(--ease-soft)}
+.btn:hover{transform:translate3d(0,-2px,0)}
+.btn:focus-visible,a:focus-visible,button:focus-visible{outline:3px solid var(--accent);
+  outline-offset:3px;border-radius:4px}
+.btn--ghost{border-color:currentColor;opacity:.75}
+.btn--ghost:hover{opacity:1}
+.btn--light{background:#fff;color:var(--ink)}
+.btn--sm{padding:.55rem 1.2rem;min-height:40px;font-size:.87rem}
+.btn-row{display:flex;flex-wrap:wrap;gap:.85rem;margin-top:2rem}
+.btn .arr{display:inline-block;transition:transform .35s var(--ease)}
+.btn:hover .arr{transform:translateX(4px)}
+
+/* --- cuerpo legal --------------------------------------------------------- */
+.legal{padding:calc(var(--nav-h) + 3.5rem) 0 5rem}
+.legal .wrap{width:min(100% - 2.5rem,760px)}
+.legal ul{margin:0 0 1.2em;padding-left:1.2em;max-width:70ch}
+.legal li{margin-bottom:.4em}
+.legal code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;
+  background:var(--paper-2);padding:.1em .35em;border-radius:5px}
+.todo{border-left:3px solid var(--accent);background:var(--paper-2);
+  padding:1rem 1.2rem;border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+  font-size:.94rem;color:var(--muted)}
+.note{border-left:2px solid var(--accent);padding-left:1.1rem;font-size:.92rem;color:var(--muted)}
+.next{list-style:none;counter-reset:n;padding:0;margin:1.6rem 0 0;display:grid;gap:1rem}
+.next li{counter-increment:n;padding-left:2.6rem;position:relative;color:var(--muted-dark);
+  font-size:.97rem}
+.next li::before{content:counter(n,decimal-leading-zero);position:absolute;left:0;top:-.1em;
+  font-family:var(--font-display);font-size:.8rem;font-weight:700;letter-spacing:.06em;
+  color:var(--accent)}
+.fine{border-top:1px solid var(--line);margin-top:3.5rem;padding-top:1.6rem;
+  display:flex;flex-wrap:wrap;gap:.6rem 2rem;font-size:.82rem;color:var(--muted)}
+
+/* --- gracias -------------------------------------------------------------- */
+.gracias{min-height:100svh;display:grid;place-content:center;justify-items:center;
+  text-align:center;padding:2rem 1.25rem;background:var(--ink);color:#fff}
+.gracias .lead{color:var(--muted-dark);margin-inline:auto}
+.gracias .next li{text-align:left}
+.gracias .note{color:var(--muted-dark);border-color:rgba(255,255,255,.3)}
+.gracias .btn-row{justify-content:center;margin-top:2.8rem}
+.gracias .btn--ghost{color:#fff}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition-duration:.01ms!important}
+}
+
+/* --- propio de esta pagina --- */
 main.legal{padding-top:8rem;padding-bottom:5rem}
 main.legal .wrap{max-width:760px}
 main.legal h2{font-size:1.35rem;margin-top:2.5rem}
@@ -27,6 +134,7 @@ main.legal ul{padding-left:1.2rem;display:grid;gap:.4rem;margin:0 0 1.1em}
 .todo{background:#fff8e6;border:1px solid #f0d9a0;border-radius:var(--r);padding:1rem 1.2rem;color:#7a5a12;font-size:.9rem}
 .todo code{background:rgba(0,0,0,.06);padding:.1em .35em;border-radius:4px}
 </style>
+
 </head>
 <body>
 <header class="nav is-stuck"><div class="wrap nav__inner">
@@ -82,5 +190,4 @@ juzgados y tribunales del domicilio del titular, salvo que la normativa de consu
   <span>© <span id="year">2026</span> Vanguard Tech</span>
   <span><a href="/aviso-legal.html">Aviso legal</a> · <a href="/privacidad.html">Privacidad</a> · <a href="/cookies.html">Cookies</a></span>
 </div></div></footer>
-<script src="/main.js"></script>
 </body></html>

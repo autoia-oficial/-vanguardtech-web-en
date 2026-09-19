@@ -17,9 +17,12 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
-    # La web no carga nada de terceros: las tipografias se sirven desde aqui.
-    # El unico origen externo es el mapa incrustado de OpenStreetMap.
-    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self'; frame-src https://www.openstreetmap.org; connect-src 'self'; base-uri 'none'; form-action 'self'"
+    # La web es un solo fichero: el CSS y el JavaScript van dentro del HTML.
+    # Por eso el script en linea se autoriza por HUELLA, no con
+    # 'unsafe-inline': si alguien inyectase un script, su huella no
+    # coincidiria y el navegador no lo ejecutaria.
+    # Si se toca el JavaScript hay que regenerarlas. El comando esta en el README.
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self' 'sha256-vQy5mCTu2wFlEYOnRN61SL5+Eqm3PTHBKLjWN4JFsPg=' 'sha256-cJ7An5+OwxTPfGGOaDzreSwI1TQUYISoGoWNZKRYu7U='; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
 
 # Las tipografias no cambian nunca.
 [[headers]]

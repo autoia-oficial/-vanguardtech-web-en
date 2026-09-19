@@ -1,22 +1,24 @@
 # Vanguard Tech — web
 
-Sitio estatico de Vanguard Tech, en ingles.
+Sitio estatico de Vanguard Tech, en cuatro idiomas.
 
 ## Que es esto
 
-HTML, CSS y JavaScript escritos a mano. **Cero dependencias y ningun paso de
-construccion**: lo que hay en este repositorio es exactamente lo que se sirve.
+**Un solo fichero.** `index.html` lleva dentro el HTML, el CSS y el JavaScript
+de toda la web. No hay `styles.css`, no hay `main.js`, no hay framework, no hay
+`npm install` y no hay paso de construccion: lo que esta en este repositorio es
+exactamente lo que se sirve.
 
-- No hay `npm install`.
-- No hay framework.
-- Las tipografias se sirven desde `/fonts/`, no desde Google Fonts: asi la IP
-  del visitante no viaja a un tercero antes de que acepte nada.
-- El formulario lo procesa Netlify. Los envios llegan al panel del sitio.
+Fuera del HTML solo quedan **datos**, no codigo: las tipografias (`/fonts/`), el
+logotipo y la tarjeta de enlace (`/brand/`) y las seis demos de sector
+(`/work/`), que son paginas sueltas y autonomas. Todo se sirve desde este mismo
+dominio: **la web no pide nada a terceros**, ni tipografias, ni analitica, ni
+scripts. La IP de quien la visita no viaja a ninguna parte.
 
 ## Verlo en local
 
-Al abrir `index.html` con doble clic se vera **sin estilos**, porque las rutas
-son absolutas (`/styles.css`). Hace falta servirlo:
+Al abrir `index.html` con doble clic se vera **sin tipografias**, porque las
+rutas son absolutas (`/fonts/...`). Hace falta servirlo:
 
 ```bash
 python3 -m http.server 8000
@@ -26,107 +28,126 @@ npx serve .
 
 Y abrir http://localhost:8000/
 
-## Marca
-
-El logotipo es **un solo fichero**: `brand/logo-mark.svg`. Lo usan la barra
-superior, el pie, las paginas legales y `gracias.html`, y se usa **tal cual**:
-mismo dibujo, misma separacion entre las dos barras, mismo angulo, mismo grosor
-y mismos cantos redondeados. Solo se escala, y proporcionalmente.
-
-**Para cambiar el logotipo se sustituye ese fichero y nada mas.** Si el oficial
-llega en PNG, se deja como `brand/logo-mark.png` y se cambia la extension en los
-`src` (dos en `index.html`, uno en cada pagina legal y uno en `gracias.html`).
-No hay ninguna copia del dibujo en el CSS ni en el JavaScript.
-
-El resto de la marca es **monocroma**: negro, blanco, grafito y plata. Ya no hay
-azul de marca; el color solo aparece cuando significa algo — un estado, el
-resultado de una comprobacion, el acento de una demo o el haz del precio.
-
-| Donde | Que hay |
-|---|---|
-| `brand/logo-mark.svg` | **El logotipo.** El unico sitio donde vive el dibujo |
-| `brand/simbolo.svg`, `brand/simbolo-blanco.svg` | Isotipo suelto, para fondos claros y oscuros |
-| `brand/logo-horizontal.svg`, `-blanco.svg` | Isotipo + nombre |
-| `brand/favicon.svg`, `favicon.svg` | Icono de pestana |
-| `brand/share-card.png` | Tarjeta de enlace (1200x630) |
-
 ## Estructura
 
 | Ruta | Que es |
 |---|---|
-| `index.html` | La web |
+| `index.html` | **La web entera**: HTML + CSS + JavaScript |
 | `gracias.html` | Donde aterriza el formulario |
 | `aviso-legal.html`, `privacidad.html`, `cookies.html` | Paginas legales, en castellano |
 | `work/` | Seis demos de sector. **Negocios inventados**, cada una lo dice en su cabecera |
 | `brand/` | Logotipo, favicon y tarjeta de enlace |
 | `fonts/` | Inter y Space Grotesk, con sus licencias OFL |
 
-## De donde sale
+Las paginas sueltas (legales y gracias) llevan su propia hoja de estilo minima
+en linea: no comparten CSS con la portada, asi que tocar una no puede romper la
+otra.
 
-Este repositorio se **genera** desde el proyecto principal, donde viven el
-motor, el CRM, las plantillas de las demos y los tests:
+## Idiomas
 
-```bash
-npm run vt -- web export
-```
+Cuatro: **ingles (por defecto)**, castellano de España, frances y aleman.
 
-No edites estos ficheros a mano: el siguiente export los sobreescribe. Los
-cambios se hacen en `VANGUARD TECH/WEBSITE/site/` del proyecto principal.
+- El HTML esta escrito en ingles. Eso es lo que ven los buscadores y quien
+  navegue sin JavaScript.
+- Las otras tres traducciones viven en el objeto `I18N` del script. Cada clave
+  corresponde a un `data-i18n` del HTML y traduce el bloque entero, con su
+  marcado.
+- El ingles no se guarda en el diccionario: se copia del DOM al arrancar, asi
+  que volver a ingles restituye el original exacto.
+- Orden de decision: **lo que el visitante eligio y pidio recordar** → **el
+  idioma del navegador** si es uno de los cuatro → **ingles**. Nunca cambia solo
+  de una visita a otra.
+- El contenido de las maquetas de demo **no se traduce**: son ilustraciones de
+  webs de negocios españoles inventados, van marcadas `aria-hidden` y
+  traducirlas seria traducir una fotografia.
 
-## Actualizar la web publicada
+Para añadir un idioma: añadir su codigo a `LANGS`, su bloque a `I18N` y un
+`<li>` al selector. No hay nada mas que tocar.
 
-El export borra esta carpeta entera salvo `.git`, asi que el remoto y el
-historial sobreviven. Tras tocar la web en el proyecto principal:
+## Almacenamiento
 
-```bash
-npm run vt -- web export
-cd ../vanguardtech-web-en
-git add -A && git commit -m "Actualizar la web" && git push
-```
+La web no pone **ni una cookie**. Lo unico que puede guardar en el navegador
+son dos datos, y solo si el visitante lo autoriza en el aviso de su primera
+visita:
 
-Netlify despliega solo al recibir el push.
+| Clave | Para que |
+|---|---|
+| `vt.lang` | El idioma elegido |
+| `vt.consent` | La respuesta al aviso, para no repetirlo |
+
+Si responde **"No guardar nada"** no se escribe nada y se borra lo que hubiera:
+el idioma vive solo mientras la pestaña este abierta. Las dos opciones estan a
+la vista, del mismo tamaño, y hacen cosas distintas de verdad. `cookies.html` lo
+explica igual.
+
+## Tipografia
+
+Tres papeles, y todo el texto de la web pertenece a uno de los tres:
+
+| Variable | Donde | Como |
+|---|---|---|
+| `--font-display` | Titulares y cifras grandes | Space Grotesk 700 |
+| `--font-label` | Rotulos, numeros de paso, metadatos | La MISMA familia, pequeña, en versalitas y con tracking |
+| `--font-body` | Parrafos, botones, formularios, interfaz | Inter 400/500/600 |
+
+Solo hay cinco ficheros de tipografia: Inter 400/500/600 y Space Grotesk
+500/700. **Ningun elemento usa un peso que no exista**, porque un peso que falta
+lo falsifica el navegador engordando el trazo, y eso es lo que hacia que unas
+secciones pareciesen de otra web.
+
+## Radios
+
+Tres, y todo lo que es imagen, pantalla o contenedor visual usa uno:
+`--radius-sm` (12 px), `--radius-md` (18 px) y `--radius-lg` (26 px). En movil
+bajan un punto.
 
 ## Movimiento
 
-Todo el movimiento vive en `main.js`, sin dependencias, en **un solo bucle**:
+Todo el movimiento va en **un solo bucle**:
 
-- El **scroll** manda en el relato. Cada seccion con historia (hero, las cuatro
-  etapas, el proceso, el anillo de sectores, el escaparate y el precio) calcula
-  su progreso 0..1 desde la posicion de su contenedor y escribe variables CSS.
-  No hay animaciones "disparadas": son funcion directa del scroll, asi que se
-  pueden parar a medio camino, volver atras y llegar de un salto desde el menu.
+- El **scroll** manda en el relato. Cada seccion con historia calcula su
+  progreso 0..1 y escribe variables CSS. No son animaciones "disparadas": son
+  funcion directa de la posicion, asi que se pueden parar a medio camino,
+  volver atras y llegar de un salto desde el menu.
+- Los giros pasan por un **muelle**: el objeto persigue a su objetivo un 18 %
+  por fotograma. Es lo que le da peso — sigue al scroll, no esta clavado a el.
 - El **raton** manda en la luz y el relieve, y siempre suma sobre lo que el
   scroll ya decidio.
-- El bucle solo pide fotogramas cuando hay algo que mover, y ninguna seccion
-  fuera de pantalla se recalcula. Cuando una entra, se fuerza una pasada: si no,
-  llegar de un salto la dejaba sin pintar.
+- La geometria se mide **una vez** (al cargar, al cambiar de tamaño, al entrar
+  las tipografias y al cambiar de idioma), no en cada fotograma.
+- Solo se escriben variables CSS **cuando cambian de verdad**: escribir una en
+  una tarjeta invalida el estilo de todo lo que lleva dentro.
+- Nada fuera de pantalla se recalcula. Cuando una seccion entra, se fuerza una
+  pasada: si no, llegar de un salto la dejaba sin pintar.
 - Con `prefers-reduced-motion: reduce` no se anima nada: las historias se
-  convierten en listas legibles con el mismo contenido y el haz del precio se
-  pinta una sola vez, ya resuelto. Lo mismo por debajo de 560 px de alto, donde
-  un panel pegajoso no cabe.
+  convierten en listas legibles con el mismo contenido.
 
-**Las maquetas de web** (`.mock`) son un componente reutilizable: el mismo
-sirve para el hero, las cuatro etapas, las seis tarjetas de sector, los tres
-escaparates y la vista ampliada. Cada una es una **portada entera** — franja de
-aviso, navegacion, cabecera editorial, servicios con precio, tarjetas, mapa,
-franja de llamada y pie — medida en `em`, con el tamaño controlado por `--mfs`.
-Las "fotos" son composiciones de degradados: **no hay imagenes externas**, asi
-que no hay nada que se pueda caer.
+## Cabeceras y despliegue
 
-**"View demo"** no lleva a un dominio inventado: abre la misma maqueta a tamaño
-grande dentro de una ventana, clonada de la tarjeta que se ha pulsado, con su
-nota de demo y el enlace a la pagina de ejemplo de `work/` que si existe. Las
-barras de direccion de las maquetas ponen `yourbusiness.es`, que es un marcador
-y se lee como tal.
+Netlify, con `netlify.toml`: rama `main`, sin comando de construccion,
+directorio publicado `.`.
 
-**El precio** tiene su propia escena: un lienzo con trazos de color que nacen
-juntos, se abren, se separan del todo, se recogen y acaban formando un halo
-alrededor del numero. Los trazos nunca entran en el rectangulo que ocupa el
-precio — se calcula la distancia del centro al borde de ese rectangulo en cada
-direccion — asi que el numero siempre es lo que se lee.
+La politica de seguridad autoriza el script en linea **por huella**
+(`'sha256-...'`), no con `'unsafe-inline'`. **Si se toca el JavaScript hay que
+regenerar las huellas**:
+
+```bash
+python3 - <<'PY'
+import re, hashlib, base64, io
+h = io.open('index.html', encoding='utf-8').read()
+for m in re.finditer(r'<script([^>]*)>(.*?)</script>', h, re.S):
+    if 'src=' in m.group(1): continue
+    print("'sha256-" + base64.b64encode(
+        hashlib.sha256(m.group(2).encode()).digest()).decode() + "'")
+PY
+```
+
+y pegarlas en `script-src` dentro de `netlify.toml`.
 
 ## Pendiente
 
 - El dominio es un marcador (`vanguardtech.es`) en las etiquetas canonical,
   og: y en `sitemap.xml`.
 - Las paginas legales necesitan los datos fiscales reales.
+- El formulario todavia no envia: el JavaScript cancela el envio y lo dice.
+  Falta conectar el buzon.
