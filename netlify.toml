@@ -1,15 +1,10 @@
 # Publicacion de la web de Vanguard Tech.
 #
-# Cada pagina es UN fichero HTML que se basta a si mismo: el CSS, el
-# JavaScript, las tipografias, el isotipo y las fotografias viajan dentro del
-# propio documento. No hay nada que compilar y no hay dependencias.
+# La web es HTML, CSS y JavaScript sin dependencias: no hay nada que compilar.
+# La raiz de este repositorio ES la web, asi que no hay carpeta que indicar.
 #
-#   Production branch .... main
-#   Base directory ....... (vacio)
-#   Build command ........ (vacio)
-#   Publish directory .... .
-#   Functions directory .. (vacio)
-#   Environment variables. (ninguna)
+# Generado por `vt web export`. No se edita a mano: se edita en
+# WEBSITE/generator/export-site.mjs del repositorio principal.
 
 [build]
   publish = "."
@@ -22,46 +17,19 @@
     X-Frame-Options = "DENY"
     Referrer-Policy = "strict-origin-when-cross-origin"
     Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+    # La web es un solo fichero: el CSS y el JavaScript van dentro del HTML.
+    # Por eso el script en linea se autoriza por HUELLA, no con
+    # 'unsafe-inline': si alguien inyectase un script, su huella no
+    # coincidiria y el navegador no lo ejecutaria.
+    # Si se toca el JavaScript hay que regenerarlas. El comando esta en el README.
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self' 'sha256-r+VxIKAYm3W6GXpNTjwlL+ezK7+ugq+Un8nUyd45obI=' 'sha256-Q9yaQ0phkuO2viUPvSLKcTShmI8uLe5/Fb7RtPWJxUQ='; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
 
-    # POLITICA DE SEGURIDAD — LEER ANTES DE TOCAR UN SOLO BYTE DEL HTML
-    #
-    # El sitio es de fichero unico, asi que el CSS y el JavaScript van DENTRO
-    # del HTML. Eso obliga a permitir contenido en linea, pero no hace falta
-    # abrir la mano del todo:
-    #
-    #   · style-src 'unsafe-inline'  ->  imprescindible. Un <style> en linea no
-    #     se puede identificar por hash si la pagina tambien lleva atributos
-    #     `style=` (y los lleva: cada demo fija su tono y cada foto su
-    #     encuadre). Es la unica concesion.
-    #
-    #   · script-src 'sha256-...'    ->  NO se usa 'unsafe-inline'. El unico
-    #     script ejecutable del sitio es el mismo en las cuatro paginas que lo
-    #     llevan (portada, aviso legal, privacidad y cookies), y se autoriza
-    #     por su huella. Cualquier script inyectado por un tercero tendria otra
-    #     huella y el navegador lo rechazaria.
-    #
-    #   · font-src / img-src 'data:' ->  las tipografias y las imagenes son
-    #     data URI dentro del documento.
-    #
-    # AVISO: si se edita el JavaScript de esas cuatro paginas, la huella deja
-    # de coincidir y el navegador BLOQUEA el script en silencio — la web se ve
-    # pero no se mueve. Hay que recalcularla:
-    #
-    #   python3 - <<'EOF'
-    #   import base64, hashlib, io, re
-    #   s = io.open('index.html', encoding='utf-8').read()
-    #   m = re.search(r'<script(?![^>]*\btype=)[^>]*>(.*?)</script>', s, re.S)
-    #   print('sha256-' + base64.b64encode(
-    #       hashlib.sha256(m.group(1).encode()).digest()).decode())
-    #   EOF
-    #
-    # El <script type="application/ld+json"> de los datos estructurados no
-    # necesita huella: es un dato, el navegador no lo ejecuta.
-    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data:; script-src 'self' 'sha256-sFZpeEAvdsY+dA/kfShzWIQLe0EpnXMRMBrZYzRwjAI='; frame-src 'none'; connect-src 'self'; base-uri 'none'; form-action 'self'"
+# Las tipografias no cambian nunca.
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
-# Lo unico que se sigue sirviendo como fichero suelto: la tarjeta de enlace
-# (las redes sociales no leen un data URI) y el original del isotipo, al que
-# apuntan los datos estructurados.
 [[headers]]
   for = "/brand/*"
   [headers.values]
