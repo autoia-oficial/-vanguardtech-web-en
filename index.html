@@ -32,6 +32,26 @@
      usa TAL CUAL: mismo dibujo, mismo disco, mismo degradado, sin recortar y
      sin recolorear. Solo se escala, y proporcionalmente. Los iconos de pestana
      salen del MISMO fichero, asi que no hay dos versiones que se separen. -->
+<!-- Lo primero que se ejecuta. Decide si esta es una primera visita ANTES de
+     que el navegador pinte, para que no se vea un destello del hero antes del
+     panel de entrada. Solo escribe un atributo; no toca almacenamiento.
+     Si el navegador bloquease los scripts, este tampoco correria y la web se
+     veria normal: nunca puede dejar la pagina tapada sin salida. -->
+<script>
+(function () {
+  var d = document.documentElement;
+  var done;
+  try { done = window.localStorage.getItem('vt.onboarded') === '1'; }
+  catch (e) { done = false; }          // modo privado: se pregunta otra vez
+  if (done) return;
+  d.setAttribute('data-onb', '');
+  /* Red de seguridad: si el script principal se rompiese, la web no puede
+     quedarse tapada para siempre. */
+  window.setTimeout(function () {
+    if (!window.__onbReady) d.removeAttribute('data-onb');
+  }, 4000);
+}());
+</script>
 <link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/brand/favicon-64.png" sizes="64x64" type="image/png">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
@@ -827,6 +847,11 @@ footer .muted{color:var(--muted-dark)}
 
 /* =============================================================== CONTACTO === */
 .form{display:grid;gap:1.05rem}
+/* `hidden` es un atributo, y el `display:none` que trae el navegador para el
+   lo pone una regla de una sola etiqueta: cualquier clase con `display` la
+   gana. Sin esta linea, `form.hidden = true` no ocultaba nada y los DOS
+   formularios se veian a la vez. */
+.form[hidden]{display:none}
 @media(min-width:680px){.form{grid-template-columns:1fr 1fr}.form .full{grid-column:1/-1}}
 .field{display:grid;gap:.4rem}
 .field>span{font-size:.8rem;font-weight:600}
@@ -1985,6 +2010,13 @@ body.peek-open{overflow:hidden}
    con un muro. El panel es una tarjeta clara sobre ese fondo, con el mismo
    vocabulario que el resto del sitio (tipografias, radios, botones).
    =========================================================================== */
+/* Estado de entrada, decidido en el <head> antes de pintar. Mientras dura, la
+   web no se ve (ni un fotograma) y no se puede mover. En una visita que ya
+   paso por aqui el atributo no se pone nunca y esto no existe. */
+html[data-onb],html[data-onb] body{overflow:hidden}
+html[data-onb] body > *:not(.onb){visibility:hidden}
+html[data-onb] .onb{display:flex}
+
 .onb{
   position:fixed;inset:0;z-index:300;
   display:flex;align-items:center;justify-content:center;
@@ -5118,7 +5150,12 @@ p,li,.lead{text-wrap:pretty}
     var done = read(OKEY) === '1';
 
     /* Ya paso por aqui: ni se pinta. La web se usa directamente. */
-    if (done) { box.remove(); return; }
+    if (done) {
+      window.__onbReady = true;
+      document.documentElement.removeAttribute('data-onb');
+      box.remove();
+      return;
+    }
 
     var panel = $('#onbPanel');
     var stepCookies = $('#onbCookies');
@@ -5212,6 +5249,7 @@ p,li,.lead{text-wrap:pretty}
       } catch (e) { /* modo privado: la eleccion vale para esta pestaña */ }
 
       document.removeEventListener('keydown', trap, true);
+      document.documentElement.removeAttribute('data-onb');   // se destapa la web
       freeze(false);
       box.classList.add('is-out');
       /* Ahora que la pagina vuelve a tener su alto real, hay que medirla. */
@@ -5227,6 +5265,7 @@ p,li,.lead{text-wrap:pretty}
     /* Se abre. Hasta aqui el overlay estaba `hidden`, de modo que quien tenga
        el JavaScript desactivado ve la web y no un panel que no puede cerrar. */
     box.hidden = false;
+    window.__onbReady = true;      // desactiva la red de seguridad del <head>
     freeze(true);
     mark(pick);
     show(stepCookies);
