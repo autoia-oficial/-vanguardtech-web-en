@@ -27,7 +27,15 @@
 <meta name="twitter:title" content="Vanguard Tech — Professional websites, built fast">
 <meta name="twitter:description" content="Your business. Better online. From 99 € plus 29 €/month.">
 <meta name="twitter:image" content="https://vanguardtech.es/brand/share-card.png">
-<link rel="icon" href="/brand/favicon.svg">
+<!-- ISOTIPO OFICIAL — UN SOLO FICHERO
+     El logotipo es `brand/logo-mark.png` (y su version webp para la web). Se
+     usa TAL CUAL: mismo dibujo, mismo disco, mismo degradado, sin recortar y
+     sin recolorear. Solo se escala, y proporcionalmente. Los iconos de pestana
+     salen del MISMO fichero, asi que no hay dos versiones que se separen. -->
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/brand/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="shortcut icon" href="/brand/favicon.ico">
 <!-- Las tipografias se sirven desde este dominio, no desde el CDN de Google:
      asi la IP del visitante no viaja a un tercero antes de aceptar nada.
      Se precargan las dos que pinta el primer pantallazo. -->
@@ -217,13 +225,12 @@ section{position:relative;padding:clamp(5rem,3rem + 8vw,11rem) 0}
   font-size:1.05rem;letter-spacing:-.035em;text-decoration:none;white-space:nowrap;flex:none}
 @media(max-width:420px){.brand{font-size:.95rem;gap:.45rem}}
 /* EL LOGOTIPO — UN SOLO FICHERO
-   `brand/logo-mark.svg`. Se usa tal cual y solo se escala, proporcionalmente:
-   el dibujo, la separacion entre las dos barras, el angulo, el grosor y los
-   cantos redondeados son los del fichero, no de aqui. Para cambiar de
+   `brand/logo-mark.png` (servido en webp a 256 px). Es el isotipo oficial y se
+   usa TAL CUAL: solo se escala, proporcionalmente. El dibujo, el angulo, el
+   grosor y los cantos son los del fichero, nunca de aqui. Para cambiar de
    logotipo se cambia ESE fichero y nada mas.
-   28 px, no 21: por debajo de 26 los brazos del isotipo se lavan con el
-   antialiasing y la marca se lee como una barra en vez de como una V.
-   Comprobado a 21/24/26/28/32 px sobre claro y sobre oscuro. */
+   El anillo de un pixel de `.brand__img` no toca el dibujo: le devuelve el
+   borde al disco negro cuando el fondo tambien es negro. */
 .brand__img{width:28px;height:28px;flex:none;object-fit:contain;display:block}
 @media(max-width:420px){.brand__img{width:25px;height:25px}}
 /* La version grande de gracias.html: el mismo fichero, otro tamaño. */
@@ -2274,6 +2281,143 @@ footer h3,
   .step.is-dim{opacity:1}
   .step__state{opacity:1}
 }
+
+/* ===========================================================================
+   ═══════════════════════════ CAPA DE FOTOGRAFIA ═══════════════════════════
+   ---------------------------------------------------------------------------
+   Hasta aqui las "fotos" de las maquetas eran composiciones de degradados.
+   Funcionaban como textura, pero una demo de restaurante sin un plato y una de
+   gimnasio sin una persona se leen como una tarjeta de color, no como la
+   portada de una web que se podria entregar.
+
+   Ahora cada sector lleva SU fotografia. Reglas de la capa:
+
+     · La imagen va como <img> dentro de `.mock__photo`, no como fondo: asi
+       tiene `srcset`, se puede diferir y el navegador elige el ancho.
+     · El encuadre lo manda `--pos` (y `--pos-sm` por debajo de 700 px), no un
+       recorte del fichero. Una sola imagen por sector sirve para la tira
+       apaisada del heroe, la miniatura de una tarjeta y la vista ampliada.
+     · La viñeta (`.mock__photo::after`) sigue encima: es lo que sostiene el
+       texto blanco del titular sobre cualquier foto.
+     · El grano cruzado (`::before`) se apaga donde hay foto: existia para que
+       un degradado no pareciese plastico, y sobre una foto solo ensucia.
+   =========================================================================== */
+
+/* Color de reposo: si una imagen tarda o falla, queda grafito, nunca un hueco
+   blanco en mitad de la maqueta. */
+.mock__photo{background:#12151a}
+.mock__photo--shot::before{content:none}
+
+.mock__img{
+  position:absolute;inset:0;width:100%;height:100%;display:block;
+  object-fit:cover;object-position:var(--pos,50% 50%);
+  /* La foto entra ligeramente desaturada y con el negro un punto mas cerrado:
+     asi seis fotografias de seis autores distintos se leen como una sola
+     coleccion, que es lo que hace que el conjunto parezca una marca. */
+  filter:saturate(.92) contrast(1.04);
+}
+/* En pantallas estrechas la tira es mas alta en proporcion y el encuadre bueno
+   no es el mismo. Se cambia la POSICION, no el recorte del fichero. */
+@media(max-width:700px){
+  .mock__img{object-position:var(--pos-sm,var(--pos,50% 50%))}
+}
+
+/* Miniaturas de las tarjetas interiores: la misma fotografia, otro encuadre.
+   Es lo que hace un sitio real — una galeria sale de la misma sesion de fotos,
+   no de seis bancos de imagen distintos. */
+.mock__thumb{background:#1a1d22;position:relative;overflow:hidden}
+.mock__thumb .mock__img{filter:saturate(.82) contrast(1.06) brightness(.94)}
+/* Un velo muy corto por debajo: separa la miniatura del texto que lleva
+   debajo sin apagar la foto. */
+.mock__thumb::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top,rgba(8,9,11,.28),transparent 62%);
+}
+
+/* La viñeta del heroe se cierra un poco mas cuando hay foto: el titular de la
+   demo tiene que leerse sobre una imagen con detalle, no sobre un degradado
+   controlado. Medido sobre las seis: 4,9:1 en el peor caso (la cocina). */
+.mock__photo--shot::after{
+  background:
+    linear-gradient(to top,rgba(6,7,9,.88),rgba(6,7,9,.42) 52%,rgba(6,7,9,.16)),
+    linear-gradient(105deg,rgba(6,7,9,.55),transparent 62%);
+}
+
+/* La maqueta del heroe es la unica que se pinta en el primer pantallazo: su
+   foto no se difiere y las demas si. La regla vive aqui para que se vea de un
+   vistazo cual es la imagen critica. */
+.stage .mock__img{filter:saturate(.95) contrast(1.03)}
+
+
+/* ===========================================================================
+   ISOTIPO OFICIAL EN SU CONTENEDOR
+   ---------------------------------------------------------------------------
+   El logotipo es un disco negro con la V en plata. Sobre el negro del hero, el
+   disco desaparece y solo quedarian la V y su filo. Un anillo de un pixel —
+   claro sobre oscuro, oscuro sobre claro — le devuelve el borde sin tocar el
+   dibujo: el fichero no se recorta, no se recolorea y no se deforma.
+   =========================================================================== */
+.brand__img{
+  width:30px;height:30px;flex:none;object-fit:contain;display:block;
+  border-radius:50%;                      /* el propio disco, no un recorte */
+  box-shadow:0 0 0 1px rgba(8,9,11,.12);
+  transition:box-shadow .35s var(--ease-soft),transform .5s var(--ease);
+}
+.nav.is-dark .brand__img,.hero .brand__img,footer .brand__img{
+  box-shadow:0 0 0 1px rgba(255,255,255,.16),0 6px 18px rgba(0,0,0,.45);
+}
+.brand:hover .brand__img{transform:scale(1.04)}
+@media(max-width:420px){.brand__img{width:27px;height:27px}}
+/* La version grande de gracias.html y de las paginas legales. */
+.brand__img--big{width:68px;height:68px;margin:0 auto 2.2rem;border-radius:50%}
+
+
+/* ===========================================================================
+   LA GALERIA DEL GIMNASIO — rotulo en caja alta
+   ---------------------------------------------------------------------------
+   `.mock__htext--caps` se usaba en la demo del gimnasio y no existia en la
+   hoja: el titular salia igual que el del restaurante. Un gimnasio rotula en
+   caja alta y apretado; es parte de que cada sector se vea distinto, que es
+   justo lo que vende esta seccion.
+   =========================================================================== */
+.mock__htext--caps b{
+  text-transform:uppercase;letter-spacing:-.02em;line-height:.98;font-size:1.72em;
+}
+.mock__htext--caps b em{display:block}
+
+
+/* ===========================================================================
+   EL CORTE DE ABAJO DE CADA DEMO
+   ---------------------------------------------------------------------------
+   La ventana de la tarjeta enseña la parte de arriba de la portada y recorta
+   el resto, que es lo que hace una ventana de navegador. El problema era
+   DONDE cortaba: casi siempre a media palabra de las tarjetas interiores, y
+   media palabra cortada no se lee como "la pagina sigue", se lee como un fallo.
+
+   Un desvanecido corto hacia el papel de la tarjeta resuelve las dos cosas:
+   el corte deja de tener filo y la pagina se lee como si continuase. Es un
+   degradado sobre un elemento que ya existe — ni un nodo mas, ni un filtro.
+   =========================================================================== */
+.ring__shot::after{
+  content:"";position:absolute;z-index:2;inset:auto 0 0 0;height:3.4rem;
+  pointer-events:none;
+  background:linear-gradient(to top,var(--paper) 14%,rgba(255,255,255,.72) 46%,transparent);
+}
+@media(prefers-reduced-motion:reduce){
+  /* Sin anillo 3D la tarjeta es una ficha de lista y el corte ya no finge ser
+     una ventana: ahi el desvanecido sobra. */
+  .ring__shot::after{height:2.2rem}
+}
+
+
+
+/* Cifras que no bailan de ancho al animarse, y titulares que reparten sus
+   lineas. Ambas vienen de la pasada de fotografia y no tocan la escala. */
+.hero__stat b,.plan__price,.plan__sub,.speed__num,.burst__num,.burst__mo,
+.mock__row em,.audit__score b{font-variant-numeric:tabular-nums}
+h1{text-wrap:balance}
+p,li,.lead{text-wrap:pretty}
+
 </style>
 <!-- Datos estructurados. Solo contiene hechos comprobables: no hay
      valoraciones, ni numero de clientes, ni domicilio, porque no los hay.
@@ -2288,7 +2432,7 @@ footer h3,
       "@id": "https://vanguardtech.es/#org",
       "name": "Vanguard Tech",
       "url": "https://vanguardtech.es/",
-      "logo": "https://vanguardtech.es/brand/logo-horizontal.svg",
+      "logo": "https://vanguardtech.es/brand/logo-mark.png",
       "image": "https://vanguardtech.es/brand/share-card.png",
       "description": "We build the online presence of local businesses in Spain: professional websites, AI integration and automation.",
       "areaServed": {
@@ -2415,15 +2559,14 @@ footer h3,
 
 <header class="nav is-dark" id="nav">
   <div class="wrap nav__inner">
-    <!-- ISOTIPO — UN SOLO FICHERO
-         El logotipo vive en `brand/logo-mark.svg` y se usa TAL CUAL: mismo
-         dibujo, misma separacion entre las dos barras, mismos cantos, sin
-         recolorear y sin recortar. Solo se escala, y proporcionalmente.
-         Para cambiarlo, se sustituye ESE fichero: la barra, el pie, las
-         paginas legales y la de gracias lo cogen de ahi. Nada mas depende de
-         la forma del isotipo. -->
+    <!-- ISOTIPO OFICIAL — UN SOLO FICHERO
+         El logotipo vive en `brand/logo-mark.png` (servido en webp) y se usa
+         TAL CUAL: mismo disco, mismo degradado, mismos cantos, sin recolorear
+         y sin recortar. Solo se escala, y proporcionalmente. Para cambiarlo se
+         sustituye ESE fichero: la barra, el pie, las paginas legales, la de
+         gracias y los iconos de pestana lo cogen de ahi. -->
     <a class="brand" href="/">
-      <img class="brand__img" src="/brand/logo-mark.svg" alt="" width="28" height="28" decoding="async">
+      <img class="brand__img" src="/brand/logo-mark-256.webp" alt="" width="256" height="256" decoding="async" fetchpriority="high">
       Vanguard Tech
     </a>
     <!-- IDIOMA. Cuatro idiomas, sin banderas: una bandera es un pais, no una
@@ -2524,7 +2667,7 @@ footer h3,
                 <div class="browser">
                   <div class="browser__bar">
                     <i></i><i></i><i></i>
-                    <div class="browser__url">yourbusiness.es</div>
+                    <div class="browser__url">casaribera.es</div>
                   </div>
                   <div class="browser__body">
                     <!-- Maqueta de web. Negocio INVENTADO: lleva su etiqueta. -->
@@ -2535,7 +2678,13 @@ footer h3,
                         <span class="mock__cta">Book a table</span>
                       </div>
                       <div class="mock__hero">
-                        <div class="mock__photo mock__photo--food"><span class="mock__shape"></span></div>
+                        <div class="mock__photo mock__photo--food mock__photo--shot">
+                          <img class="mock__img" src="/photos/restaurant-800.webp"
+                           srcset="/photos/restaurant-400.webp 400w, /photos/restaurant-800.webp 800w, /photos/restaurant-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="eager" fetchpriority="high" style="--pos:50% 66%;--pos-sm:50% 70%"
+                           alt="A plated main course on a linen-set table in a stone-walled dining room.">
+                        </div>
                         <span class="mock__tag">Demo</span>
                         <div class="mock__htext">
                           <b>Seasonal kitchen, three streets from the cathedral.</b>
@@ -2555,11 +2704,17 @@ footer h3,
                           <div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div>
                         </div>
                         <div class="mock__grid">
-                          <div class="mock__card"><div class="mock__thumb mock__thumb--a"></div>
+                          <div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 74%"
+                           alt=""></div>
                             <p><b>The room</b><span>Twelve tables</span></p></div>
-                          <div class="mock__card"><div class="mock__thumb mock__thumb--b"></div>
+                          <div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:66% 42%"
+                           alt=""></div>
                             <p><b>Wine list</b><span>40 references</span></p></div>
-                          <div class="mock__card"><div class="mock__thumb mock__thumb--c"></div>
+                          <div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:22% 46%"
+                           alt=""></div>
                             <p><b>Private</b><span>Up to 20</span></p></div>
                         </div>
                       </div>
@@ -2593,8 +2748,9 @@ footer h3,
 
 <!-- ════════════════════════════════════════════ LAS CUATRO ETAPAS EN 3D ══ -->
 <!-- Un solo objeto de cuatro caras. El scroll lo gira 270 grados y cada cara es
-     una pantalla real del mismo negocio inventado (Talleres Bergara): la web que
-     hay, la auditoria, la propuesta montandose y la web publicada. La rotacion
+     una pantalla real del mismo negocio inventado (La Sobremesa, el mismo
+     restaurante que abre el escaparate): la web que hay, la auditoria, la
+     propuesta montandose y la web publicada. La rotacion
      es una funcion directa del scroll, asi que se puede parar a media vuelta. -->
 <section class="morph" id="transformation" aria-label="Website transformation">
   <div class="morph__track" id="morphTrack">
@@ -2630,29 +2786,29 @@ footer h3,
             <!-- ETAPA 01 · lo que hay -------------------------------------- -->
             <article class="stg" style="--i:0">
               <div class="old">
-                <div class="old__bar">Talleres Bergara <span>Logroño · desde 1998</span></div>
-                <div class="old__nav"><i>Home</i><i>Company</i><i>Services</i><i>Photos</i><i>Contact</i></div>
+                <div class="old__bar">La Sobremesa <span>Logroño · desde 1994</span></div>
+                <div class="old__nav"><i>Home</i><i>The house</i><i>Menu</i><i>Photos</i><i>Contact</i></div>
                 <div class="old__body">
                   <div>
                     <h4>Welcome to our web page!</h4>
-                    <p>We are a family workshop with more than 20 years of experience
-                    in mechanics, tyres and pre-MOT checks.</p>
-                    <div class="old__img">photo_taller_01.jpg</div>
-                    <table class="old__tbl"><tr><td>Mechanics</td><td>Tyres</td><td>MOT</td></tr>
-                      <tr><td>Bodywork</td><td>Batteries</td><td>Air-con</td></tr></table>
-                    <p class="old__blink">** WEB UNDER CONSTRUCTION **</p>
+                    <p>Traditional cooking in the old town of Logroño. Family run
+                    since 1994, twelve tables and a private room for groups.</p>
+                    <div class="old__img">foto_comedor_01.jpg</div>
+                    <table class="old__tbl"><tr><td>Menu</td><td>Wine list</td><td>Groups</td></tr>
+                      <tr><td>Set lunch</td><td>Terrace</td><td>Takeaway</td></tr></table>
+                    <p class="old__blink">** MENU UNDER CONSTRUCTION **</p>
                     <div class="old__row">
-                      <div class="old__img">foto_taller_02.jpg</div>
+                      <div class="old__img">foto_plato_02.jpg</div>
                       <div class="old__img">foto_equipo.jpg</div>
-                      <div class="old__img">logo_neumaticos.gif</div>
+                      <div class="old__img">logo_rioja.gif</div>
                     </div>
-                    <p>For any query please call us during opening hours. We also do
-                    bodywork and air-con recharges.</p>
+                    <p>To book a table please call us during opening hours. We also
+                    cater for private events and Sunday family lunches.</p>
                   </div>
                   <div class="old__side">
                     <b>Contact</b>
-                    <p>Tel. 941 00 00 02<br>C/ Industria 14<br>Mon–Fri 9–13 / 16–19</p>
-                    <ul class="old__links"><li>Price list 2009</li><li>Photo gallery</li>
+                    <p>Tel. 941 00 00 01<br>C/ Laurel 14<br>Tue–Sun 13–16 / 20–23:30</p>
+                    <ul class="old__links"><li>Menu 2009 (PDF)</li><li>Photo gallery</li>
                       <li>Sign our guest book</li></ul>
                     <div class="old__count">012457</div>
                     <span>visitors since 2003</span>
@@ -2668,7 +2824,7 @@ footer h3,
             <article class="stg" style="--i:1">
               <div class="audit">
                 <div class="audit__top">
-                  <b>yourbusiness.es</b>
+                  <b>lasobremesa.es</b>
                   <span class="audit__score"><b>2</b><span>/ 13 passed</span></span>
                 </div>
                 <div class="audit__list">
@@ -2694,20 +2850,20 @@ footer h3,
             <!-- ETAPA 03 · la propuesta ------------------------------------ -->
             <article class="stg" style="--i:2">
               <div class="prop">
-                <div class="prop__top"><b>Draft · Talleres Bergara</b><em>assembling</em></div>
+                <div class="prop__top"><b>Draft · La Sobremesa</b><em>assembling</em></div>
                 <div class="prop__cols">
                   <div class="prop__col">
                     <i class="h"></i><i class="l"></i><i class="m"></i><i class="h"></i><i class="m"></i>
                   </div>
                   <div class="prop__col">
-                    <div class="prop__block"><b>Mechanics and diagnostics</b>
-                      <span>Official-equivalent servicing without losing your warranty.</span></div>
-                    <div class="prop__block"><b>Pre-MOT check</b>
-                      <span>We check it, fix it and take the car in for you.</span></div>
-                    <div class="prop__block"><b>Tyres and alignment</b>
-                      <span>Fitting the same day, four brands in stock.</span></div>
+                    <div class="prop__block"><b>This week&#39;s menu</b>
+                      <span>Written from the dishes you already publish, changed by you in two clicks.</span></div>
+                    <div class="prop__block"><b>Book a table</b>
+                      <span>Date, time and party size. It lands in your inbox and on your phone.</span></div>
+                    <div class="prop__block"><b>The room and the wine list</b>
+                      <span>Twelve tables, a private room for twenty, forty references.</span></div>
                     <div class="prop__block"><b>Where we are</b>
-                      <span>C/ Industria 14, Logroño · Mon–Fri 9–13 / 16–19</span></div>
+                      <span>C/ Laurel 14, Logroño · Tuesday to Sunday, lunch and dinner</span></div>
                   </div>
                 </div>
                 <div class="prop__foot"><span>7 of 9 sections</span>
@@ -2720,62 +2876,80 @@ footer h3,
               <div class="live">
                 <div class="live__bar">
                   <i></i><i></i><i></i>
-                  <span class="live__url">yourbusiness.es</span>
+                  <span class="live__url">lasobremesa.es</span>
                 </div>
                 <div class="live__screens">
                   <div class="live__desk">
-                    <div class="mock" aria-hidden="true" style="--tone:#9c4f3f;--mfs:6px">
+                    <div class="mock" aria-hidden="true" style="--tone:#a86f3c;--mfs:6px">
                       <div class="mock__nav">
-                        <span class="mock__logo">Talleres Bergara</span>
-                        <span class="mock__menu"><span>Services</span><span>MOT</span><span>Find us</span></span>
-                        <span class="mock__cta">Call now</span>
+                        <span class="mock__logo">La Sobremesa</span>
+                        <span class="mock__menu"><span>Menu</span><span>The room</span><span>Find us</span></span>
+                        <span class="mock__cta">Book a table</span>
                       </div>
                       <div class="mock__hero">
-                        <div class="mock__photo mock__photo--tools"><span class="mock__shape"></span></div>
+                        <div class="mock__photo mock__photo--food mock__photo--shot">
+                          <img class="mock__img" src="/photos/restaurant-800.webp"
+                               srcset="/photos/restaurant-400.webp 400w, /photos/restaurant-800.webp 800w, /photos/restaurant-1376.webp 1376w"
+                               sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                               loading="lazy" decoding="async" style="--pos:50% 66%;--pos-sm:50% 70%"
+                               alt="A plated main course on a linen-set table in a stone-walled dining room.">
+                        </div>
                         <span class="mock__tag">Demo</span>
-                        <div class="mock__htext"><b>Your car back on the road this week.</b>
-                          <span>Logroño · Mon–Fri 9–13 / 16–19</span>
-                          <span class="mock__btn">941 00 00 02</span></div>
+                        <div class="mock__htext"><b>A table in the old town, booked in two taps.</b>
+                          <span>Logroño · Tuesday to Sunday</span>
+                          <span class="mock__btn">Book a table</span></div>
                       </div>
                       <div class="mock__strip"><span class="mock__dot">Open now</span>
-                        <span>Pre-MOT check</span><span><b>Free quote</b></span></div>
+                        <span>13:30 – 16:00</span><span><b>Twelve tables</b></span></div>
                       <div class="mock__body">
                         <div class="mock__grid">
-                          <div class="mock__card"><div class="mock__thumb mock__thumb--b"></div>
-                            <p><b>Mechanics</b><span>From 45 €</span></p></div>
-                          <div class="mock__card"><div class="mock__thumb mock__thumb--a"></div>
-                            <p><b>Tyres</b><span>Same day</span></p></div>
-                          <div class="mock__card"><div class="mock__thumb mock__thumb--c"></div>
-                            <p><b>MOT</b><span>We take it</span></p></div>
+                          <div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 74%"
+                           alt=""></div>
+                            <p><b>The room</b><span>Twelve tables</span></p></div>
+                          <div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:66% 42%"
+                           alt=""></div>
+                            <p><b>Wine list</b><span>40 references</span></p></div>
+                          <div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:22% 46%"
+                           alt=""></div>
+                            <p><b>Private</b><span>Up to 20</span></p></div>
                         </div>
                         <div class="mock__list">
-                          <div class="mock__row"><b>Full service</b><i>Oil, filters and 30-point check</i><em>from 89 €</em></div>
-                          <div class="mock__row"><b>Pre-MOT check</b><i>We take the car in for you</i><em>35 €</em></div>
-                          <div class="mock__row"><b>Diagnostics</b><i>Engine warning light</i><em>25 €</em></div>
+                          <div class="mock__row"><b>Pochas with quail</b><i>White beans, slow cooked</i><em>14 €</em></div>
+                          <div class="mock__row"><b>Grilled hake</b><i>Garlic and sweet pepper</i><em>19 €</em></div>
+                          <div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div>
                         </div>
                       </div>
-                      <div class="mock__band"><b>Need it this week?</b>
-                        <span class="mock__btn">Call 941 00 00 02</span></div>
+                      <div class="mock__band"><b>Table for two tonight?</b>
+                        <span class="mock__btn">Book a table</span></div>
                     </div>
                   </div>
                   <div class="live__tab">
-                    <div class="mock" aria-hidden="true" style="--tone:#9c4f3f;--mfs:4.5px">
-                      <div class="mock__nav"><span class="mock__logo">Bergara</span>
-                        <span class="mock__cta">Call</span></div>
+                    <div class="mock" aria-hidden="true" style="--tone:#a86f3c;--mfs:4.5px">
+                      <div class="mock__nav"><span class="mock__logo">La Sobremesa</span>
+                        <span class="mock__cta">Book</span></div>
                       <div class="mock__hero">
-                        <div class="mock__photo mock__photo--tools"></div>
-                        <div class="mock__htext"><b>Back on the road this week.</b></div>
+                        <div class="mock__photo mock__photo--food mock__photo--shot">
+                          <img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                               loading="lazy" decoding="async" style="--pos:50% 66%" alt="">
+                        </div>
+                        <div class="mock__htext"><b>A table in the old town.</b></div>
                       </div>
                       <div class="mock__strip"><span class="mock__dot">Open</span></div>
                     </div>
                   </div>
                   <div class="live__phone">
-                    <div class="mock" aria-hidden="true" style="--tone:#9c4f3f;--mfs:3.4px">
-                      <div class="mock__nav"><span class="mock__logo">B</span>
-                        <span class="mock__cta">Call</span></div>
+                    <div class="mock" aria-hidden="true" style="--tone:#a86f3c;--mfs:3.4px">
+                      <div class="mock__nav"><span class="mock__logo">LS</span>
+                        <span class="mock__cta">Book</span></div>
                       <div class="mock__hero">
-                        <div class="mock__photo mock__photo--tools"></div>
-                        <div class="mock__htext"><b>Back on the road.</b></div>
+                        <div class="mock__photo mock__photo--food mock__photo--shot">
+                          <img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                               loading="lazy" decoding="async" style="--pos:50% 68%" alt="">
+                        </div>
+                        <div class="mock__htext"><b>Book a table.</b></div>
                       </div>
                     </div>
                   </div>
@@ -2972,7 +3146,7 @@ footer h3,
         </div>
         <div class="ring-stage">
           <div class="ring" id="ring" tabindex="0" role="group" aria-label="Sector demos">
-            <article class="ring__card" style="--i:0" data-demo="restaurant">
+            <article class="ring__card" style="--i:0" data-demo="restaurant" data-url="lasobremesa.es">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#a86f3c">
@@ -2983,7 +3157,13 @@ footer h3,
                     <span class="mock__cta">Book a table</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--food"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--food mock__photo--shot">
+                          <img class="mock__img" src="/photos/restaurant-800.webp"
+                           srcset="/photos/restaurant-400.webp 400w, /photos/restaurant-800.webp 800w, /photos/restaurant-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 66%;--pos-sm:50% 70%"
+                           alt="A plated main course on a linen-set table in a stone-walled dining room.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Restaurant · Logroño</span>
                       <b><em>Cuisine rooted in tradition,</em><em>in the heart of the old town.</em></b>
@@ -2996,7 +3176,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">This week's menu</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Pochas with quail</b><i>White beans, slow cooked</i><em>14 €</em></div><div class="mock__row"><b>Grilled hake</b><i>Garlic and sweet pepper</i><em>19 €</em></div><div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>The room</b><span>Twelve tables</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Wine list</b><span>40 references</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Private</b><span>Up to 20</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 74%"
+                           alt=""></div><p><b>The room</b><span>Twelve tables</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:66% 42%"
+                           alt=""></div><p><b>Wine list</b><span>40 references</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:22% 46%"
+                           alt=""></div><p><b>Private</b><span>Up to 20</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>C/ Laurel 14 · Logroño</span></div>
                   <div class="mock__band"><b>Table for two tonight?</b><span class="mock__btn">Book a table →</span></div>
@@ -3014,7 +3200,7 @@ footer h3,
                 <button type="button" class="demo-btn" data-peek="restaurant" data-i18n="work.5">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:1" data-demo="barber">
+            <article class="ring__card" style="--i:1" data-demo="barber" data-url="navajabarberclub.es">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#4a4f58">
@@ -3025,7 +3211,13 @@ footer h3,
                     <span class="mock__cta">Book an appointment</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--hair"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--hair mock__photo--shot">
+                          <img class="mock__img" src="/photos/barber-800.webp"
+                           srcset="/photos/barber-400.webp 400w, /photos/barber-800.webp 800w, /photos/barber-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:62% 44%;--pos-sm:66% 42%"
+                           alt="A barber trimming a seated client&#39;s hair in a dark, wood-panelled shop.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Barber · Valencia</span>
                       <b><em>Precise cuts.</em><em>Style without noise.</em></b>
@@ -3038,7 +3230,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">Services</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Cut</b><i>Wash, cut and finish</i><em>from 25 €</em></div><div class="mock__row"><b>Cut and beard</b><i>The full thing, 45 min</i><em>from 35 €</em></div><div class="mock__row"><b>Beard</b><i>Hot towel and razor</i><em>from 18 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>The team</b><span>Four barbers</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Our space</b><span>Six chairs</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Gallery</b><span>60 real cuts</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/barber-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:30% 50%"
+                           alt=""></div><p><b>The team</b><span>Four barbers</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/barber-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:70% 34%"
+                           alt=""></div><p><b>Our space</b><span>Six chairs</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/barber-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:58% 58%"
+                           alt=""></div><p><b>Gallery</b><span>60 real cuts</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>C/ Cadirers 8 · Valencia</span></div>
                   <div class="mock__band"><b>Free chair at 18:00 today</b><span class="mock__btn">Book an appointment →</span></div>
@@ -3056,7 +3254,7 @@ footer h3,
                 <button type="button" class="demo-btn" data-peek="barber" data-i18n="work.8">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:2" data-demo="gym">
+            <article class="ring__card" style="--i:2" data-demo="gym" data-url="forjaentrenamiento.es">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#4f7a5e">
@@ -3067,7 +3265,13 @@ footer h3,
                     <span class="mock__cta">Start training</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--gym"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--gym mock__photo--shot">
+                          <img class="mock__img" src="/photos/gym-800.webp"
+                           srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 24%;--pos-sm:50% 22%"
+                           alt="A man resting on a bench with a dumbbell in a daylit training floor.">
+                        </div>
                     <div class="mock__htext mock__htext--caps">
                       <span class="mock__eyebrow">Gym · Zaragoza</span>
                       <b><em>Train</em><em>to become</em><em>stronger.</em></b>
@@ -3080,7 +3284,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">Memberships</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Personal training</b><i>Two sessions a week</i><em>89 €/mo</em></div><div class="mock__row"><b>Classes</b><i>Eight a week, small groups</i><em>39 €/mo</em></div><div class="mock__row"><b>Open gym</b><i>Free access, no classes</i><em>29 €/mo</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Strength</b><span>Mon · Wed · Fri</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Conditioning</b><span>Tue · Thu</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Mobility</b><span>Saturday</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/gym-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:78% 44%"
+                           alt=""></div><p><b>Strength</b><span>Mon · Wed · Fri</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/gym-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:20% 52%"
+                           alt=""></div><p><b>Conditioning</b><span>Tue · Thu</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/gym-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 18%"
+                           alt=""></div><p><b>Mobility</b><span>Saturday</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>Av. Navarra 120 · Zaragoza</span></div>
                   <div class="mock__band"><b>First session is free</b><span class="mock__btn">Start training →</span></div>
@@ -3098,7 +3308,7 @@ footer h3,
                 <button type="button" class="demo-btn" data-peek="gym" data-i18n="work.11">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:3" data-demo="real-estate">
+            <article class="ring__card" style="--i:3" data-demo="real-estate" data-url="llavemaestra.es">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#6a5f8f">
@@ -3109,7 +3319,13 @@ footer h3,
                     <span class="mock__cta">View properties</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--home"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--home mock__photo--shot">
+                          <img class="mock__img" src="/photos/real-estate-800.webp"
+                           srcset="/photos/real-estate-400.webp 400w, /photos/real-estate-800.webp 800w, /photos/real-estate-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:52% 52%;--pos-sm:56% 50%"
+                           alt="An open-plan living room with floor-to-ceiling glazing over a city.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Real estate · Málaga</span>
                       <b><em>Spaces worth seeing.</em></b>
@@ -3122,7 +3338,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">Featured properties</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Penthouse · El Limonar</b><i>3 bed · 2 bath · 148 m² · terrace</i><em>1.250.000 €</em></div><div class="mock__row"><b>Townhouse · Pedregalejo</b><i>4 bed · 210 m² · garden</i><em>890.000 €</em></div><div class="mock__row"><b>Flat · Centro histórico</b><i>2 bed · 96 m² · lift</i><em>415.000 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Terrace</b><span>40 m², facing south</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Parking</b><span>Two spaces</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Views</b><span>Sea and port</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/real-estate-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:24% 44%"
+                           alt=""></div><p><b>Terrace</b><span>40 m², facing south</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/real-estate-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:58% 62%"
+                           alt=""></div><p><b>Parking</b><span>Two spaces</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/real-estate-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:80% 40%"
+                           alt=""></div><p><b>Views</b><span>Sea and port</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>Paseo de Reding 3 · Málaga</span></div>
                   <div class="mock__band"><b>Book a viewing this week</b><span class="mock__btn">View properties →</span></div>
@@ -3140,7 +3362,7 @@ footer h3,
                 <button type="button" class="demo-btn" data-peek="real-estate" data-i18n="work.14">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:4" data-demo="dental-clinic">
+            <article class="ring__card" style="--i:4" data-demo="dental-clinic" data-url="clinicadentalarbol.es">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#6e7a66">
@@ -3151,7 +3373,13 @@ footer h3,
                     <span class="mock__cta">Book an appointment</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--tooth"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--tooth mock__photo--shot">
+                          <img class="mock__img" src="/photos/dental-clinic-800.webp"
+                           srcset="/photos/dental-clinic-400.webp 400w, /photos/dental-clinic-800.webp 800w, /photos/dental-clinic-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:64% 46%;--pos-sm:68% 44%"
+                           alt="A patient waiting in the calm, wood-lined reception of a dental clinic.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Dental clinic · Salamanca</span>
                       <b><em>A healthier smile.</em><em>A different kind of care.</em></b>
@@ -3164,7 +3392,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">Treatments</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Implantology</b><i>Planned in 3D before we start</i><em>from 950 €</em></div><div class="mock__row"><b>Orthodontics</b><i>Clear aligners, reviewed monthly</i><em>from 2.400 €</em></div><div class="mock__row"><b>Hygiene</b><i>Twice a year, 40 minutes</i><em>45 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Cosmetic</b><span>Whitening and veneers</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Digital</b><span>Intraoral scanner</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>First visit</b><span>Free, with X-ray</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/dental-clinic-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:30% 48%"
+                           alt=""></div><p><b>Cosmetic</b><span>Whitening and veneers</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/dental-clinic-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:68% 40%"
+                           alt=""></div><p><b>Digital</b><span>Intraoral scanner</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/dental-clinic-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:52% 70%"
+                           alt=""></div><p><b>First visit</b><span>Free, with X-ray</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>C/ Zamora 22 · Salamanca</span></div>
                   <div class="mock__band"><b>First visit is free</b><span class="mock__btn">Book an appointment →</span></div>
@@ -3182,45 +3416,57 @@ footer h3,
                 <button type="button" class="demo-btn" data-peek="dental-clinic" data-i18n="work.17">View demo <span class="arr">→</span></button>
               </div>
             </article>
-            <article class="ring__card" style="--i:5" data-demo="local-business">
+            <article class="ring__card" style="--i:5" data-demo="local-business" data-url="casaolmo.es">
               <div class="ring__shot" aria-hidden="true">
                 <span class="ring__tag">Demo</span>
-                <div class="mock" aria-hidden="true" style="--tone:#9c4f3f">
-                  <div class="mock__bar"><b>984 00 00 06</b><span>24 h call-outs</span><span>Fixed price before we start</span></div>
+                <div class="mock" aria-hidden="true" style="--tone:#8a6a52">
+                  <div class="mock__bar"><b>984 00 00 06</b><span>Tuesday to Saturday, 10:00 – 20:00</span><span>Free delivery in Gijón</span></div>
                   <div class="mock__nav">
-                    <span class="mock__logo">Fontanería Robles</span>
-                    <span class="mock__menu"><span>Services</span><span>Service area</span><span>Prices</span><span>Contact</span></span>
-                    <span class="mock__cta">Call now</span>
+                    <span class="mock__logo">Casa Olmo</span>
+                    <span class="mock__menu"><span>The shop</span><span>Workshops</span><span>About us</span><span>Visit</span></span>
+                    <span class="mock__cta">Plan your visit</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--tools"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--tools mock__photo--shot">
+                          <img class="mock__img" src="/photos/local-business-800.webp"
+                           srcset="/photos/local-business-400.webp 400w, /photos/local-business-800.webp 800w, /photos/local-business-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:60% 38%;--pos-sm:64% 36%"
+                           alt="The owner standing at the counter of a small homeware shop.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Local business · Gijón</span>
-                      <b><em>A leak today?</em><em>We come today.</em></b>
-                      <span>Gijón · Since 1998</span>
-                      <span class="mock__ctas"><span class="mock__btn">Call now →</span>
-                        <span class="mock__btn mock__btn--ghost">Get directions</span></span>
+                      <b><em>Made nearby.</em><em>Chosen one piece at a time.</em></b>
+                      <span>Gijón · Open since 2014</span>
+                      <span class="mock__ctas"><span class="mock__btn">Plan your visit →</span>
+                        <span class="mock__btn mock__btn--ghost">See the workshops</span></span>
                     </div>
                   </div>
-                  <div class="mock__strip"><span class="mock__dot">Available now</span><span>24 h call-outs</span><span><b>Since 1998</b></span></div>
+                  <div class="mock__strip"><span class="mock__dot">Open now</span><span>10:00 – 20:00</span><span><b>Two rooms</b></span></div>
                   <div class="mock__body">
-                    <p class="mock__h">Services</p>
-                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Call-out</b><i>Same day, fixed price</i><em>35 €</em></div><div class="mock__row"><b>Boiler service</b><i>Annual check and certificate</i><em>65 €</em></div><div class="mock__row"><b>Bathroom refit</b><i>Quoted on site, in writing</i><em>from 1.200 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Opening hours</b><span>Mon–Sat 8:00–20:00</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Service area</b><span>Gijón and Villaviciosa</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Contact</b><span>Phone and WhatsApp</span></p></div></div>
+                    <p class="mock__h">In the shop this month</p>
+                    <div class="mock__list mock__list--lead"><div class="mock__row"><b>Stoneware</b><i>Plates, bowls and jugs, fired in Asturias</i><em>from 19 €</em></div><div class="mock__row"><b>Washed linen</b><i>Table and kitchen, six colours</i><em>from 36 €</em></div><div class="mock__row"><b>Pottery workshop</b><i>Saturday mornings, six places</i><em>48 €</em></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/local-business-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:24% 44%"
+                           alt=""></div><p><b>The shop</b><span>Two rooms, one street</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/local-business-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:70% 30%"
+                           alt=""></div><p><b>Who we are</b><span>Family run since 2014</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/local-business-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 78%"
+                           alt=""></div><p><b>Gift wrapping</b><span>Free, always</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>C/ Magnus Blikstad 40 · Gijón</span></div>
-                  <div class="mock__band"><b>Need someone today?</b><span class="mock__btn">Call now →</span></div>
+                  <div class="mock__band"><b>Coming this weekend?</b><span class="mock__btn">Plan your visit →</span></div>
                   <div class="mock__foot">
-                    <div><b>Fontanería Robles</b><i>Plumbing in Gijón since 1998.</i></div>
-                    <div><u>Services</u><u>Contact</u><u>Find us</u></div>
+                    <div><b>Casa Olmo</b><i>Homeware and ceramics, Gijón, since 2014.</i></div>
+                    <div><u>The shop</u><u>Workshops</u><u>Find us</u></div>
                     <div><i>984 00 00 06</i><u>Legal notice</u><u>Privacy</u></div>
                   </div>
                 </div>
               </div>
               <div class="ring__txt">
                 <h3 data-i18n="work.18">Local business</h3>
-                <p data-i18n="work.19"><strong>Goal: a phone call.</strong> Plumbers, electricians, locksmiths: the number
-                  always visible, service area and prices up front.</p>
+                <p data-i18n="work.19"><strong>Goal: a visit, or a call.</strong> What you sell, when you open, where you
+                  are — the three things a neighbour actually looks up.</p>
                 <button type="button" class="demo-btn" data-peek="local-business" data-i18n="work.20">View demo <span class="arr">→</span></button>
               </div>
             </article>
@@ -3248,10 +3494,10 @@ footer h3,
 
         <div class="show-stage">
           <div class="show-ring" id="showRing">
-            <article class="show-card" style="--i:0" data-demo="restaurant">
+            <article class="show-card" style="--i:0" data-demo="restaurant" data-url="lasobremesa.es">
               <div class="show-card__in" aria-hidden="true">
                 <div class="chrome"><i></i><i></i><i></i>
-                  <span class="chrome__url">yourbusiness.es</span></div>
+                  <span class="chrome__url">lasobremesa.es</span></div>
                 <span class="show-card__demo">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#a86f3c">
                   <div class="mock__bar"><b>941 00 00 01</b><span>Open Tuesday to Sunday</span><span>Booking in two taps</span></div>
@@ -3261,7 +3507,13 @@ footer h3,
                     <span class="mock__cta">Book a table</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--food"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--food mock__photo--shot">
+                          <img class="mock__img" src="/photos/restaurant-800.webp"
+                           srcset="/photos/restaurant-400.webp 400w, /photos/restaurant-800.webp 800w, /photos/restaurant-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 66%;--pos-sm:50% 70%"
+                           alt="A plated main course on a linen-set table in a stone-walled dining room.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Restaurant · Logroño</span>
                       <b><em>Cuisine rooted in tradition,</em><em>in the heart of the old town.</em></b>
@@ -3274,7 +3526,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">This week's menu</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Pochas with quail</b><i>White beans, slow cooked</i><em>14 €</em></div><div class="mock__row"><b>Grilled hake</b><i>Garlic and sweet pepper</i><em>19 €</em></div><div class="mock__row"><b>Rice pudding</b><i>House recipe, cinnamon</i><em>6 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>The room</b><span>Twelve tables</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Wine list</b><span>40 references</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Private</b><span>Up to 20</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 74%"
+                           alt=""></div><p><b>The room</b><span>Twelve tables</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:66% 42%"
+                           alt=""></div><p><b>Wine list</b><span>40 references</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/restaurant-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:22% 46%"
+                           alt=""></div><p><b>Private</b><span>Up to 20</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>C/ Laurel 14 · Logroño</span></div>
                   <div class="mock__band"><b>Table for two tonight?</b><span class="mock__btn">Book a table →</span></div>
@@ -3286,10 +3544,10 @@ footer h3,
                 </div>
               </div>
             </article>
-            <article class="show-card" style="--i:1" data-demo="barber">
+            <article class="show-card" style="--i:1" data-demo="barber" data-url="navajabarberclub.es">
               <div class="show-card__in" aria-hidden="true">
                 <div class="chrome"><i></i><i></i><i></i>
-                  <span class="chrome__url">yourbusiness.es</span></div>
+                  <span class="chrome__url">navajabarberclub.es</span></div>
                 <span class="show-card__demo">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#4a4f58">
                   <div class="mock__bar"><b>960 00 00 02</b><span>Tuesday to Saturday, 10:00 – 20:30</span><span>Walk-ins when there is a chair</span></div>
@@ -3299,7 +3557,13 @@ footer h3,
                     <span class="mock__cta">Book an appointment</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--hair"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--hair mock__photo--shot">
+                          <img class="mock__img" src="/photos/barber-800.webp"
+                           srcset="/photos/barber-400.webp 400w, /photos/barber-800.webp 800w, /photos/barber-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:62% 44%;--pos-sm:66% 42%"
+                           alt="A barber trimming a seated client&#39;s hair in a dark, wood-panelled shop.">
+                        </div>
                     <div class="mock__htext">
                       <span class="mock__eyebrow">Barber · Valencia</span>
                       <b><em>Precise cuts.</em><em>Style without noise.</em></b>
@@ -3312,7 +3576,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">Services</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Cut</b><i>Wash, cut and finish</i><em>from 25 €</em></div><div class="mock__row"><b>Cut and beard</b><i>The full thing, 45 min</i><em>from 35 €</em></div><div class="mock__row"><b>Beard</b><i>Hot towel and razor</i><em>from 18 €</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>The team</b><span>Four barbers</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Our space</b><span>Six chairs</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Gallery</b><span>60 real cuts</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/barber-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:30% 50%"
+                           alt=""></div><p><b>The team</b><span>Four barbers</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/barber-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:70% 34%"
+                           alt=""></div><p><b>Our space</b><span>Six chairs</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/barber-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:58% 58%"
+                           alt=""></div><p><b>Gallery</b><span>60 real cuts</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>C/ Cadirers 8 · Valencia</span></div>
                   <div class="mock__band"><b>Free chair at 18:00 today</b><span class="mock__btn">Book an appointment →</span></div>
@@ -3324,10 +3594,10 @@ footer h3,
                 </div>
               </div>
             </article>
-            <article class="show-card" style="--i:2" data-demo="gym">
+            <article class="show-card" style="--i:2" data-demo="gym" data-url="forjaentrenamiento.es">
               <div class="show-card__in" aria-hidden="true">
                 <div class="chrome"><i></i><i></i><i></i>
-                  <span class="chrome__url">yourbusiness.es</span></div>
+                  <span class="chrome__url">forjaentrenamiento.es</span></div>
                 <span class="show-card__demo">Demo</span>
                 <div class="mock" aria-hidden="true" style="--tone:#4f7a5e">
                   <div class="mock__bar"><b>976 00 00 03</b><span>Open 7:00 – 22:00</span><span>First session free</span></div>
@@ -3337,7 +3607,13 @@ footer h3,
                     <span class="mock__cta">Start training</span>
                   </div>
                   <div class="mock__hero mock__hero--tall">
-                    <div class="mock__photo mock__photo--gym"><span class="mock__shape"></span></div>
+                    <div class="mock__photo mock__photo--gym mock__photo--shot">
+                          <img class="mock__img" src="/photos/gym-800.webp"
+                           srcset="/photos/gym-400.webp 400w, /photos/gym-800.webp 800w, /photos/gym-1376.webp 1376w"
+                           sizes="(max-width:720px) 92vw, 700px" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 24%;--pos-sm:50% 22%"
+                           alt="A man resting on a bench with a dumbbell in a daylit training floor.">
+                        </div>
                     <div class="mock__htext mock__htext--caps">
                       <span class="mock__eyebrow">Gym · Zaragoza</span>
                       <b><em>Train</em><em>to become</em><em>stronger.</em></b>
@@ -3350,7 +3626,13 @@ footer h3,
                   <div class="mock__body">
                     <p class="mock__h">Memberships</p>
                     <div class="mock__list mock__list--lead"><div class="mock__row"><b>Personal training</b><i>Two sessions a week</i><em>89 €/mo</em></div><div class="mock__row"><b>Classes</b><i>Eight a week, small groups</i><em>39 €/mo</em></div><div class="mock__row"><b>Open gym</b><i>Free access, no classes</i><em>29 €/mo</em></div></div>
-                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb mock__thumb--c"></div><p><b>Strength</b><span>Mon · Wed · Fri</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--b"></div><p><b>Conditioning</b><span>Tue · Thu</span></p></div><div class="mock__card"><div class="mock__thumb mock__thumb--a"></div><p><b>Mobility</b><span>Saturday</span></p></div></div>
+                    <div class="mock__grid"><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/gym-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:78% 44%"
+                           alt=""></div><p><b>Strength</b><span>Mon · Wed · Fri</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/gym-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:20% 52%"
+                           alt=""></div><p><b>Conditioning</b><span>Tue · Thu</span></p></div><div class="mock__card"><div class="mock__thumb"><img class="mock__img" src="/photos/gym-400.webp" width="1376" height="768"
+                           loading="lazy" decoding="async" style="--pos:50% 18%"
+                           alt=""></div><p><b>Mobility</b><span>Saturday</span></p></div></div>
                   </div>
                   <div class="mock__map"><span class="mock__pin"></span><span>Av. Navarra 120 · Zaragoza</span></div>
                   <div class="mock__band"><b>First session is free</b><span class="mock__btn">Start training →</span></div>
@@ -3444,7 +3726,7 @@ footer h3,
         <p class="eyebrow" data-i18n="pricing.1">Pricing</p>
         <h2 class="burst__h2" id="priceTitle" data-i18n="pricing.2">
           <span class="burst__from">Starting from</span>
-          <span class="burst__num">99<i>€</i></span>
+          <span class="burst__num"><i>$</i>99</span>
         </h2>
         <div class="burst__pair" data-i18n="pricing.3">
           <span class="burst__tag">setup, one payment</span>
@@ -3660,7 +3942,7 @@ footer h3,
     <div class="footer__grid">
       <div>
         <a class="brand" href="/" style="color:#fff">
-          <img class="brand__img" src="/brand/logo-mark.svg" alt="" width="28" height="28" decoding="async">
+          <img class="brand__img" src="/brand/logo-mark-256.webp" alt="" width="256" height="256" decoding="async" fetchpriority="high">
           Vanguard Tech
         </a>
         <p style="color:var(--muted-dark);max-width:36ch;margin-top:1.1rem;font-size:.92rem" data-i18n="footer.1">
@@ -4035,7 +4317,7 @@ footer h3,
     'work.16':'<strong>Objetivo: confianza y después una visita.</strong> Tratamientos explicados en claro, el equipo con sus titulaciones y cita online.',
     'work.17':'Ver demo <span class="arr">→</span>',
     'work.18':'Negocio local',
-    'work.19':'<strong>Objetivo: una llamada.</strong> Fontaneros, electricistas, cerrajeros: el teléfono siempre visible, zona de trabajo y precios por delante.',
+    'work.19':'<strong>Objetivo: una visita, o una llamada.</strong> Qué vendes, cuándo abres y dónde estás: las tres cosas que mira de verdad quien vive al lado.',
     'work.2':'Cada sector necesita una web distinta.',
     'work.20':'Ver demo <span class="arr">→</span>',
     'work.21':'Baja, o usa las flechas. Abre la de delante para verla a tamaño completo.',
@@ -4265,7 +4547,7 @@ footer h3,
     'work.16':'<strong>Objectif : la confiance, puis la visite.</strong> Des soins expliqués simplement, l\'équipe avec ses diplômes et la prise de rendez-vous en ligne.',
     'work.17':'Voir la démo <span class="arr">→</span>',
     'work.18':'Commerce de proximité',
-    'work.19':'<strong>Objectif : un appel.</strong> Plombiers, électriciens, serruriers : le numéro toujours visible, la zone d\'intervention et les prix annoncés.',
+    'work.19':'<strong>Objectif : une visite, ou un appel.</strong> Ce que vous vendez, vos horaires et votre adresse : les trois choses qu\'un voisin cherche vraiment.',
     'work.2':'Chaque secteur a besoin d\'un site différent.',
     'work.20':'Voir la démo <span class="arr">→</span>',
     'work.21':'Faites défiler, ou utilisez les flèches. Ouvrez celle de devant pour la voir en grand.',
@@ -4495,7 +4777,7 @@ footer h3,
     'work.16':'<strong>Ziel: Vertrauen, dann der Besuch.</strong> Behandlungen verständlich erklärt, das Team mit seinen Qualifikationen und Online-Termine.',
     'work.17':'Demo ansehen <span class="arr">→</span>',
     'work.18':'Lokales Gewerbe',
-    'work.19':'<strong>Ziel: ein Anruf.</strong> Installateure, Elektriker, Schlüsseldienste: die Nummer immer sichtbar, Einsatzgebiet und Preise vorweg.',
+    'work.19':'<strong>Ziel: ein Besuch oder ein Anruf.</strong> Was Sie verkaufen, wann Sie öffnen und wo Sie sind — die drei Dinge, die ein Nachbar wirklich nachschlägt.',
     'work.2':'Jede Branche braucht eine andere Website.',
     'work.20':'Demo ansehen <span class="arr">→</span>',
     'work.21':'Scrollen Sie, oder nutzen Sie die Pfeile. Öffnen Sie die vordere, um sie in voller Größe zu sehen.',

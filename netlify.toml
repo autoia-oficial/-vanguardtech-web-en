@@ -22,7 +22,7 @@
     # 'unsafe-inline': si alguien inyectase un script, su huella no
     # coincidiria y el navegador no lo ejecutaria.
     # Si se toca el JavaScript hay que regenerarlas. El comando esta en el README.
-    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self' 'sha256-vQy5mCTu2wFlEYOnRN61SL5+Eqm3PTHBKLjWN4JFsPg=' 'sha256-q2N6kbhTyeg+FAI9W0dXBDqeeuGAj9n/GPhMF9mL7VY='; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+    Content-Security-Policy = "default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; script-src 'self' 'sha256-r+VxIKAYm3W6GXpNTjwlL+ezK7+ugq+Un8nUyd45obI=' 'sha256-Q9yaQ0phkuO2viUPvSLKcTShmI8uLe5/Fb7RtPWJxUQ='; connect-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
 
 # Las tipografias no cambian nunca.
 [[headers]]

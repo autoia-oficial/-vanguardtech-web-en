@@ -9,7 +9,10 @@
 <!-- Tipografias servidas desde este dominio: la IP del visitante no viaja a
      un tercero antes de que acepte nada. Ver /fonts/ y la hoja de estilo de esta pagina. -->
 <link rel="preload" href="/fonts/inter-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="icon" href="/brand/favicon.svg">
+<link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="/brand/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
+<link rel="shortcut icon" href="/brand/favicon.ico">
 <link rel="canonical" href="https://vanguardtech.es/cookies.html">
 <meta property="og:site_name" content="Vanguard Tech">
 <meta property="og:locale" content="es_ES">
@@ -72,7 +75,8 @@ p{margin:0 0 1.1em;max-width:70ch}
 .brand{display:flex;align-items:center;gap:.6rem;font-family:var(--font-display);
   font-weight:700;font-size:1.05rem;letter-spacing:-.035em;text-decoration:none;
   white-space:nowrap;flex:none}
-.brand__img{width:28px;height:28px;flex:none;object-fit:contain;display:block}
+.brand__img{width:30px;height:30px;flex:none;object-fit:contain;display:block;border-radius:50%;box-shadow:0 0 0 1px rgba(8,9,11,.12)}
+footer .brand__img{box-shadow:0 0 0 1px rgba(255,255,255,.16)}
 .brand__img--big{width:64px;height:64px;margin:0 auto 2.2rem}
 
 /* --- botones -------------------------------------------------------------- */
@@ -138,7 +142,7 @@ main.legal ul{padding-left:1.2rem;display:grid;gap:.4rem;margin:0 0 1.1em}
 </head>
 <body>
 <header class="nav is-stuck"><div class="wrap nav__inner">
-  <a class="brand" href="/"><img class="brand__img" src="/brand/logo-mark.svg" alt="" width="28" height="28" decoding="async"> Vanguard Tech</a>
+  <a class="brand" href="/"><img class="brand__img" src="/brand/logo-mark-256.webp" alt="" width="256" height="256" decoding="async"> Vanguard Tech</a>
   <a class="btn btn--ghost btn--sm" href="/" style="margin-left:auto">Volver</a>
 </div></header>
 <main class="legal"><div class="wrap">
