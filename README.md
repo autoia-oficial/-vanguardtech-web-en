@@ -10,8 +10,8 @@ de toda la web. No hay `styles.css`, no hay `main.js`, no hay framework, no hay
 exactamente lo que se sirve.
 
 Fuera del HTML solo quedan **datos**, no codigo: las tipografias (`/fonts/`), el
-logotipo y la tarjeta de enlace (`/brand/`) y las seis demos de sector
-(`/work/`), que son paginas sueltas y autonomas. Todo se sirve desde este mismo
+logotipo y los iconos (`/brand/`), las seis fotografias de sector (`/photos/`) y
+las seis demos de sector (`/work/`), que son paginas sueltas y autonomas. Todo se sirve desde este mismo
 dominio: **la web no pide nada a terceros**, ni tipografias, ni analitica, ni
 scripts. La IP de quien la visita no viaja a ninguna parte.
 
@@ -36,12 +36,29 @@ Y abrir http://localhost:8000/
 | `gracias.html` | Donde aterriza el formulario |
 | `aviso-legal.html`, `privacidad.html`, `cookies.html` | Paginas legales, en castellano |
 | `work/` | Seis demos de sector. **Negocios inventados**, cada una lo dice en su cabecera |
-| `brand/` | Logotipo, favicon y tarjeta de enlace |
+| `brand/` | Isotipo oficial, iconos y tarjeta de enlace |
+| `photos/` | Seis fotografias, una por sector, en tres anchos (webp) |
 | `fonts/` | Inter y Space Grotesk, con sus licencias OFL |
 
 Las paginas sueltas (legales y gracias) llevan su propia hoja de estilo minima
 en linea: no comparten CSS con la portada, asi que tocar una no puede romper la
 otra.
+
+## Logotipo y fotografia
+
+El isotipo oficial es **`brand/logo-mark.png`**, y se sirve como
+`logo-mark-256.webp`. Se usa **tal cual**: solo se escala, y proporcionalmente.
+El dibujo, el angulo, el grosor y los cantos son los del fichero. El anillo de
+un pixel de `.brand__img` no toca el dibujo: le devuelve el borde al disco
+negro cuando el fondo tambien es negro. Para cambiar de logotipo se cambia ESE
+fichero y nada mas: la portada, las cuatro paginas sueltas y todos los iconos
+leen de ahi.
+
+Cada sector tiene **su** fotografia en `/photos/`, en tres anchos. El encuadre
+lo manda `--pos` (y `--pos-sm` por debajo de 700 px), nunca un recorte nuevo:
+un solo fichero por sector sirve para la tira del heroe, la miniatura de una
+tarjeta y la vista ampliada. Se sirven con `srcset` y diferidas salvo la del
+heroe, que es la unica que se pinta en el primer pantallazo.
 
 ## Idiomas
 
