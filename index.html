@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-onb>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -32,26 +32,30 @@
      usa TAL CUAL: mismo dibujo, mismo disco, mismo degradado, sin recortar y
      sin recolorear. Solo se escala, y proporcionalmente. Los iconos de pestana
      salen del MISMO fichero, asi que no hay dos versiones que se separen. -->
-<!-- Lo primero que se ejecuta. Decide si esta es una primera visita ANTES de
-     que el navegador pinte, para que no se vea un destello del hero antes del
-     panel de entrada. Solo escribe un atributo; no toca almacenamiento.
-     Si el navegador bloquease los scripts, este tampoco correria y la web se
-     veria normal: nunca puede dejar la pagina tapada sin salida. -->
+<!-- Lo primero que se ejecuta.
+
+     El atributo `data-onb` ya viene puesto en el <html> de arriba, asi que la
+     entrada es el estado POR DEFECTO del documento: se pinta antes de que
+     corra una sola linea de JavaScript, y no hay forma de que un script roto
+     o bloqueado la haga desaparecer. Lo unico que hace este script es
+     QUITARLO cuando el visitante ya paso por aqui.
+
+     El sentido importa: si fallase, lo que se ve es la entrada (molesto pero
+     correcto), nunca la web sin haber preguntado. -->
 <script>
 (function () {
-  var d = document.documentElement;
-  var done;
-  try { done = window.localStorage.getItem('vt.onboarded') === '1'; }
-  catch (e) { done = false; }          // modo privado: se pregunta otra vez
-  if (done) return;
-  d.setAttribute('data-onb', '');
-  /* Red de seguridad: si el script principal se rompiese, la web no puede
-     quedarse tapada para siempre. */
-  window.setTimeout(function () {
-    if (!window.__onbReady) d.removeAttribute('data-onb');
-  }, 4000);
+  try {
+    if (window.localStorage.getItem('vt.onboarded') === '1') {
+      document.documentElement.removeAttribute('data-onb');
+    }
+  } catch (e) { /* modo privado: se pregunta otra vez, que es lo seguro */ }
 }());
 </script>
+<noscript><style>
+  html[data-onb] .onb{display:none}
+  html[data-onb],html[data-onb] body{overflow:auto}
+  html[data-onb] body > *{visibility:visible}
+</style></noscript>
 <link rel="icon" href="/brand/favicon-32.png" sizes="32x32" type="image/png">
 <link rel="icon" href="/brand/favicon-64.png" sizes="64x64" type="image/png">
 <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png">
@@ -784,7 +788,7 @@ footer .muted{color:var(--muted-dark)}
 .section--dark .step__when{color:var(--muted-dark)}
 
 /* ================================================================ PRECIOS === */
-.price{display:grid;gap:1.4rem}
+.price{display:grid;gap:1.4rem;padding-top:14px}
 @media(min-width:820px){.price{grid-template-columns:1.08fr .92fr;align-items:start}}
 /* Tres planes: a partir de 1040 px caben en fila; por debajo se apilan, porque
    tres columnas estrechas hacen ilegible la lista de lo que incluye cada uno. */
@@ -964,10 +968,15 @@ footer h3{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
 }
 .card:hover::after,.plan:hover::after{opacity:.5}
 .section--dark .card:hover::after{opacity:.75}
-.plan{position:relative;overflow:hidden}
+/* `overflow:hidden` estaba aqui para recortar el brillo de la ficha, pero la
+   chapa vive a `top:-12px` y se llevaba por delante su mitad de arriba. El
+   brillo ya no necesita el recorte: es un pseudoelemento a `inset:0`, asi que
+   con heredar el radio se queda dentro el solo. */
+.plan{position:relative;overflow:visible}
 /* El brillo de las fichas de precio, que antes no tenian ninguno. */
 .plan::before{
   content:"";position:absolute;inset:0;opacity:0;pointer-events:none;
+  border-radius:inherit;overflow:hidden;
   background:radial-gradient(360px circle at var(--mx,50%) var(--my,50%),
     rgba(8,9,11,.05),transparent 48%);
   transition:opacity .4s var(--ease-soft);
@@ -2015,7 +2024,10 @@ body.peek-open{overflow:hidden}
    paso por aqui el atributo no se pone nunca y esto no existe. */
 html[data-onb],html[data-onb] body{overflow:hidden}
 html[data-onb] body > *:not(.onb){visibility:hidden}
-html[data-onb] .onb{display:flex}
+/* La entrada se ve por defecto. Solo desaparece cuando alguien ha quitado
+   `data-onb`, que es lo que hace el script del <head> para quien ya paso. */
+html:not([data-onb]) .onb{display:none}
+
 
 .onb{
   position:fixed;inset:0;z-index:300;
@@ -4131,7 +4143,7 @@ p,li,.lead{text-wrap:pretty}
      web antes de que el JavaScript arranque. Sin JavaScript no hay overlay,
      porque `noscript` lo esconde y no habria forma de cerrarlo.
      =========================================================================== -->
-<div class="onb" id="onb" role="dialog" aria-modal="true" aria-labelledby="onbTitle" hidden>
+<div class="onb" id="onb" role="dialog" aria-modal="true" aria-labelledby="onbTitle">
   <div class="onb__panel" id="onbPanel">
     <p class="onb__brand" aria-hidden="true">Vanguard Tech</p>
 
@@ -5151,7 +5163,6 @@ p,li,.lead{text-wrap:pretty}
 
     /* Ya paso por aqui: ni se pinta. La web se usa directamente. */
     if (done) {
-      window.__onbReady = true;
       document.documentElement.removeAttribute('data-onb');
       box.remove();
       return;
@@ -5264,8 +5275,8 @@ p,li,.lead{text-wrap:pretty}
 
     /* Se abre. Hasta aqui el overlay estaba `hidden`, de modo que quien tenga
        el JavaScript desactivado ve la web y no un panel que no puede cerrar. */
-    box.hidden = false;
-    window.__onbReady = true;      // desactiva la red de seguridad del <head>
+    /* Ya se esta viendo: `data-onb` venia puesto en el documento. Aqui solo
+       se toma el control (foco, teclado, bloqueo). */
     freeze(true);
     mark(pick);
     show(stepCookies);
