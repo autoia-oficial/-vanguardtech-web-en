@@ -2001,18 +2001,36 @@ body.peek-open{overflow:hidden}
 .onb.is-out .onb__panel{opacity:0;transform:translate3d(0,-10px,0) scale(.99)}
 
 .onb__panel{
-  width:min(440px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;
-  padding:2.1rem 2.1rem 1.9rem;
-  background:var(--paper);color:var(--ink);
-  border:1px solid var(--line);border-radius:var(--radius-lg);
-  box-shadow:0 40px 120px rgba(0,0,0,.45);
+  width:min(460px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;
+  padding:2.4rem 2.3rem 2.1rem;
+  /* Vidrio, no papel: el blanco deja pasar algo de la web que hay detras, asi
+     que se entiende que se esta entrando en algo y no que se ha topado con un
+     muro. El velo del overlay ya desenfoca; esto solo lo aclara. */
+  background:rgba(255,255,255,.94);
+  -webkit-backdrop-filter:saturate(180%) blur(30px);backdrop-filter:saturate(180%) blur(30px);
+  color:var(--ink);
+  border:1px solid rgba(255,255,255,.6);border-radius:28px;
+  box-shadow:0 40px 120px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.9);
   transition:opacity .4s var(--ease-soft),transform .4s var(--ease);
 }
 .onb__brand{
-  margin:0 0 1.6rem;font-family:var(--font-label);font-weight:var(--label-weight);
-  font-size:.68rem;letter-spacing:var(--label-track);text-transform:uppercase;
-  color:var(--silver);
+  margin:0 0 1.9rem;font-family:var(--font-display);font-weight:700;
+  font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--graphite);
 }
+/* El rotulo de cada paso. Mismo sistema que el titular que lleva debajo —
+   misma familia y peso de verdad — para que "LANGUAGE" no parezca una nota al
+   pie encima de una frase grande. */
+.onb__label{
+  margin:0 0 .55rem;font-family:var(--font-label);font-weight:700;
+  font-size:.76rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--graphite);
+}
+/* El paso del idioma va centrado: es una eleccion, no un formulario. La
+   marca se centra con el, de ahi la clase en el panel. */
+.onb__step--mid{text-align:center}
+.onb__step--mid .onb__langs{text-align:left}
+.onb__panel.is-mid .onb__brand{text-align:center}
 
 /* Los dos pasos ocupan el mismo hueco. Solo uno existe a la vez: el otro lleva
    `hidden`, asi que no lo lee nadie ni lo tabula nadie. */
@@ -2023,8 +2041,9 @@ body.peek-open{overflow:hidden}
 .onb__step.is-on{opacity:1;transform:none;
   transition:opacity .4s var(--ease-soft) .04s,transform .4s var(--ease) .04s}
 
-.onb__h{font-size:clamp(1.45rem,1.1rem + 1.4vw,1.85rem);line-height:1.15;margin:0 0 .6rem}
-.onb__p{font-size:.9rem;line-height:1.55;color:var(--graphite);margin:0 0 1.5rem;max-width:none}
+.onb__h{font-size:clamp(1.6rem,1.2rem + 1.6vw,2.05rem);line-height:1.1;margin:0 0 .55rem;
+  font-weight:700;letter-spacing:-.035em}
+.onb__p{font-size:.94rem;line-height:1.55;color:var(--graphite);margin:0 0 1.7rem;max-width:none}
 
 .onb__row{display:flex;gap:.6rem;flex-wrap:wrap}
 /* `min-width:max-content` en vez de un punto de corte en pixeles: cada boton
@@ -2043,7 +2062,7 @@ body.peek-open{overflow:hidden}
 .onb__lang{
   display:flex;align-items:center;justify-content:space-between;gap:.75rem;
   width:100%;min-height:50px;padding:.75rem 1rem;
-  font-family:var(--font-body);font-size:.95rem;font-weight:500;text-align:left;
+  font-family:var(--font-body);font-size:1rem;font-weight:600;text-align:left;
   color:var(--ink);background:var(--paper);
   border:1px solid var(--line);border-radius:var(--radius-sm);cursor:pointer;
   transition:border-color .25s var(--ease),background .25s var(--ease),transform .25s var(--ease);
@@ -3890,28 +3909,54 @@ p,li,.lead{text-wrap:pretty}
         </p>
       </div>
 
-      <form class="form rv rv-d2" name="propuesta" method="POST"
-              data-netlify="true" netlify-honeypot="empresa-web"
-              action="/gracias.html" novalidate>
-          <!-- Netlify necesita saber el nombre del formulario al recibirlo. -->
-          <input type="hidden" name="form-name" value="propuesta">
-          <!-- Trampa para robots: una persona nunca ve este campo, asi que si
-               viene relleno, el envio se descarta. Sin captcha ni cookies. -->
+      <!-- ===================================================================
+           DOS FORMULARIOS, UN SOLO SITIO
+           -------------------------------------------------------------------
+           Netlify enruta el aviso por NOMBRE de formulario, no por un campo
+           que mande el navegador: un destinatario en un <input hidden> lo
+           podria cambiar cualquiera desde las herramientas del navegador.
+           Por eso hay dos formularios de verdad:
+
+             contact-es    castellano   -> contacto.vanguardtech@gmail.com
+             contact-int   en / fr / de -> contact.vanguardtech@gmail.com
+
+           Los dos viven en el HTML porque Netlify los detecta leyendo la
+           pagina publicada; `hidden` no se lo impide. Solo se ve el que
+           corresponde al idioma, y de eso se encarga `setupForms()`.
+
+           No hay `novalidate` y NADA cancela el envio: valida el navegador y
+           envia el navegador. Si el JavaScript fallase, el formulario seguiria
+           funcionando igual.
+           =================================================================== -->
+      <form class="form rv rv-d2" id="formEs" name="contact-es" method="POST"
+            data-netlify="true" data-netlify-honeypot="bot-field"
+            action="/gracias.html?ok=1" hidden>
+          <input type="hidden" name="form-name" value="contact-es">
+          <input type="hidden" name="language" value="es">
+          <!-- Trampa para robots. Una persona nunca ve este campo, asi que si
+               llega relleno, Netlify descarta el envio. Sin captcha ni cookies. -->
           <p class="trampa" aria-hidden="true">
-            <label data-i18n="form.trap">No rellenes esto:
-              <input name="empresa-web" tabindex="-1" autocomplete="off">
+            <!-- El rotulo traducible va en su propio <span>. Si `data-i18n`
+                 viviese en el <label>, al traducir se reescribiria su
+                 innerHTML y el <input> de la trampa desapareceria. -->
+            <label><span data-i18n="form.trap">Don&#39;t fill this in:</span>
+              <input name="bot-field" tabindex="-1" autocomplete="off">
             </label>
           </p>
         <label class="field"><span data-i18n="form.name">Your name</span>
-          <input name="nombre" autocomplete="name" required data-i18n-ph="form.name.ph" placeholder="First and last name"></label>
+          <input name="name" autocomplete="name" required
+                 data-i18n-ph="form.name.ph" placeholder="First and last name"></label>
         <label class="field"><span data-i18n="form.business">Business name</span>
-          <input name="negocio" required data-i18n-ph="form.business.ph" placeholder="e.g. Sonrisa Dental Clinic"></label>
+          <input name="business" required
+                 data-i18n-ph="form.business.ph" placeholder="e.g. Sonrisa Dental Clinic"></label>
         <label class="field"><span data-i18n="form.phone">Phone</span>
-          <input name="telefono" type="tel" autocomplete="tel" data-i18n-ph="form.phone.ph" placeholder="600 00 00 00"></label>
+          <input name="phone" type="tel" autocomplete="tel"
+                 data-i18n-ph="form.phone.ph" placeholder="600 00 00 00"></label>
         <label class="field"><span data-i18n="form.email">Email</span>
-          <input name="email" type="email" autocomplete="email" required data-i18n-ph="form.email.ph" placeholder="you@yourbusiness.es"></label>
+          <input name="email" type="email" autocomplete="email" required
+                 data-i18n-ph="form.email.ph" placeholder="you@yourbusiness.es"></label>
         <label class="field full"><span data-i18n="form.sector">Sector</span>
-          <select name="sector">
+          <select name="service">
             <option value="" data-i18n="start.13">Select…</option>
             <option data-i18n="start.14">Restaurant / hospitality</option><option data-i18n="start.15">Barber / hair / beauty</option>
             <option data-i18n="start.16">Health (clinic, dentist, physio)</option><option data-i18n="start.17">Trades (plumbing, electrical…)</option>
@@ -3919,9 +3964,60 @@ p,li,.lead{text-wrap:pretty}
             <option data-i18n="start.19">Gym / studio</option><option data-i18n="start.20">Real estate</option><option data-i18n="start.21">Retail</option><option data-i18n="start.22">Other</option>
           </select></label>
         <label class="field full"><span data-i18n="form.msg">What do you need? (optional)</span>
-          <textarea name="mensaje" rows="3" data-i18n-ph="form.msg.ph" placeholder="A line or two about where you are now"></textarea></label>
+          <textarea name="message" rows="3"
+                    data-i18n-ph="form.msg.ph" placeholder="A line or two about where you are now"></textarea></label>
         <label class="consent full">
-          <input type="checkbox" name="consentimiento" required>
+          <input type="checkbox" name="consent" required>
+          <span data-i18n="form.consent">I agree that Vanguard Tech may process my data to answer this request, as described in the
+          <a href="/privacidad.html">privacy policy</a>.</span>
+        </label>
+        <div class="full"><button class="btn btn--light" type="submit" data-i18n="start.24">Start your website <span class="arr">→</span></button></div>
+        <p class="full" style="font-size:.82rem;color:var(--muted-dark);margin:0" data-i18n="start.25">
+          We reply within one working day. See
+          <a href="/privacidad.html" style="text-decoration:underline">how we handle your data</a>.
+        </p>
+      </form>
+
+      <form class="form rv rv-d2" id="formInt" name="contact-int" method="POST"
+            data-netlify="true" data-netlify-honeypot="bot-field"
+            action="/gracias.html?ok=1">
+          <input type="hidden" name="form-name" value="contact-int">
+          <input type="hidden" name="language" value="en">
+          <!-- Trampa para robots. Una persona nunca ve este campo, asi que si
+               llega relleno, Netlify descarta el envio. Sin captcha ni cookies. -->
+          <p class="trampa" aria-hidden="true">
+            <!-- El rotulo traducible va en su propio <span>. Si `data-i18n`
+                 viviese en el <label>, al traducir se reescribiria su
+                 innerHTML y el <input> de la trampa desapareceria. -->
+            <label><span data-i18n="form.trap">Don&#39;t fill this in:</span>
+              <input name="bot-field" tabindex="-1" autocomplete="off">
+            </label>
+          </p>
+        <label class="field"><span data-i18n="form.name">Your name</span>
+          <input name="name" autocomplete="name" required
+                 data-i18n-ph="form.name.ph" placeholder="First and last name"></label>
+        <label class="field"><span data-i18n="form.business">Business name</span>
+          <input name="business" required
+                 data-i18n-ph="form.business.ph" placeholder="e.g. Sonrisa Dental Clinic"></label>
+        <label class="field"><span data-i18n="form.phone">Phone</span>
+          <input name="phone" type="tel" autocomplete="tel"
+                 data-i18n-ph="form.phone.ph" placeholder="600 00 00 00"></label>
+        <label class="field"><span data-i18n="form.email">Email</span>
+          <input name="email" type="email" autocomplete="email" required
+                 data-i18n-ph="form.email.ph" placeholder="you@yourbusiness.es"></label>
+        <label class="field full"><span data-i18n="form.sector">Sector</span>
+          <select name="service">
+            <option value="" data-i18n="start.13">Select…</option>
+            <option data-i18n="start.14">Restaurant / hospitality</option><option data-i18n="start.15">Barber / hair / beauty</option>
+            <option data-i18n="start.16">Health (clinic, dentist, physio)</option><option data-i18n="start.17">Trades (plumbing, electrical…)</option>
+            <option data-i18n="start.18">Professional services (legal, accounting…)</option>
+            <option data-i18n="start.19">Gym / studio</option><option data-i18n="start.20">Real estate</option><option data-i18n="start.21">Retail</option><option data-i18n="start.22">Other</option>
+          </select></label>
+        <label class="field full"><span data-i18n="form.msg">What do you need? (optional)</span>
+          <textarea name="message" rows="3"
+                    data-i18n-ph="form.msg.ph" placeholder="A line or two about where you are now"></textarea></label>
+        <label class="consent full">
+          <input type="checkbox" name="consent" required>
           <span data-i18n="form.consent">I agree that Vanguard Tech may process my data to answer this request, as described in the
           <a href="/privacidad.html">privacy policy</a>.</span>
         </label>
@@ -4009,24 +4105,25 @@ p,li,.lead{text-wrap:pretty}
 
     <!-- paso 1 ------------------------------------------------------------ -->
     <section class="onb__step is-on" id="onbCookies" data-step="cookies">
+      <p class="onb__label" data-i18n="ui.cookieLabel">Privacy</p>
       <h2 class="onb__h" id="onbTitle" data-i18n="ui.cookieTitle">Cookies</h2>
       <p class="onb__p" data-i18n="ui.cookieText">This site has no analytics, advertising or
       tracking cookies. If you accept, we will remember your language for your next visit.
       Either way we store your answer, so we only ask once.</p>
       <div class="onb__row">
-        <button class="btn btn--primary onb__btn" type="button" data-consent="all"
+        <button class="btn btn--primary onb__btn" type="button" data-consent="accepted"
                 data-i18n="ui.cookieYes">Accept</button>
-        <button class="btn btn--ghost onb__btn" type="button" data-consent="essential"
+        <button class="btn btn--ghost onb__btn" type="button" data-consent="rejected"
                 data-i18n="ui.cookieNo">Reject non-essential</button>
       </div>
       <a class="onb__link" href="/cookies.html" data-i18n="ui.cookieMore">Cookie policy</a>
     </section>
 
     <!-- paso 2 ------------------------------------------------------------ -->
-    <section class="onb__step" id="onbLang" data-step="lang" hidden>
-      <h2 class="onb__h" id="onbLangTitle" data-i18n="ui.onbLangTitle">Choose your language</h2>
-      <p class="onb__p" data-i18n="ui.onbLangText">Select the language you would like to read the
-      site in. You can change it at any time from the header.</p>
+    <section class="onb__step onb__step--mid" id="onbLang" data-step="lang" hidden>
+      <p class="onb__label" data-i18n="ui.onbLangLabel">Language</p>
+      <h2 class="onb__h" id="onbLangTitle" data-i18n="ui.onbLangTitle">Choose your language.</h2>
+      <p class="onb__p" data-i18n="ui.onbLangText">Select the language you&#39;d like to use.</p>
       <div class="onb__langs" role="radiogroup" aria-labelledby="onbLangTitle" id="onbLangs">
         <button class="onb__lang is-sel" type="button" role="radio" aria-checked="true"
                 data-lang="en" lang="en"><span>English</span></button>
@@ -4038,7 +4135,7 @@ p,li,.lead{text-wrap:pretty}
                 data-lang="de" lang="de"><span>Deutsch</span></button>
       </div>
       <button class="btn btn--primary onb__go" type="button" id="onbGo"
-              data-i18n="ui.onbGo">Continue</button>
+              data-i18n="ui.onbGo">Continue <span class="arr">→</span></button>
     </section>
   </div>
 </div>
@@ -4277,6 +4374,7 @@ p,li,.lead{text-wrap:pretty}
     'transformation.7':'<b>04 · En línea</b> <span>Rápida, en tu dominio y lista para Google.</span>',
     'ui.accent':'Acento',
     'ui.accentGroup':'Color de acento de la demo',
+    'ui.cookieLabel':'Privacidad',
     'ui.cookieMore':'Política de cookies',
     'ui.cookieNo':'Rechazar las no esenciales',
     'ui.cookieText':'Esta web no tiene cookies de analítica, de publicidad ni de seguimiento. Si aceptas, recordaremos tu idioma para la próxima visita. En los dos casos guardamos tu respuesta, para no volver a preguntártelo.',
@@ -4286,9 +4384,10 @@ p,li,.lead{text-wrap:pretty}
     'ui.langCurrent':'Idioma: castellano',
     'ui.navCta':'Quiero mi web',
     'ui.navCtaShort':'Empezar',
-    'ui.onbGo':'Continuar',
-    'ui.onbLangText':'Selecciona el idioma en el que quieres leer la web. Puedes cambiarlo cuando quieras desde la cabecera.',
-    'ui.onbLangTitle':'Elige tu idioma',
+    'ui.onbGo':'Continuar <span class="arr">→</span>',
+    'ui.onbLangLabel':'Idioma',
+    'ui.onbLangText':'Selecciona el idioma en el que quieres leer la web.',
+    'ui.onbLangTitle':'Elige tu idioma.',
     'ui.peekClose':'Cerrar la vista ampliada',
     'ui.peekDemo':'demo',
     'ui.peekLink':'Abrir la página de ejemplo completa',
@@ -4507,6 +4606,7 @@ p,li,.lead{text-wrap:pretty}
     'transformation.7':'<b>04 · En ligne</b> <span>Rapide, sur votre domaine, prêt pour Google.</span>',
     'ui.accent':'Accent',
     'ui.accentGroup':'Couleur d\'accent de la démo',
+    'ui.cookieLabel':'Confidentialité',
     'ui.cookieMore':'Politique de cookies',
     'ui.cookieNo':'Refuser les non essentiels',
     'ui.cookieText':'Ce site n’utilise aucun cookie de mesure d’audience, de publicitÃ© ou de suivi. Si vous acceptez, nous retiendrons votre langue pour votre prochaine visite. Dans les deux cas, nous conservons votre rÃ©ponse afin de ne vous la demander qu’une fois.',
@@ -4516,9 +4616,10 @@ p,li,.lead{text-wrap:pretty}
     'ui.langCurrent':'Langue : français',
     'ui.navCta':'Créer mon site',
     'ui.navCtaShort':'Commencer',
-    'ui.onbGo':'Continuer',
-    'ui.onbLangText':'SÃ©lectionnez la langue dans laquelle vous souhaitez lire le site. Vous pouvez en changer Ã  tout moment depuis l’en-tÃªte.',
-    'ui.onbLangTitle':'Choisissez votre langue',
+    'ui.onbGo':'Continuer <span class="arr">→</span>',
+    'ui.onbLangLabel':'Langue',
+    'ui.onbLangText':'Sélectionnez la langue dans laquelle vous souhaitez lire le site.',
+    'ui.onbLangTitle':'Choisissez votre langue.',
     'ui.peekClose':'Fermer l\'aperçu',
     'ui.peekDemo':'démo',
     'ui.peekLink':'Ouvrir la page d\'exemple complète',
@@ -4737,6 +4838,7 @@ p,li,.lead{text-wrap:pretty}
     'transformation.7':'<b>04 · Online</b> <span>Schnell, auf Ihrer Domain, bereit für Google.</span>',
     'ui.accent':'Akzent',
     'ui.accentGroup':'Akzentfarbe der Demo',
+    'ui.cookieLabel':'Datenschutz',
     'ui.cookieMore':'Cookie-Richtlinie',
     'ui.cookieNo':'Nicht notwendige ablehnen',
     'ui.cookieText':'Diese Website verwendet keine Analyse-, Werbe- oder Tracking-Cookies. Wenn Sie zustimmen, merken wir uns Ihre Sprache für Ihren nächsten Besuch. In beiden Fällen speichern wir Ihre Antwort, damit wir nur einmal fragen.',
@@ -4746,9 +4848,10 @@ p,li,.lead{text-wrap:pretty}
     'ui.langCurrent':'Sprache: Deutsch',
     'ui.navCta':'Website starten',
     'ui.navCtaShort':'Start',
-    'ui.onbGo':'Weiter',
-    'ui.onbLangText':'Wählen Sie die Sprache, in der Sie die Website lesen möchten. Sie können sie jederzeit in der Kopfzeile ändern.',
-    'ui.onbLangTitle':'Wählen Sie Ihre Sprache',
+    'ui.onbGo':'Weiter <span class="arr">→</span>',
+    'ui.onbLangLabel':'Sprache',
+    'ui.onbLangText':'Wählen Sie die Sprache, in der Sie die Website lesen möchten.',
+    'ui.onbLangTitle':'Wählen Sie Ihre Sprache.',
     'ui.peekClose':'Vorschau schließen',
     'ui.peekDemo':'Demo',
     'ui.peekLink':'Vollständige Beispielseite öffnen',
@@ -4821,6 +4924,7 @@ p,li,.lead{text-wrap:pretty}
     'meta.title':'Vanguard Tech — Professional websites, built fast',
     'ui.accent':'Accent',
     'ui.accentGroup':'Demo accent colour',
+    'ui.cookieLabel':'Privacy',
     'ui.cookieMore':'Cookie policy',
     'ui.cookieNo':'Reject non-essential',
     'ui.cookieText':'This site has no analytics, advertising or tracking cookies. If you accept, we will remember your language for your next visit. Either way we store your answer, so we only ask once.',
@@ -4830,9 +4934,10 @@ p,li,.lead{text-wrap:pretty}
     'ui.langCurrent':'Language: English',
     'ui.navCta':'Build my website',
     'ui.navCtaShort':'Start',
-    'ui.onbGo':'Continue',
-    'ui.onbLangText':'Select the language you would like to read the site in. You can change it at any time from the header.',
-    'ui.onbLangTitle':'Choose your language',
+    'ui.onbGo':'Continue <span class="arr">→</span>',
+    'ui.onbLangLabel':'Language',
+    'ui.onbLangText':'Select the language you’d like to use.',
+    'ui.onbLangTitle':'Choose your language.',
     'ui.peekClose':'Close preview',
     'ui.peekDemo':'demo',
     'ui.peekLink':'Open the full sample site',
@@ -4860,10 +4965,10 @@ p,li,.lead{text-wrap:pretty}
   var OKEY = 'vt.onboarded';
   var base = null;              // el ingles original, copiado del DOM
   var lang = 'en';
-  var consent = null;           // 'all' | 'none' | null (sin responder)
+  var consent = null;           // 'accepted' | 'rejected' | null (sin responder)
 
   function store(key, value) {
-    if (consent !== 'all') return;
+    if (consent !== 'accepted') return;
     try { window.localStorage.setItem(key, value); } catch (e) { /* modo privado */ }
   }
   function read(key) {
@@ -4930,6 +5035,7 @@ p,li,.lead{text-wrap:pretty}
       b.setAttribute('aria-current', String(b.getAttribute('data-lang') === code));
     });
     store(LKEY, code);
+    if (onLang) onLang(code);   // el formulario visible sigue al idioma
     /* Otro idioma, otro alto de texto: hay que volver a medir o los relatos
        calcularian su progreso contra la pagina anterior. */
     if (typeof measure === 'function' && geo.hero) {
@@ -4939,7 +5045,7 @@ p,li,.lead{text-wrap:pretty}
 
   function pickInitialLang() {
     consent = read(CKEY);
-    var saved = consent === 'all' ? read(LKEY) : null;
+    var saved = consent === 'accepted' ? read(LKEY) : null;
     if (saved && LANGS.indexOf(saved) >= 0) return saved;
     var nav = (navigator.languages && navigator.languages[0]) || navigator.language || 'en';
     var short = String(nav).slice(0, 2).toLowerCase();
@@ -4999,7 +5105,7 @@ p,li,.lead{text-wrap:pretty}
                      preguntar en cada carga, asi que es estrictamente
                      necesario para respetar la respuesta dada.
        vt.consent    siempre: es el registro de la respuesta.
-       vt.lang       solo con 'all'. Quien rechaza lo no esencial entra igual
+       vt.lang       solo con 'accepted'. Quien rechaza lo no esencial entra
                      en el idioma que elija, pero esa eleccion no sobrevive a
                      la pestaña: en la visita siguiente se vuelve a deducir del
                      navegador. Esa es la diferencia real entre las dos
@@ -5049,6 +5155,7 @@ p,li,.lead{text-wrap:pretty}
         s.hidden = true;
       });
       step.hidden = false;
+      panel.classList.toggle('is-mid', step === stepLang);
       requestAnimationFrame(function () {
         requestAnimationFrame(function () { step.classList.add('is-on'); });
       });
@@ -5100,7 +5207,7 @@ p,li,.lead{text-wrap:pretty}
       try {
         window.localStorage.setItem(CKEY, consent);
         window.localStorage.setItem(OKEY, '1');
-        if (consent === 'all') window.localStorage.setItem(LKEY, pick);
+        if (consent === 'accepted') window.localStorage.setItem(LKEY, pick);
         else window.localStorage.removeItem(LKEY);
       } catch (e) { /* modo privado: la eleccion vale para esta pestaña */ }
 
@@ -6216,23 +6323,41 @@ p,li,.lead{text-wrap:pretty}
   }
 
   /* ---------------------------------------------------------- formulario --
-     Todavía no hay backend. Se dice, en vez de fingir que se ha enviado. */
-  function setupForm() {
-    var form = $('form.form');
-    if (!form) return;
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-      var button = form.querySelector('button[type=submit]');
-      var note = form.querySelector('p.full');
-      button.disabled = true;
-      button.textContent = 'Formulario no conectado';
-      if (note) {
-        note.innerHTML = '<strong style="color:#fff">Este formulario todavía no envía nada.</strong> '
-          + 'Falta conectar el buzón de la empresa. Escríbenos directamente mientras tanto.';
-      }
-    });
+     Dos formularios de Netlify, uno por buzon. El que se ve depende del
+     idioma; el otro queda con `hidden`, fuera del orden de tabulacion y
+     fuera del arbol de accesibilidad, pero sigue en el HTML para que Netlify
+     lo detecte al publicar.
+
+     Aqui NO se cancela nada. El navegador valida (no hay `novalidate`) y el
+     navegador envia. Si este script no llegase a ejecutarse, el visitante
+     veria el formulario internacional y podria enviarlo igual.
+     ---------------------------------------------------------------------- */
+  function setupForms() {
+    var es = $('#formEs'), int_ = $('#formInt');
+    if (!es || !int_) return;
+
+    function show(code) {
+      var useEs = code === 'es';
+      /* `disabled` en el formulario oculto: un campo deshabilitado no se
+         valida ni se envia, asi que el que esta a la vista nunca puede
+         tropezar con un `required` de una caja que nadie ve. */
+      [[es, useEs], [int_, !useEs]].forEach(function (pair) {
+        var form = pair[0], on = pair[1];
+        form.hidden = !on;
+        $$('input,select,textarea,button', form).forEach(function (el) {
+          el.disabled = !on;
+        });
+      });
+      /* El campo `language` viaja con el envio: en el buzon internacional
+         distingue un aviso en ingles de uno en frances o aleman. */
+      var lf = $('input[name="language"]', int_);
+      if (lf) lf.value = useEs ? 'en' : code;
+    }
+
+    show(lang);
+    onLang = show;            // applyLang lo llama en cada cambio de idioma
   }
+  var onLang = null;
 
   /* ------------------------------------------------------------- arranque -- */
   watch(hero, 'hero');
@@ -6259,7 +6384,7 @@ p,li,.lead{text-wrap:pretty}
   setupCardTilt();
   setupMagnets();
   setupCounter();
-  setupForm();
+  setupForms();
 
   if (!reduced && !coarse) {
     window.addEventListener('mousemove', function (e) {

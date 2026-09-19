@@ -85,6 +85,43 @@ Cuatro: **ingles (por defecto)**, castellano de España, frances y aleman.
 Para añadir un idioma: añadir su codigo a `LANGS`, su bloque a `I18N` y un
 `<li>` al selector. No hay nada mas que tocar.
 
+## Formulario de contacto
+
+Hay **dos formularios de Netlify**, no uno. Netlify enruta el aviso por el
+NOMBRE del formulario, no por un campo que mande el navegador: un destinatario
+en un `<input hidden>` lo podria cambiar cualquiera desde las herramientas del
+navegador.
+
+| Formulario | Idioma | Buzon |
+|---|---|---|
+| `contact-es` | castellano | contacto.vanguardtech@gmail.com |
+| `contact-int` | ingles, frances, aleman | contact.vanguardtech@gmail.com |
+
+Los dos viven en el HTML porque Netlify los detecta leyendo la pagina
+publicada; `hidden` no se lo impide. Solo se ve el que corresponde al idioma, y
+de eso se encarga `setupForms()`, que ademas **deshabilita** los campos del que
+esta oculto para que un `required` invisible no pueda bloquear el envio.
+
+Reglas que no se pueden romper al tocar esto:
+
+- **Nada cancela el envio.** No hay `preventDefault` en el `submit` y no hay
+  `novalidate`: valida el navegador y envia el navegador. Si el JavaScript no
+  llegase a ejecutarse, se veria el formulario internacional y se podria enviar
+  igual.
+- El campo del correo se llama **`email`**, que es lo que Netlify usa como
+  Reply-To.
+- La trampa para robots es `bot-field`, declarada con
+  `data-netlify-honeypot="bot-field"`. Su rotulo traducible vive en un `<span>`
+  **dentro** del `<label>`, nunca en el `<label>`: si `data-i18n` estuviese en
+  el `<label>`, al traducir se reescribiria su `innerHTML` y el `<input>` de la
+  trampa desapareceria.
+- Al enviar se aterriza en `gracias.html`, que se traduce sola leyendo
+  `vt.lang`.
+
+**Falta hacerlo en Netlify** (no se puede hacer desde el repositorio): Forms →
+`contact-es` → Form notifications → Email notification → el buzon de arriba, y
+lo mismo con `contact-int`.
+
 ## Entrada (cookies -> idioma -> continuar)
 
 Quien llega por primera vez no ve la web hasta contestar dos preguntas. El
@@ -110,9 +147,9 @@ La web no pone **ni una cookie**. Como mucho guarda tres datos:
 
 | Clave | Cuando | Para que |
 |---|---|---|
-| `vt.consent` | siempre, al contestar | `all` o `essential` |
+| `vt.consent` | siempre, al contestar | `accepted` o `rejected` |
 | `vt.onboarded` | siempre, al contestar | no repetir la entrada |
-| `vt.lang` | solo con `all` | el idioma elegido |
+| `vt.lang` | solo con `accepted` | el idioma elegido |
 
 Los dos primeros se escriben con cualquiera de las dos respuestas porque son
 **estrictamente necesarios para cumplirla**: sin ellos habria que volver a
@@ -193,5 +230,5 @@ y pegarlas en `script-src` dentro de `netlify.toml`.
 - El dominio es un marcador (`vanguardtech.es`) en las etiquetas canonical,
   og: y en `sitemap.xml`.
 - Las paginas legales necesitan los datos fiscales reales.
-- El formulario todavia no envia: el JavaScript cancela el envio y lo dice.
-  Falta conectar el buzon.
+- Los dos formularios envian de verdad, pero **los avisos por correo hay que
+  darlos de alta en el panel de Netlify** (ver "Formulario de contacto").

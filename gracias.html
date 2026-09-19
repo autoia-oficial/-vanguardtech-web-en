@@ -144,30 +144,84 @@ body{background:var(--ink);color:#fff;min-height:100svh;display:grid;place-items
 <main class="gracias">
   <!-- El logotipo, del mismo fichero que el resto de la web. -->
   <img class="brand__img brand__img--big" src="/brand/logo-mark-256.webp" alt="" width="64" height="64">
-  
 
-  <h1>Request received.</h1>
-  <p class="lead">
-    Thanks. We have your details and we are already looking your business up.
+  <h1 data-g="h1">Request received.</h1>
+  <p class="lead" data-g="lead">
+    Thank you. We&#39;ve received your message and will get back to you.
   </p>
 
   <ol class="next">
-    <li>We run our checks on what you have online right now.</li>
-    <li>We build a draft of your website — a real page, not a mockup image.</li>
-    <li>We send you a private link, <strong>within one working day</strong>.</li>
-    <li>You decide. If it is not for you, we delete it and that is the end of it.</li>
+    <li data-g="n1">We run our checks on what you have online right now.</li>
+    <li data-g="n2">We build a draft of your website — a real page, not a mockup image.</li>
+    <li data-g="n3">We send you a private link, <strong>within one working day</strong>.</li>
+    <li data-g="n4">You decide. If it is not for you, we delete it and that is the end of it.</li>
   </ol>
 
-  <p class="note" style="margin-top:2.4rem;color:var(--muted-dark)">
+  <p class="note" style="margin-top:2.4rem;color:var(--muted-dark)" data-g="note">
     Nothing is published and search engines cannot see it. Prefer to write in
     Spanish? Go ahead — we are based in Spain and that is how we work day to day.
   </p>
 
   <div class="btn-row">
-    <a class="btn btn--light" href="/">Back to the site <span class="arr">→</span></a>
-    <a class="btn btn--ghost" href="/work/restaurant/">See a demo</a>
+    <a class="btn btn--light" href="/" data-g="back">Back to the site <span class="arr">→</span></a>
+    <a class="btn btn--ghost" href="/work/restaurant/" data-g="demo">See a demo</a>
   </div>
 </main>
+
+<!-- Esta pagina es donde aterriza el formulario de Netlify. Lee el idioma que
+     el visitante eligio en la portada y se traduce sola. El ingles vive en el
+     HTML, asi que sin JavaScript se lee igual. -->
+<script>
+(function () {
+  var T = {
+    es: {
+      h1: 'Mensaje recibido.',
+      lead: 'Gracias. Hemos recibido tu mensaje y nos pondremos en contacto contigo.',
+      n1: 'Revisamos lo que tienes ahora mismo publicado.',
+      n2: 'Montamos un borrador de tu web: una página de verdad, no una imagen.',
+      n3: 'Te mandamos un enlace privado, <strong>en un día laborable</strong>.',
+      n4: 'Decides tú. Si no es para ti, lo borramos y ahí se acaba.',
+      note: 'No se publica nada y los buscadores no pueden verlo. Estamos en España, así que escríbenos en castellano con toda tranquilidad.',
+      back: 'Volver a la web <span class="arr">→</span>',
+      demo: 'Ver una demo'
+    },
+    fr: {
+      h1: 'Message reçu.',
+      lead: 'Merci. Nous avons reçu votre message et nous vous répondrons bientôt.',
+      n1: 'Nous passons en revue ce que vous avez en ligne aujourd&#39;hui.',
+      n2: 'Nous montons un brouillon de votre site : une vraie page, pas une image.',
+      n3: 'Nous vous envoyons un lien privé, <strong>sous un jour ouvré</strong>.',
+      n4: 'À vous de décider. Si cela ne vous convient pas, nous le supprimons et l&#39;affaire est close.',
+      note: 'Rien n&#39;est publié et les moteurs de recherche ne peuvent pas le voir. Nous sommes en Espagne, mais écrivez-nous en français sans souci.',
+      back: 'Retour au site <span class="arr">→</span>',
+      demo: 'Voir une démo'
+    },
+    de: {
+      h1: 'Nachricht erhalten.',
+      lead: 'Danke. Wir haben Ihre Nachricht erhalten und melden uns bei Ihnen.',
+      n1: 'Wir prüfen, was Sie derzeit online haben.',
+      n2: 'Wir bauen einen Entwurf Ihrer Website — eine echte Seite, kein Bild.',
+      n3: 'Sie bekommen einen privaten Link, <strong>innerhalb eines Werktags</strong>.',
+      n4: 'Sie entscheiden. Passt es nicht, löschen wir ihn und damit hat es sich.',
+      note: 'Nichts wird veröffentlicht und Suchmaschinen sehen es nicht. Wir sitzen in Spanien, schreiben Sie uns ruhig auf Deutsch.',
+      back: 'Zurück zur Website <span class="arr">→</span>',
+      demo: 'Demo ansehen'
+    }
+  };
+  var TITLE = { es: 'Mensaje recibido · Vanguard Tech', fr: 'Message reçu · Vanguard Tech',
+                de: 'Nachricht erhalten · Vanguard Tech' };
+  var lang = 'en';
+  try { lang = window.localStorage.getItem('vt.lang') || 'en'; } catch (e) { /* modo privado */ }
+  var d = T[lang];
+  if (!d) return;                                  // ingles: ya esta en el HTML
+  document.documentElement.lang = lang;
+  if (TITLE[lang]) document.title = TITLE[lang];
+  Array.prototype.forEach.call(document.querySelectorAll('[data-g]'), function (el) {
+    var v = d[el.getAttribute('data-g')];
+    if (v != null) el.innerHTML = v;
+  });
+}());
+</script>
 
 </body>
 </html>
