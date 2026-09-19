@@ -150,23 +150,30 @@ main.legal ul{padding-left:1.2rem;display:grid;gap:.4rem;margin:0 0 1.1em}
 terceros, y tampoco instala cookies propias.</p>
 
 <h2>2. Qué se guarda en tu navegador</h2>
-<p>La web ofrece cuatro idiomas y necesita recordar cuál has elegido. Para eso, y solo para eso,
-puede guardar dos datos en el almacenamiento local de tu navegador:</p>
+<p>En tu primera visita, antes de ver la web, te preguntamos dos cosas: qué podemos guardar y en
+qué idioma quieres leer. Según lo que respondas, se guardan hasta tres datos en el almacenamiento
+local de tu navegador:</p>
 <ul>
-  <li><b>El idioma que has elegido</b> (<code>vt.lang</code>).</li>
-  <li><b>Tu respuesta a este aviso</b> (<code>vt.consent</code>), para no volver a enseñártelo.</li>
+  <li><b>Tu respuesta a esta pregunta</b> (<code>vt.consent</code>).</li>
+  <li><b>Que ya la has respondido</b> (<code>vt.onboarded</code>), para no volver a preguntártelo
+  en cada visita.</li>
+  <li><b>El idioma que has elegido</b> (<code>vt.lang</code>), solo si aceptas.</li>
 </ul>
-<p>No se guarda nada hasta que respondes al aviso que aparece en tu primera visita, y las dos
-opciones hacen cosas distintas de verdad:</p>
+<p>Hasta que respondes no se escribe absolutamente nada. Las dos opciones hacen cosas distintas de
+verdad:</p>
 <ul>
-  <li><b>Recordar mi elección</b>: se guardan esos dos datos en tu dispositivo. No viajan a
-  ningún servidor, no identifican a nadie y no se comparten.</li>
-  <li><b>No guardar nada</b>: no se escribe nada y se borra lo que hubiera de antes. El idioma
-  vivirá solo mientras tengas la pestaña abierta, y el aviso volverá a aparecer en tu próxima
-  visita.</li>
+  <li><b>Aceptar</b>: se guardan los tres datos. Recordamos tu idioma, así que en tu próxima
+  visita la web se abre directamente en él.</li>
+  <li><b>Rechazar las no esenciales</b>: tu idioma <b>no</b> se guarda. Entras igualmente en el
+  idioma que elijas, pero solo dura mientras tengas la pestaña abierta; en tu próxima visita se
+  deducirá otra vez de tu navegador.</li>
 </ul>
-<p>Puedes borrar ambos datos en cualquier momento desde los ajustes de tu navegador, igual que
-borrarías una cookie.</p>
+<p>Los dos primeros datos se guardan en ambos casos porque son estrictamente necesarios para
+cumplir lo que nos has pedido: sin ellos no habría forma de recordar tu respuesta y volveríamos a
+preguntarte una y otra vez. Ninguno de los tres viaja a ningún servidor, identifica a nadie ni se
+comparte.</p>
+<p>Puedes borrarlos en cualquier momento desde los ajustes de tu navegador, igual que borrarías
+una cookie. Si lo haces, volveremos a preguntarte en tu siguiente visita.</p>
 
 <h2>2 bis. Almacenamiento técnico del panel interno</h2>
 <p>El panel interno de gestión (no accesible públicamente) guarda un token de acceso en el

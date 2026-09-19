@@ -57,6 +57,10 @@ Cuatro: **ingles (por defecto)**, castellano de España, frances y aleman.
 - Orden de decision: **lo que el visitante eligio y pidio recordar** → **el
   idioma del navegador** si es uno de los cuatro → **ingles**. Nunca cambia solo
   de una visita a otra.
+- En la primera visita ese orden solo decide que fila viene marcada: entrar
+  exige pasar por la pantalla de idioma y pulsar Continue.
+- El selector `EN ▾` de la cabecera sigue estando despues, y cambiar de idioma
+  desde ahi no vuelve a abrir la entrada.
 - El contenido de las maquetas de demo **no se traduce**: son ilustraciones de
   webs de negocios españoles inventados, van marcadas `aria-hidden` y
   traducirlas seria traducir una fotografia.
@@ -64,21 +68,44 @@ Cuatro: **ingles (por defecto)**, castellano de España, frances y aleman.
 Para añadir un idioma: añadir su codigo a `LANGS`, su bloque a `I18N` y un
 `<li>` al selector. No hay nada mas que tocar.
 
+## Entrada (cookies -> idioma -> continuar)
+
+Quien llega por primera vez no ve la web hasta contestar dos preguntas. El
+overlay es `#onb`, vive fuera de `#main` y lo gobierna `setupOnboarding()`.
+
+    primera visita:  cookies -> idioma -> Continue -> web
+    visitas siguientes:  web directa, en el idioma guardado
+
+- **Paso 1, cookies.** Las dos opciones tienen el mismo peso visual y estan una
+  al lado de la otra. Hasta contestar no se escribe **nada**.
+- **Paso 2, idioma.** Cuatro filas seleccionables, ingles preseleccionado. Al
+  marcar una, la web de detras ya se traduce: se ve lo que se elige antes de
+  confirmarlo. Hay que pulsar **Continue** para entrar.
+- **Mientras esta abierto** el `body` lleva `is-onb` (sin scroll), y `#nav`,
+  `#main`, `footer` y `#peek` llevan `inert` + `aria-hidden`. Donde no haya
+  `inert`, una trampa de foco devuelve el tabulador al panel.
+- El overlay se sirve con `hidden` y lo quita el script. Sin JavaScript no
+  aparece: si no, seria un panel imposible de cerrar.
+
 ## Almacenamiento
 
-La web no pone **ni una cookie**. Lo unico que puede guardar en el navegador
-son dos datos, y solo si el visitante lo autoriza en el aviso de su primera
-visita:
+La web no pone **ni una cookie**. Como mucho guarda tres datos:
 
-| Clave | Para que |
-|---|---|
-| `vt.lang` | El idioma elegido |
-| `vt.consent` | La respuesta al aviso, para no repetirlo |
+| Clave | Cuando | Para que |
+|---|---|---|
+| `vt.consent` | siempre, al contestar | `all` o `essential` |
+| `vt.onboarded` | siempre, al contestar | no repetir la entrada |
+| `vt.lang` | solo con `all` | el idioma elegido |
 
-Si responde **"No guardar nada"** no se escribe nada y se borra lo que hubiera:
-el idioma vive solo mientras la pestaña este abierta. Las dos opciones estan a
-la vista, del mismo tamaño, y hacen cosas distintas de verdad. `cookies.html` lo
-explica igual.
+Los dos primeros se escriben con cualquiera de las dos respuestas porque son
+**estrictamente necesarios para cumplirla**: sin ellos habria que volver a
+preguntar en cada carga, que es justo lo que el visitante ha contestado.
+
+La diferencia real entre las dos opciones es la tercera clave: quien rechaza lo
+no esencial entra igual en el idioma que elija, pero esa eleccion no sobrevive
+a la pestaña; en la visita siguiente se vuelve a deducir del navegador. No hay
+ninguna otra diferencia, porque no hay analitica, ni publicidad, ni
+seguimiento. `cookies.html` lo explica igual.
 
 ## Tipografia
 

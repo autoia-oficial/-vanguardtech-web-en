@@ -1968,52 +1968,118 @@ body.peek-open{overflow:hidden}
   transform:rotate(-45deg) translate(1px,-2px)}
 
 /* ===========================================================================
-   AVISO DE ALMACENAMIENTO
+   ENTRADA (COOKIES -> IDIOMA -> CONTINUAR)
    ---------------------------------------------------------------------------
-   Una tarjeta en una esquina, no un muro. En escritorio no tapa la pagina; en
-   movil es una franja abajo que deja ver el contenido de detras. Las dos
-   opciones tienen el mismo tamaño y estan una al lado de la otra: ninguna se
-   esconde, porque las dos hacen algo distinto de verdad.
+   Quien llega por primera vez decide dos cosas antes de ver nada: que se
+   guarda y en que idioma lee. Son dos pasos, nunca los dos a la vez.
+
+   El fondo no es negro opaco: es la web real, desenfocada y atenuada. Se
+   entiende que hay algo detras y que se esta entrando, no que se ha topado
+   con un muro. El panel es una tarjeta clara sobre ese fondo, con el mismo
+   vocabulario que el resto del sitio (tipografias, radios, botones).
    =========================================================================== */
-.notice{
-  position:fixed;z-index:120;left:1.25rem;bottom:1.25rem;width:min(420px,calc(100vw - 2.5rem));
-  padding:1.3rem 1.4rem 1.2rem;
-  background:#0c0e12;color:#fff;
-  border:1px solid rgba(255,255,255,.14);border-radius:var(--radius-md);
-  box-shadow:0 30px 80px rgba(0,0,0,.5);
-  opacity:0;transform:translate3d(0,14px,0);
-  transition:opacity .5s var(--ease-soft),transform .5s var(--ease);
+.onb{
+  position:fixed;inset:0;z-index:300;
+  display:flex;align-items:center;justify-content:center;
+  padding:calc(1.25rem + env(safe-area-inset-top)) calc(1.25rem + env(safe-area-inset-right))
+          calc(1.25rem + env(safe-area-inset-bottom)) calc(1.25rem + env(safe-area-inset-left));
+  background:rgba(8,9,11,.62);
+  -webkit-backdrop-filter:saturate(140%) blur(14px);backdrop-filter:saturate(140%) blur(14px);
+  opacity:1;
+  transition:opacity .45s var(--ease-soft);
 }
-.notice[hidden]{display:none}
-.notice.is-in{opacity:1;transform:none}
-.notice .eyebrow{color:rgba(255,255,255,.6);margin-bottom:.7rem}
-.notice .eyebrow::before{background:rgba(255,255,255,.5)}
-.notice__text{font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.76);margin:0 0 1.1rem;
-  max-width:none}
-.notice__row{display:flex;gap:.6rem;flex-wrap:wrap}
-.notice__row .btn{flex:1 1 auto;min-height:44px;padding:.6rem 1rem;font-size:.85rem}
-.notice__link{display:inline-block;margin-top:.9rem;font-size:.78rem;
-  color:rgba(255,255,255,.55);text-decoration:underline;text-underline-offset:3px}
-.notice__link:hover{color:#fff}
+.onb[hidden]{display:none}
+/* Al salir: el velo se va y el panel se aparta un poco hacia arriba. */
+.onb.is-out{opacity:0;pointer-events:none}
+.onb.is-out .onb__panel{opacity:0;transform:translate3d(0,-10px,0) scale(.99)}
+
+.onb__panel{
+  width:min(440px,100%);max-height:100%;overflow-y:auto;overscroll-behavior:contain;
+  padding:2.1rem 2.1rem 1.9rem;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--line);border-radius:var(--radius-lg);
+  box-shadow:0 40px 120px rgba(0,0,0,.45);
+  transition:opacity .4s var(--ease-soft),transform .4s var(--ease);
+}
+.onb__brand{
+  margin:0 0 1.6rem;font-family:var(--font-label);font-weight:var(--label-weight);
+  font-size:.68rem;letter-spacing:var(--label-track);text-transform:uppercase;
+  color:var(--silver);
+}
+
+/* Los dos pasos ocupan el mismo hueco. Solo uno existe a la vez: el otro lleva
+   `hidden`, asi que no lo lee nadie ni lo tabula nadie. */
+.onb__step[hidden]{display:none}
+/* Los pasos son <section>, y la regla global de `section` les mete once rem
+   de aire arriba y abajo. Dentro del panel eso sobra: se anula aqui. */
+.onb__step{padding:0;margin:0;opacity:0;transform:translate3d(0,8px,0)}
+.onb__step.is-on{opacity:1;transform:none;
+  transition:opacity .4s var(--ease-soft) .04s,transform .4s var(--ease) .04s}
+
+.onb__h{font-size:clamp(1.45rem,1.1rem + 1.4vw,1.85rem);line-height:1.15;margin:0 0 .6rem}
+.onb__p{font-size:.9rem;line-height:1.55;color:var(--graphite);margin:0 0 1.5rem;max-width:none}
+
+.onb__row{display:flex;gap:.6rem;flex-wrap:wrap}
+/* `min-width:max-content` en vez de un punto de corte en pixeles: cada boton
+   pide el ancho que necesita su etiqueta, asi que cuando las dos no caben al
+   lado la segunda baja sola. Vale igual para "Reject non-essential" que para
+   "Nicht notwendige ablehnen", que es medio dedo mas larga. */
+.onb__btn{flex:1 1 auto;min-width:max-content;min-height:46px;padding:.7rem 1rem;
+  font-size:.86rem;justify-content:center;text-align:center}
+.onb__link{display:inline-block;margin-top:1.1rem;font-size:.78rem;color:var(--silver);
+  text-decoration:underline;text-underline-offset:3px}
+.onb__link:hover{color:var(--ink)}
+
+/* Idiomas: filas seleccionables, no tarjetas gigantes. El estado elegido se
+   dice con borde, fondo y una marca; nunca solo con color. */
+.onb__langs{display:grid;gap:.5rem;margin:0 0 1.5rem}
+.onb__lang{
+  display:flex;align-items:center;justify-content:space-between;gap:.75rem;
+  width:100%;min-height:50px;padding:.75rem 1rem;
+  font-family:var(--font-body);font-size:.95rem;font-weight:500;text-align:left;
+  color:var(--ink);background:var(--paper);
+  border:1px solid var(--line);border-radius:var(--radius-sm);cursor:pointer;
+  transition:border-color .25s var(--ease),background .25s var(--ease),transform .25s var(--ease);
+}
+.onb__lang:hover{border-color:var(--silver);background:var(--paper-2)}
+.onb__lang:active{transform:scale(.995)}
+/* La marca ocupa su sitio siempre, tambien sin elegir: asi la fila no da un
+   salto de ancho al cambiar de idioma. */
+.onb__lang::after{
+  content:"";flex:none;width:16px;height:16px;border-radius:50%;
+  border:1px solid var(--line);
+  transition:border-color .25s var(--ease),background .25s var(--ease),box-shadow .25s var(--ease);
+}
+.onb__lang.is-sel{border-color:var(--ink);background:var(--paper-2)}
+.onb__lang.is-sel::after{
+  border-color:var(--ink);background:var(--ink);
+  box-shadow:inset 0 0 0 3px var(--paper);
+}
+.onb__go{width:100%;min-height:50px;justify-content:center;text-align:center}
+
+/* Foco visible dentro del panel, igual que en el resto del sitio. */
+.onb__lang:focus-visible,.onb__btn:focus-visible,.onb__go:focus-visible,
+.onb__link:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
 @media(max-width:600px){
-  .notice{left:.6rem;right:.6rem;bottom:.6rem;width:auto;padding:.95rem 1rem .9rem}
-  .notice__text{font-size:.82rem;margin-bottom:.85rem}
-  .notice .eyebrow{margin-bottom:.5rem}
-  /* Los dos botones caben en una fila a 320 px: apilados, el aviso ocupaba
-     media pantalla de movil sin necesidad. */
-  .notice__row{gap:.45rem}
-  .notice__row .btn{flex:1 1 0;min-width:0;padding:.55rem .6rem;font-size:.8rem}
-  /* Por debajo de 380 px las dos etiquetas no caben en una fila sin cortarse:
-     ahi vuelven a apilarse, que es preferible a un boton con el texto a medias. */
-  @media(max-width:379px){
-    .notice__row{flex-direction:column}
-    .notice__row .btn{width:100%;flex:none}
-  }
-  .notice__link{margin-top:.7rem;font-size:.74rem}
+  .onb{padding:calc(.75rem + env(safe-area-inset-top)) calc(.75rem + env(safe-area-inset-right))
+              calc(.75rem + env(safe-area-inset-bottom)) calc(.75rem + env(safe-area-inset-left));
+       align-items:flex-end}
+  .onb__panel{width:100%;padding:1.5rem 1.25rem 1.35rem;border-radius:var(--radius-md)}
+  .onb__brand{margin-bottom:1.15rem;font-size:.64rem}
+  .onb__p{font-size:.86rem;margin-bottom:1.25rem}
+  .onb__langs{gap:.45rem;margin-bottom:1.25rem}
+  .onb__lang{min-height:48px;padding:.7rem .9rem;font-size:.92rem}
 }
 @media(prefers-reduced-motion:reduce){
-  .notice{transition:none;opacity:1;transform:none}
+  .onb,.onb__panel,.onb__step,.onb__lang{transition:none}
+  .onb__step{opacity:1;transform:none}
 }
+
+/* Mientras la entrada esta abierta la pagina de detras no se mueve. Se fija el
+   body en su sitio en vez de solo `overflow:hidden`, que en iOS no basta. */
+body.is-onb{overflow:hidden}
+body.is-onb .spot{opacity:0}
 
 /* ===========================================================================
    EL PAPEL "ROTULO", EN UNA SOLA REGLA
@@ -3647,24 +3713,53 @@ footer h3,
   </div>
 </div>
 
-<!-- AVISO DE ALMACENAMIENTO. No es un muro de cookies con botones falsos:
-     esta web no pone ni una cookie de analitica, publicidad o seguimiento, asi
-     que no hay nada que "aceptar". Lo unico que se puede guardar es el idioma
-     elegido y esta misma respuesta, y por eso las dos opciones son de verdad
-     distintas: recordar, o no guardar nada. Ninguna esta escondida. -->
-<aside class="notice" id="consent" role="region" aria-labelledby="consentTitle" hidden>
-  <p class="eyebrow" id="consentTitle" data-i18n="ui.cookieTitle">Storage</p>
-  <p class="notice__text" data-i18n="ui.cookieText">This site uses no analytics, advertising or
-  tracking cookies. The only thing we can keep in your browser is the language you choose and
-  this answer.</p>
-  <div class="notice__row">
-    <button class="btn btn--light btn--sm" type="button" data-consent="all"
-            data-i18n="ui.cookieYes">Remember my choice</button>
-    <button class="btn btn--ghost btn--sm" type="button" data-consent="none"
-            data-i18n="ui.cookieNo">Store nothing</button>
+<!-- ===========================================================================
+     Entrada. Dos pasos antes de ver la web: que se guarda, y en que idioma.
+     El overlay vive fuera de #main para poder marcar el resto como `inert`
+     sin tocar su arbol. Se pinta ya en el HTML (sin `hidden`) y es el script
+     quien lo retira: asi quien entra por primera vez no ve un destello de la
+     web antes de que el JavaScript arranque. Sin JavaScript no hay overlay,
+     porque `noscript` lo esconde y no habria forma de cerrarlo.
+     =========================================================================== -->
+<div class="onb" id="onb" role="dialog" aria-modal="true" aria-labelledby="onbTitle" hidden>
+  <div class="onb__panel" id="onbPanel">
+    <p class="onb__brand" aria-hidden="true">Vanguard Tech</p>
+
+    <!-- paso 1 ------------------------------------------------------------ -->
+    <section class="onb__step is-on" id="onbCookies" data-step="cookies">
+      <h2 class="onb__h" id="onbTitle" data-i18n="ui.cookieTitle">Cookies</h2>
+      <p class="onb__p" data-i18n="ui.cookieText">This site has no analytics, advertising or
+      tracking cookies. If you accept, we will remember your language for your next visit.
+      Either way we store your answer, so we only ask once.</p>
+      <div class="onb__row">
+        <button class="btn btn--primary onb__btn" type="button" data-consent="all"
+                data-i18n="ui.cookieYes">Accept</button>
+        <button class="btn btn--ghost onb__btn" type="button" data-consent="essential"
+                data-i18n="ui.cookieNo">Reject non-essential</button>
+      </div>
+      <a class="onb__link" href="/cookies.html" data-i18n="ui.cookieMore">Cookie policy</a>
+    </section>
+
+    <!-- paso 2 ------------------------------------------------------------ -->
+    <section class="onb__step" id="onbLang" data-step="lang" hidden>
+      <h2 class="onb__h" id="onbLangTitle" data-i18n="ui.onbLangTitle">Choose your language</h2>
+      <p class="onb__p" data-i18n="ui.onbLangText">Select the language you would like to read the
+      site in. You can change it at any time from the header.</p>
+      <div class="onb__langs" role="radiogroup" aria-labelledby="onbLangTitle" id="onbLangs">
+        <button class="onb__lang is-sel" type="button" role="radio" aria-checked="true"
+                data-lang="en" lang="en"><span>English</span></button>
+        <button class="onb__lang" type="button" role="radio" aria-checked="false"
+                data-lang="es" lang="es"><span>Español</span></button>
+        <button class="onb__lang" type="button" role="radio" aria-checked="false"
+                data-lang="fr" lang="fr"><span>Français</span></button>
+        <button class="onb__lang" type="button" role="radio" aria-checked="false"
+                data-lang="de" lang="de"><span>Deutsch</span></button>
+      </div>
+      <button class="btn btn--primary onb__go" type="button" id="onbGo"
+              data-i18n="ui.onbGo">Continue</button>
+    </section>
   </div>
-  <a class="notice__link" href="/cookies.html" data-i18n="ui.cookieMore">Cookie policy</a>
-</aside>
+</div>
 
 <!-- La luz que sigue al cursor. Va al final del body para pintarse por encima
      de las secciones y poder iluminarlas en modo `screen`; el JavaScript la enciende
@@ -3901,14 +3996,17 @@ footer h3,
     'ui.accent':'Acento',
     'ui.accentGroup':'Color de acento de la demo',
     'ui.cookieMore':'Política de cookies',
-    'ui.cookieNo':'No guardar nada',
-    'ui.cookieText':'Esta web no usa cookies de analítica, de publicidad ni de seguimiento. Lo único que podemos guardar en tu navegador es el idioma que elijas y esta respuesta.',
-    'ui.cookieTitle':'Almacenamiento',
-    'ui.cookieYes':'Recordar mi elección',
+    'ui.cookieNo':'Rechazar las no esenciales',
+    'ui.cookieText':'Esta web no tiene cookies de analítica, de publicidad ni de seguimiento. Si aceptas, recordaremos tu idioma para la próxima visita. En los dos casos guardamos tu respuesta, para no volver a preguntártelo.',
+    'ui.cookieTitle':'Cookies',
+    'ui.cookieYes':'Aceptar',
     'ui.lang':'Idioma',
     'ui.langCurrent':'Idioma: castellano',
     'ui.navCta':'Quiero mi web',
     'ui.navCtaShort':'Empezar',
+    'ui.onbGo':'Continuar',
+    'ui.onbLangText':'Selecciona el idioma en el que quieres leer la web. Puedes cambiarlo cuando quieras desde la cabecera.',
+    'ui.onbLangTitle':'Elige tu idioma',
     'ui.peekClose':'Cerrar la vista ampliada',
     'ui.peekDemo':'demo',
     'ui.peekLink':'Abrir la página de ejemplo completa',
@@ -4128,14 +4226,17 @@ footer h3,
     'ui.accent':'Accent',
     'ui.accentGroup':'Couleur d\'accent de la démo',
     'ui.cookieMore':'Politique de cookies',
-    'ui.cookieNo':'Ne rien enregistrer',
-    'ui.cookieText':'Ce site n\'utilise ni cookies de mesure d\'audience, ni publicité, ni traceurs. La seule chose que nous pouvons enregistrer dans votre navigateur est la langue que vous choisissez et cette réponse.',
-    'ui.cookieTitle':'Stockage',
-    'ui.cookieYes':'Retenir mon choix',
+    'ui.cookieNo':'Refuser les non essentiels',
+    'ui.cookieText':'Ce site n’utilise aucun cookie de mesure d’audience, de publicitÃ© ou de suivi. Si vous acceptez, nous retiendrons votre langue pour votre prochaine visite. Dans les deux cas, nous conservons votre rÃ©ponse afin de ne vous la demander qu’une fois.',
+    'ui.cookieTitle':'Cookies',
+    'ui.cookieYes':'Accepter',
     'ui.lang':'Langue',
     'ui.langCurrent':'Langue : français',
     'ui.navCta':'Créer mon site',
     'ui.navCtaShort':'Commencer',
+    'ui.onbGo':'Continuer',
+    'ui.onbLangText':'SÃ©lectionnez la langue dans laquelle vous souhaitez lire le site. Vous pouvez en changer Ã  tout moment depuis l’en-tÃªte.',
+    'ui.onbLangTitle':'Choisissez votre langue',
     'ui.peekClose':'Fermer l\'aperçu',
     'ui.peekDemo':'démo',
     'ui.peekLink':'Ouvrir la page d\'exemple complète',
@@ -4355,14 +4456,17 @@ footer h3,
     'ui.accent':'Akzent',
     'ui.accentGroup':'Akzentfarbe der Demo',
     'ui.cookieMore':'Cookie-Richtlinie',
-    'ui.cookieNo':'Nichts speichern',
-    'ui.cookieText':'Diese Website nutzt keine Analyse-, Werbe- oder Tracking-Cookies. Das Einzige, was wir in Ihrem Browser speichern können, ist die von Ihnen gewählte Sprache und diese Antwort.',
-    'ui.cookieTitle':'Speicherung',
-    'ui.cookieYes':'Auswahl merken',
+    'ui.cookieNo':'Nicht notwendige ablehnen',
+    'ui.cookieText':'Diese Website verwendet keine Analyse-, Werbe- oder Tracking-Cookies. Wenn Sie zustimmen, merken wir uns Ihre Sprache für Ihren nächsten Besuch. In beiden Fällen speichern wir Ihre Antwort, damit wir nur einmal fragen.',
+    'ui.cookieTitle':'Cookies',
+    'ui.cookieYes':'Zustimmen',
     'ui.lang':'Sprache',
     'ui.langCurrent':'Sprache: Deutsch',
     'ui.navCta':'Website starten',
     'ui.navCtaShort':'Start',
+    'ui.onbGo':'Weiter',
+    'ui.onbLangText':'Wählen Sie die Sprache, in der Sie die Website lesen möchten. Sie können sie jederzeit in der Kopfzeile ändern.',
+    'ui.onbLangTitle':'Wählen Sie Ihre Sprache',
     'ui.peekClose':'Vorschau schließen',
     'ui.peekDemo':'Demo',
     'ui.peekLink':'Vollständige Beispielseite öffnen',
@@ -4436,14 +4540,17 @@ footer h3,
     'ui.accent':'Accent',
     'ui.accentGroup':'Demo accent colour',
     'ui.cookieMore':'Cookie policy',
-    'ui.cookieNo':'Store nothing',
-    'ui.cookieText':'This site uses no analytics, advertising or tracking cookies. The only thing we can keep in your browser is the language you choose and this answer.',
-    'ui.cookieTitle':'Storage',
-    'ui.cookieYes':'Remember my choice',
+    'ui.cookieNo':'Reject non-essential',
+    'ui.cookieText':'This site has no analytics, advertising or tracking cookies. If you accept, we will remember your language for your next visit. Either way we store your answer, so we only ask once.',
+    'ui.cookieTitle':'Cookies',
+    'ui.cookieYes':'Accept',
     'ui.lang':'Language',
     'ui.langCurrent':'Language: English',
     'ui.navCta':'Build my website',
     'ui.navCtaShort':'Start',
+    'ui.onbGo':'Continue',
+    'ui.onbLangText':'Select the language you would like to read the site in. You can change it at any time from the header.',
+    'ui.onbLangTitle':'Choose your language',
     'ui.peekClose':'Close preview',
     'ui.peekDemo':'demo',
     'ui.peekLink':'Open the full sample site',
@@ -4468,6 +4575,7 @@ footer h3,
   var LANGS = ['en', 'es', 'fr', 'de'];
   var LKEY = 'vt.lang';
   var CKEY = 'vt.consent';
+  var OKEY = 'vt.onboarded';
   var base = null;              // el ingles original, copiado del DOM
   var lang = 'en';
   var consent = null;           // 'all' | 'none' | null (sin responder)
@@ -4601,32 +4709,142 @@ footer h3,
     });
   }
 
-  /* ------------------------------------------------- aviso de almacenamiento -- */
-  function setupConsent() {
-    var box = $('#consent');
+  /* ------------------------------------------------- entrada en dos pasos --
+     Cookies -> idioma -> continuar -> web. Solo la primera visita.
+
+     Que se guarda y por que:
+       vt.onboarded  siempre, tras contestar. Es lo unico que evita volver a
+                     preguntar en cada carga, asi que es estrictamente
+                     necesario para respetar la respuesta dada.
+       vt.consent    siempre: es el registro de la respuesta.
+       vt.lang       solo con 'all'. Quien rechaza lo no esencial entra igual
+                     en el idioma que elija, pero esa eleccion no sobrevive a
+                     la pestaña: en la visita siguiente se vuelve a deducir del
+                     navegador. Esa es la diferencia real entre las dos
+                     opciones, y no hay ninguna otra, porque la web no tiene
+                     analitica ni publicidad ni seguimiento.
+     ---------------------------------------------------------------------- */
+  function setupOnboarding() {
+    var box = $('#onb');
     if (!box) return;
-    if (consent) return;                       // ya respondio en otra visita
-    box.hidden = false;
-    // Un fotograma entre quitar `hidden` y animar, o no hay desde donde entrar.
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { box.classList.add('is-in'); });
-    });
+    var done = read(OKEY) === '1';
+
+    /* Ya paso por aqui: ni se pinta. La web se usa directamente. */
+    if (done) { box.remove(); return; }
+
+    var panel = $('#onbPanel');
+    var stepCookies = $('#onbCookies');
+    var stepLang = $('#onbLang');
+    var go = $('#onbGo');
+    var langBtns = $$('.onb__lang', box);
+    var pick = lang;                       // ingles, o lo que dijera el navegador
+    var blocked = [$('#nav'), $('#main'), $('footer'), $('#peek')];
+
+    function freeze(on) {
+      document.body.classList.toggle('is-onb', on);
+      blocked.forEach(function (el) {
+        if (!el) return;
+        if (on) { el.setAttribute('inert', ''); el.setAttribute('aria-hidden', 'true'); }
+        else { el.removeAttribute('inert'); el.removeAttribute('aria-hidden'); }
+      });
+    }
+
+    /* `inert` es reciente. Donde no exista, el cinturon es el foco: si el
+       tabulador se escapa del panel, se devuelve al primer control. */
+    function trap(e) {
+      if (e.key !== 'Tab') return;
+      var f = $$('button,[href]', box).filter(function (el) { return el.offsetParent !== null; });
+      if (!f.length) return;
+      var first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
+    function show(step) {
+      [stepCookies, stepLang].forEach(function (s) {
+        if (s === step) return;
+        s.classList.remove('is-on');
+        s.hidden = true;
+      });
+      step.hidden = false;
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { step.classList.add('is-on'); });
+      });
+    }
+
+    function mark(code) {
+      pick = code;
+      langBtns.forEach(function (b) {
+        var on = b.getAttribute('data-lang') === code;
+        b.classList.toggle('is-sel', on);
+        b.setAttribute('aria-checked', String(on));
+        b.tabIndex = on ? 0 : -1;          // un radiogroup se tabula como uno solo
+      });
+      /* Se traduce en vivo, para ver lo que se elige antes de confirmarlo. */
+      applyLang(code);
+    }
+
+    /* ---- paso 1: que se guarda ---- */
     $$('[data-consent]', box).forEach(function (b) {
       b.addEventListener('click', function () {
         consent = b.getAttribute('data-consent');
-        if (consent === 'all') {
-          store(CKEY, 'all');
-          store(LKEY, lang);
-        } else {
-          // "No guardar nada" se cumple: no se escribe, y se limpia lo que
-          // hubiera de antes.
-          try { window.localStorage.removeItem(LKEY); window.localStorage.removeItem(CKEY); }
-          catch (e) { /* nada que limpiar */ }
-        }
-        box.classList.remove('is-in');
-        window.setTimeout(function () { box.hidden = true; }, reduced ? 0 : 500);
+        show(stepLang);
+        mark(pick);
+        window.setTimeout(function () {
+          var sel = langBtns.filter(function (x) { return x.classList.contains('is-sel'); })[0];
+          (sel || langBtns[0]).focus();
+        }, reduced ? 0 : 60);
       });
     });
+
+    /* ---- paso 2: idioma ---- */
+    langBtns.forEach(function (b, i) {
+      b.addEventListener('click', function () { mark(b.getAttribute('data-lang')); });
+      b.addEventListener('keydown', function (e) {
+        var d = e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1
+              : e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : 0;
+        if (!d) return;
+        e.preventDefault();
+        var n = langBtns[(i + d + langBtns.length) % langBtns.length];
+        mark(n.getAttribute('data-lang'));
+        n.focus();
+      });
+    });
+
+    /* ---- continuar ---- */
+    function enter() {
+      /* El registro de la respuesta y el "ya contestado" son necesarios para
+         cumplirla, asi que se escriben con cualquiera de las dos opciones. */
+      try {
+        window.localStorage.setItem(CKEY, consent);
+        window.localStorage.setItem(OKEY, '1');
+        if (consent === 'all') window.localStorage.setItem(LKEY, pick);
+        else window.localStorage.removeItem(LKEY);
+      } catch (e) { /* modo privado: la eleccion vale para esta pestaña */ }
+
+      document.removeEventListener('keydown', trap, true);
+      freeze(false);
+      box.classList.add('is-out');
+      /* Ahora que la pagina vuelve a tener su alto real, hay que medirla. */
+      if (typeof measure === 'function') { measure(); needPass = true; schedule(); }
+      window.setTimeout(function () { box.remove(); }, reduced ? 0 : 480);
+    }
+    go.addEventListener('click', enter);
+    box.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !stepLang.hidden && e.target !== go) { e.preventDefault(); enter(); }
+    });
+    document.addEventListener('keydown', trap, true);
+
+    /* Se abre. Hasta aqui el overlay estaba `hidden`, de modo que quien tenga
+       el JavaScript desactivado ve la web y no un panel que no puede cerrar. */
+    box.hidden = false;
+    freeze(true);
+    mark(pick);
+    show(stepCookies);
+    window.setTimeout(function () {
+      var f = $('[data-consent]', box);
+      if (f) f.focus({ preventScroll: true });
+    }, reduced ? 0 : 60);
   }
 
   /* ------------------------------------------------------------ revelado --
@@ -5747,7 +5965,7 @@ footer h3,
   captureBase();
   applyLang(pickInitialLang());
   setupLangMenu();
-  setupConsent();
+  setupOnboarding();
 
   setupReveal();
   setupRingClicks();
