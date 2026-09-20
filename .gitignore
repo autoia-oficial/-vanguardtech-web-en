@@ -2,12 +2,14 @@
 node_modules/
 /.pnp
 .pnp.js
-yarn.lock
-package-lock.json
 
 # Testing
 /coverage
 /.nyc_output
+
+# Build artifacts
+*.tsbuildinfo
+next-env.d.ts
 
 # Production
 /.next/

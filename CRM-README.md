@@ -1,363 +1,396 @@
-# Vanguard CRM - Autonomous Sales System
+# Vanguard CRM
 
-A complete, production-ready sales automation platform for Vanguard Tech. Built with Next.js, TypeScript, PostgreSQL, and deployed on Vercel.
+A sales system for Vanguard Tech: it finds local businesses, audits their
+websites against 13 concrete checks, scores them by how much work they need and
+how reachable they are, and runs email outreach with hard limits so a bug
+cannot turn into a thousand emails.
 
-## 🎯 Features
+Next.js 15 · TypeScript · PostgreSQL · Drizzle ORM · Tailwind · deployed on Vercel.
 
-### Core CRM
-- **Lead Management**: Create, track, and manage leads with detailed information
-- **Lead Scoring**: Automatic scoring based on audit results and data quality
-- **Pipeline Management**: 16-stage pipeline (NEW → LIVE)
-- **Activity Timeline**: Complete activity history for every lead
-- **Custom Fields**: Extensible lead data structure
+---
 
-### Audits & Scoring
-- **13 Comprehensive Checks**:
-  1. Mobile Responsiveness
-  2. HTTPS/Security
-  3. Performance
-  4. Visual Structure
-  5. Call-to-Action (CTA)
-  6. Click-to-Call Functionality
-  7. Opening Hours
-  8. Services Information
-  9. Location/Maps
-  10. Contactability
-  11. Basic SEO
-  12. Images & Content Quality
-  13. Local Consistency (Google My Business, etc.)
+## The rule this codebase is built around
 
-- **Automatic Scoring**: Combined with lead data quality to produce actionable scores
+**Nothing is recorded that did not happen.**
 
-### Email Management
-- **Campaign Management**: Create and manage email campaigns
-- **Email Accounts**: Configure multiple sender accounts with daily limits
-- **Email Queue**: Automatic email sending with rate limiting
-- **Email Events**: Track opens, clicks, replies, bounces
-- **Suppression List**: Automatically avoid sending to unresponsive addresses
-- **Do-Not-Contact List**: Respect user preferences
+- An email reaches `SENT` only after the provider returns a message id. Every
+  other outcome leaves it `PENDING` (retryable) or `FAILED`/`CANCELLED` with
+  the reason stored.
+- A website that cannot be fetched produces 13 `NOT_VERIFIED` checks with the
+  fetch error as evidence — never a failing grade.
+- A discovery source with no credentials is skipped and reported, not faked.
+- Every integration that is not wired up says `NOT CONFIGURED` in the interface
+  and names the exact environment variable that is missing.
 
-### Automations & Workflows
-- **Follow-up Sequences**: Automated multi-step email sequences
-- **Lead Discovery**: Background discovery of new business opportunities
-- **Duplicate Detection**: Automatic detection of duplicate leads
-- **Email Queue Processing**: Scheduled email sending with safety limits
-- **Error Recovery**: Automatic retry logic for failed operations
+---
 
-### Dashboard & Analytics
-- **Real-time Stats**: Total leads, new leads, audited, contacts, replies, etc.
-- **Activity Feed**: Recent activities and changes
-- **Lead Tables**: Filterable, sortable lead views
-- **Email Tracking**: Daily email stats
-- **Automation Status**: View automation runs and errors
+## Architecture
 
-## 🏗️ Architecture
+```
+src/
+  app/
+    (app)/            CRM pages, all behind the auth check in its layout
+    login/            sign-in and first-run setup
+    api/              REST endpoints; withAuth / withCronAuth wrap every one
+  components/         shell, theme, shared presentational primitives
+  db/
+    schema.ts         20 tables, relations, indexes, cascade rules
+    client.ts         pooled pg connection
+  lib/
+    audit/            fetcher, the 13 checks, scoring of a single site
+    discovery/        LeadSourceProvider + adapters (OSM, Google Places)
+    email/            EmailProvider + adapters, and the queue
+    campaigns/        sequence definition and advancement
+    automation/       job runner, the seven jobs, dispatcher
+    auth.ts           scrypt hashing, database sessions
+    locks.ts          cooperative job locks with expiry
+    dedupe.ts         duplicate detection and normalisation
+    scoring.ts        the lead score, formula documented in the module
+    config.ts         which integrations are configured
+migrations/           generated SQL, reproducible
+scripts/              audit-url, seed, ui-check
+```
 
-### Technology Stack
-- **Frontend**: React 18, Next.js 15, TypeScript
-- **Styling**: Tailwind CSS, shadcn/ui components
-- **Database**: PostgreSQL with Neon
-- **ORM**: Drizzle ORM
-- **Deployment**: Vercel
-- **API**: RESTful with Next.js API Routes
-- **Scheduled Jobs**: Vercel Cron Jobs
+### Database
 
-### Database Schema
-Complete relational schema with 20+ tables:
-- `users` - User accounts and permissions
-- `leads` - Business leads
-- `audits` - Website audits
-- `audit_checks` - Individual audit check results
-- `contacts` - Contact persons
-- `email_accounts` - Configured sender accounts
-- `campaigns` - Email campaigns
-- `emails` - Sent emails with tracking
-- `email_events` - Email open/click/bounce events
-- `follow_ups` - Automated follow-up sequences
-- `demos` - Demo/meeting scheduling
-- `activities` - Activity timeline
-- `automations` - Automation configurations
-- `automation_runs` - Execution history
-- `errors` - Error log for recovery
-- `suppression_list` - Do-not-contact addresses
-- `settings` - System configuration
+20 tables. The interesting parts:
 
-### Lead Pipeline Stages
-1. **NEW** - Just discovered
-2. **QUALIFIED** - Data verified
-3. **AUDIT_READY** - Ready for audit
-4. **AUDITED** - Website audited
-5. **DEMO_READY** - Demo scheduled
-6. **CONTACTED** - Initial contact made
-7. **REPLIED** - Lead responded
-8. **DEMO_SENT** - Demo materials sent
-9. **INTERESTED** - Showed interest
-10. **MEETING** - Meeting scheduled
-11. **ACCEPTED** - Proposal accepted
-12. **PAID** - Closed and paid
-13. **PROJECT** - Project in progress
-14. **LIVE** - Project live
-15. **LOST** - Lost opportunity
-16. **DO_NOT_CONTACT** - No further contact
+| Table | Holds |
+|---|---|
+| `leads` | The business. `dedupe_key` makes discovery idempotent across runs. |
+| `audits` / `audit_checks` | One row per audit, 13 per audit with status, evidence, problem, impact, priority. |
+| `emails` | The queue. Carries `idempotency_key` (unique), `attempts`, `next_retry_at`, `last_error`, `blocked_reason`, `provider_message_id`, `sequence_step`. |
+| `email_events` | `SENT` / `DELIVERED` / `BOUNCED` / `OPENED` / `CLICKED` / `REPLIED`, only when a provider reports them. |
+| `campaigns` / `campaign_leads` | Sequence definition, and each lead's position in it. |
+| `follow_ups` | One row per scheduled step, unique on (lead, campaign, step). |
+| `activities` | The permanent history. Only deleting the lead removes it. |
+| `automations` / `automation_runs` | Job registry and every execution with counts. |
+| `errors` | Per-item failures with `retry_count` and `next_retry_at`. |
+| `job_locks` | Advisory locks with a dead-man expiry. |
+| `suppression_list` | Addresses that are never emailed. |
+| `users` / `sessions` | Authentication. |
 
-## 🚀 Getting Started
+### Pipeline
 
-### Prerequisites
-- Node.js 18+ and npm/yarn
-- PostgreSQL 12+ (local or via Neon)
-- Git
+`NEW → QUALIFIED → AUDIT_READY → AUDITED → DEMO_READY → CONTACTED → REPLIED →
+DEMO_SENT → INTERESTED → MEETING → ACCEPTED → PAID → PROJECT → LIVE`,
+plus `LOST` and `DO_NOT_CONTACT`.
 
-### Local Development Setup
+Every stage change is written to `activities` with the transition and reason.
+`DO_NOT_CONTACT`, `LOST`, `PAID`, `PROJECT` and `LIVE` stop outbound sales email.
 
-1. **Clone and install**:
+---
+
+## Lead discovery
+
+Provider-based. The CRM depends only on the `LeadSourceProvider` interface, so a
+new source is an adapter, not a change to the CRM.
+
+| Source | Credentials | Notes |
+|---|---|---|
+| OpenStreetMap (Overpass) | none | Always available. A business with no `website` tag genuinely has no website on record — exactly the signal worth selling to. |
+| Google Places | `GOOGLE_PLACES_API_KEY` | Skipped with a reason when absent. Places does not expose email addresses, so `email` stays null. |
+
+Search by country, province, city and category. Supported categories are listed
+by `GET /api/discovery`. A business found again is matched on its source
+identity first, then email, phone, website, `google_url`, and name + city.
+
+**Adding a source:** implement `LeadSourceProvider` in
+`src/lib/discovery/providers/`, give it a stable `key`, have `availability()`
+report what it needs, and register it in `src/lib/discovery/engine.ts`.
+
+---
+
+## The auditor
+
+`auditWebsite(url, leadContext)` fetches the page (15s timeout, 3MB cap,
+redirects followed) and runs 13 checks against the real document.
+
+| # | Check | What it actually looks at |
+|---|---|---|
+| 01 | Mobile / Responsive | `<meta name="viewport">`, device-width, whether zoom is disabled |
+| 02 | HTTPS | Whether the final URL is TLS, and whether plain http redirects to it |
+| 03 | Performance | Measured document fetch time and size, render-blocking scripts, stylesheets |
+| 04 | Visual structure | `<h1>` count, heading total, semantic landmarks |
+| 05 | CTA | Action-labelled links/buttons, form presence |
+| 06 | Click to call | `href^="tel:"`; a printed-but-unlinked number warns rather than fails |
+| 07 | Opening hours | JSON-LD `openingHours`, else day/time text as a weaker signal |
+| 08 | Services | Headings and nav links naming the offer |
+| 09 | Location | JSON-LD address/geo, map embed, map link, `<address>` |
+| 10 | Contactability | How many of phone / email / WhatsApp / form exist |
+| 11 | Basic SEO | title, meta description, canonical, lang, Open Graph |
+| 12 | Images / content | Image count, alt coverage, visible word count |
+| 13 | Local consistency | Name, phone and city on record vs. what the page shows |
+
+Each check stores `status`, `evidence`, `problem`, `impact`, `priority` and
+`checked_at`. Status is `PASS`, `WARNING`, `FAIL` or `NOT_VERIFIED`.
+
+A check that cannot determine something returns `NOT_VERIFIED` with the reason.
+If the page cannot be fetched at all, all 13 come back `NOT_VERIFIED` and the
+audit stores `fetch_error`.
+
+Run one from the command line without touching the database:
+
 ```bash
-cd vanguard-crm
+npm run audit:url -- https://example.com "Business Name" "City"
+```
+
+---
+
+## Lead scoring
+
+0–100, in `src/lib/scoring.ts`. The score answers: how much is this lead worth
+contacting next? Vanguard sells websites, so the best lead visibly needs that
+work **and** can be reached.
+
+| Component | Max | How |
+|---|---|---|
+| Opportunity | 45 | No website at all = 45. With a website, `45 × (1 − auditScore/100)`, so a site scoring 20/100 yields 36. Un-audited = 20 (unknown, not zero). |
+| Reachability | 30 | email 18, phone 8, any social 4. Email dominates because outbound runs on email. |
+| Data quality | 15 | category, city, address, country — 3.75 each. |
+| Evidence | 10 | Proportional to how many of the 13 checks actually ran. |
+
+**A lead with no contact route is capped at 40** however broken its site is —
+an unreachable business is not actionable.
+
+Priority bands: ≥80 `critical`, ≥60 `high`, ≥35 `medium`, else `low`.
+
+`scoreLead()` returns the total plus each component and a `reasons` array, so
+any score in the interface can be explained.
+
+---
+
+## Email
+
+### Providers
+
+`EmailProvider` with an SMTP adapter (nodemailer). When SMTP is not configured,
+`UnconfiguredEmailProvider` is selected: it never sends and never claims to.
+
+A send returns `{ ok: true, provider_message_id }` only when the server accepted
+the message. A 5xx is a permanent rejection and is not retried; a 4xx or a
+transport error is retried with backoff.
+
+### Queue states
+
+`PENDING → QUEUED → SENDING → SENT`, or `FAILED` / `CANCELLED`.
+
+### Every gate, checked at enqueue *and* again immediately before sending
+
+- recipient is syntactically valid
+- recipient is not on the suppression list
+- lead is not at a no-outreach stage
+- campaign is still `ACTIVE`
+- sending account exists and is active
+- per-day cap for that account, counted **over today only**
+- per-hour cap for that account, counted over the last hour
+- campaign's own daily cap
+- lead was not contacted inside the cool-off window (default 14 days)
+- no other email is already outstanding for that lead
+
+A limit is temporary, so the email is deferred with a `next_retry_at` rather
+than cancelled. A permanent block is cancelled with `blocked_reason` recorded
+and written to the lead's activity.
+
+### Why it cannot double-send
+
+- `idempotency_key` is unique in the database, derived from
+  lead + campaign + step + subject.
+- A worker claims a row with a conditional `UPDATE ... WHERE status IN
+  ('PENDING','QUEUED')`, so overlapping runs cannot both take it.
+- Rows stranded in `SENDING` by a killed worker are reclaimed after 10 minutes.
+- Each job holds a lock, so two cron invocations never process the same queue.
+
+There is a test that runs three workers concurrently against five queued emails
+and asserts exactly five sends.
+
+---
+
+## Campaigns and follow-ups
+
+A campaign carries ordered steps:
+
+```json
+[
+  { "step": 1, "wait_days": 0, "subject": "About {{business_name}}", "body": "Hi {{business_name}} in {{city}}" },
+  { "step": 2, "wait_days": 4, "subject": "Following up",           "body": "Checking in" }
+]
+```
+
+`{{field}}` placeholders are filled from the lead; an unknown or null field
+renders empty rather than leaving the placeholder visible.
+
+Step 1 queues immediately. A later step is booked **only once the previous one
+was actually sent**, waiting `wait_days` from that send. Emails record their
+`sequence_step`, so the wait is always measured from the right send.
+
+A sequence stops immediately when the lead replies, becomes a customer, or is
+marked `DO_NOT_CONTACT` — cancelling pending follow-ups and any queued mail.
+
+---
+
+## Automations
+
+Seven jobs, each separate, idempotent and lock-protected.
+
+| Job | Schedule | Does |
+|---|---|---|
+| `lead-discovery` | `0 */6 * * *` | Runs the saved discovery queries. |
+| `website-audit` | `15 * * * *` | Audits leads with a website and no audit, then rescores. |
+| `email-queue` | `*/5 * * * *` | Sends due mail through every gate above. |
+| `follow-up` | `0 9 * * *` | Advances sequences, queues due steps. |
+| `crm-maintenance` | `30 * * * *` | Stops sequences for converted leads, reclaims stuck sends, prunes sessions and locks. |
+| `duplicate-detection` | `0 2 * * 0` | Reports groups that look like the same business. |
+| `error-retry` | `*/30 * * * *` | Re-attempts recorded failures whose backoff elapsed. |
+
+Every run writes an `automation_runs` row with processed/success/failed/skipped,
+whether it succeeded or threw. A per-item failure is recorded in `errors` and
+never aborts the batch — one broken lead cannot stop the queue.
+
+The Automations page can pause, resume, or run each job now. "Run now" takes the
+same lock a cron run does, so pressing it twice is refused rather than
+duplicating work.
+
+---
+
+## Authentication
+
+scrypt with a per-password random salt, database-backed sessions, httpOnly
+cookie, 7-day expiry. Timing-safe comparison, and sign-in spends the hashing
+time even for an unknown account so the endpoint cannot enumerate users.
+
+Every CRM page sits under a layout that checks the session server-side; every
+private API route is wrapped in `withAuth`. With `AUTH_SECRET` unset, sign-in is
+refused and the CRM stays locked.
+
+The first account is created at `/login` on first run; that endpoint closes
+itself permanently once a user exists.
+
+**Cron routes never fall back to a default secret.** If `CRON_SECRET` is unset,
+they return 503 `NOT_CONFIGURED` and run nothing.
+
+---
+
+## Local development
+
+Requires Node 18+ and PostgreSQL 14+.
+
+```bash
 npm install
+
+# database
+createdb vanguard_crm
+createdb vanguard_crm_test
+
+cp .env.example .env.local
+# set DATABASE_URL, AUTH_SECRET, CRON_SECRET
+
+npm run db:migrate      # apply migrations
+npm run seed            # admin account + example leads (development only)
+npm run dev             # http://localhost:3000
 ```
 
-2. **Set up PostgreSQL locally**:
+The seed writes leads using `.invalid` addresses (reserved by RFC 2606, so they
+can never resolve or be emailed) and `source = "seed"`. Remove them with:
+
 ```bash
-# macOS with Homebrew
-brew install postgresql@15
-brew services start postgresql@15
-
-# Create database
-createdb vanguard_crm_dev
+npx tsx scripts/seed.ts --clean
 ```
 
-3. **Configure environment**:
+### Commands
+
+| Command | Does |
+|---|---|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm start` | Serve the build |
+| `npm test` | Full test suite |
+| `npm run type-check` | TypeScript, no emit |
+| `npm run lint` | ESLint |
+| `npm run db:generate` | Generate a migration from schema changes |
+| `npm run db:migrate` | Apply migrations |
+| `npm run db:studio` | Drizzle Studio |
+| `npm run seed` | Development seed |
+| `npm run audit:url -- <url>` | Audit one URL from the terminal |
+| `npm run ui-check` | Drive the running app in a browser across three viewports |
+
+---
+
+## Testing
+
+The suite runs against a **real PostgreSQL database** — nothing is mocked — so
+unique constraints, cascades and concurrent updates behave as they will in
+production. `TEST_DATABASE_URL` is truncated between tests.
+
 ```bash
-# Copy example env file
-cp .env.local.example .env.local
-
-# Edit .env.local and set DATABASE_URL
-```
-
-4. **Run migrations**:
-```bash
-npm run db:push
-```
-
-5. **Start development server**:
-```bash
-npm run dev
-```
-
-Visit `http://localhost:3000` to see the CRM dashboard.
-
-## 📝 Database Migrations
-
-Generate schema:
-```bash
-npm run db:generate
-```
-
-Push schema to database:
-```bash
-npm run db:push
-```
-
-View database with Drizzle Studio:
-```bash
-npm run db:studio
-```
-
-## 🔌 API Routes
-
-### Leads
-- `GET /api/leads` - List leads with pagination
-- `POST /api/leads` - Create new lead
-- `GET /api/leads/[id]` - Get lead details
-- `PATCH /api/leads/[id]` - Update lead
-- `DELETE /api/leads/[id]` - Delete lead
-
-### Audits
-- `GET /api/audits` - List audits
-- `POST /api/audits` - Create audit with checks
-- `GET /api/audits?lead_id=X` - Get lead audit
-
-### Emails
-- `GET /api/emails` - List emails
-- `POST /api/emails` - Create email
-- `GET /api/emails?lead_id=X` - Get lead emails
-
-### Campaigns
-- `GET /api/campaigns` - List campaigns
-- `POST /api/campaigns` - Create campaign
-
-### Automations
-- `GET /api/automations` - List automations
-- `POST /api/automations` - Create automation
-
-### Dashboard
-- `GET /api/dashboard/stats` - Get dashboard statistics
-
-### Cron Jobs
-- `GET /api/cron/email-queue` - Process email queue (every 5 minutes)
-- `GET /api/cron/follow-ups` - Process follow-ups (daily at 9 AM)
-- `GET /api/cron/leads-discovery` - Discover new leads (every 6 hours)
-- `GET /api/cron/duplicate-detection` - Find duplicates (weekly Sunday 2 AM)
-
-## ⚙️ Configuration
-
-### Email Configuration
-Configure email accounts in the CRM dashboard or via API:
-```json
-{
-  "email": "sales@vanguardtech.com",
-  "name": "Vanguard Sales",
-  "smtp_host": "smtp.gmail.com",
-  "smtp_port": 587,
-  "smtp_user": "your-email@gmail.com",
-  "smtp_password": "app-password",
-  "daily_limit": 100,
-  "is_active": true
-}
-```
-
-### Campaign Configuration
-Create campaigns with target filters:
-```json
-{
-  "name": "Restaurants Campaign Q4",
-  "description": "Target restaurants without websites",
-  "target_filter": {
-    "category": "RESTAURANTS",
-    "has_website": false,
-    "priority": ["high", "critical"]
-  },
-  "email_account_id": 1,
-  "daily_limit": 50,
-  "status": "DRAFT"
-}
-```
-
-### Email Limits
-- **Daily Limit**: Per email account (default 100)
-- **Hourly Limit**: Implicit through queue processing
-- **Suppression List**: Automatic email blocking
-- **Do-Not-Contact**: Lead status prevents any outreach
-- **Idempotency**: Same email not sent twice within 24 hours
-
-## 🧪 Testing
-
-Run tests:
-```bash
+createdb vanguard_crm_test
+DATABASE_URL=postgresql://.../vanguard_crm_test npm run db:migrate
 npm test
 ```
 
-Run tests with UI:
+Covered: the 13 audit checks against fixture pages served over loopback,
+unreachable and non-HTML sites, scoring in every band, duplicate detection and
+normalisation, lock acquisition and contention, email validation, every queue
+gate, daily and hourly limits, retry and backoff, concurrency, password hashing
+and sessions, sequence advancement and every stop condition, and an end-to-end
+run of one lead from discovery through audit, scoring, enrolment, send,
+follow-up and cleanup.
+
+`npm run ui-check` drives the running app in Chromium: signs in, visits all ten
+pages at mobile, tablet and desktop widths, exercises both themes and the mobile
+drawer, and fails on any console error, failed request, 5xx, or horizontal
+overflow.
+
+---
+
+## Deployment
+
+### 1. Database
+
+Create a PostgreSQL database. Neon needs no code changes — use the **pooled**
+connection string for serverless.
+
+### 2. Vercel
+
+Import the repository. Next.js is detected automatically; `vercel.json` already
+declares the seven cron schedules.
+
+Set these environment variables:
+
+| Variable | Required | Notes |
+|---|---|---|
+| `DATABASE_URL` | yes | Pooled connection string |
+| `AUTH_SECRET` | yes | `openssl rand -base64 32` |
+| `CRON_SECRET` | yes | `openssl rand -hex 32` |
+| `SMTP_HOST` `SMTP_PORT` `SMTP_USER` `SMTP_PASSWORD` | no | Until set, the queue holds mail and sends nothing |
+| `GOOGLE_PLACES_API_KEY` | no | Enables that discovery source |
+
+### 3. Migrate
+
 ```bash
-npm run test:ui
+DATABASE_URL="<production url>" npm run db:migrate
 ```
 
-Type checking:
-```bash
-npm run type-check
-```
+### 4. First run
 
-## 🔧 Building
+Open the deployment, create the first account at `/login`, then configure
+discovery queries and an email account under Settings.
 
-Build for production:
-```bash
-npm run build
-```
+Vercel Cron sends `Authorization: Bearer $CRON_SECRET` automatically once the
+variable is set on the project.
 
-Start production server:
-```bash
-npm start
-```
+---
 
-## 📦 Deployment on Vercel
+## What is not built
 
-### 1. Connect Repository
-```bash
-vercel link
-```
+Stated plainly so nothing here is mistaken for working:
 
-### 2. Set Environment Variables
-In Vercel dashboard or CLI:
-```bash
-vercel env add DATABASE_URL
-vercel env add CRON_SECRET
-```
-
-### 3. Configure PostgreSQL with Neon
-
-1. Go to https://neon.tech
-2. Create new project
-3. Copy connection string
-4. Add to Vercel as DATABASE_URL
-
-### 4. Deploy
-```bash
-vercel deploy --prod
-```
-
-## 🔐 Security Considerations
-
-- **API Authentication**: Cron jobs use bearer token (CRON_SECRET)
-- **Email Validation**: Suppression list prevents bounces
-- **Rate Limiting**: Daily and hourly email limits
-- **Data Privacy**: No fake data in production, only real leads
-- **Audit Trail**: All actions logged in activities table
-- **Environment Variables**: Never commit secrets to git
-
-## 📊 Scoring Algorithm
-
-Lead score is calculated from:
-1. **Base Score**: 20 points
-2. **Contact Data**: Up to 30 points (email +10, phone +10, website +10)
-3. **Website Quality**: Up to 20 points (based on audit results)
-4. **Audit Completion**: 15 points (if audited)
-5. **Priority Boost**: Up to 15 points (critical +15, high +10, medium +5)
-
-**Total**: 0-100 points
-
-## 🛠️ Maintenance
-
-### Regular Tasks
-- **Monitor Errors**: Check `/api/dashboard` for unresolved errors
-- **Cleanup Bounced Emails**: Move to suppression list automatically
-- **Archive Old Leads**: Move completed leads to history
-- **Update Email Limits**: Based on delivery rates
-- **Review Duplicate Leads**: Merge related leads
-
-### Backup Strategy
-- Use Neon's automated backups
-- Export critical data weekly
-- Keep git history clean and backed up
-
-## 🐛 Troubleshooting
-
-### Database Connection Issues
-```bash
-# Check connection string
-echo $DATABASE_URL
-
-# Test connection
-psql $DATABASE_URL -c "SELECT 1"
-```
-
-### Email Not Sending
-1. Check email account is active
-2. Verify daily limit not exceeded
-3. Check suppression list
-4. Review cron job logs
-
-### Leads Not Appearing
-1. Verify database connection
-2. Check API response for errors
-3. Clear browser cache and refresh
-
-## 📞 Support
-
-For issues or questions:
-1. Check error logs: `GET /api/dashboard`
-2. Review cron job status
-3. Check database schema with Drizzle Studio
-4. Examine activity timeline for specific leads
-
-## 📄 License
-
-Proprietary - Vanguard Tech
+- **Open/click/reply tracking.** The `email_events` table and the statuses
+  exist, but nothing writes `OPENED`, `CLICKED` or `REPLIED` — that needs
+  provider webhooks or an IMAP poller. No event is invented in their absence.
+- **Demos.** The `demos` table exists and lead detail reads it; nothing creates
+  a demo yet.
+- **Sequence editing in the interface.** Campaigns are created in the UI, but
+  their steps are set through `PATCH /api/campaigns` for now.
+- **Email account management in the interface.** Accounts are inserted directly
+  or by the seed; there is no form yet.
