@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
 }
 
 function isValidCronRequest(request: NextRequest): boolean {
-  const authHeader = request.headers.get('authorization');
-  return authHeader === `Bearer ${process.env.CRON_SECRET || 'default-secret'}`;
+  const secret = process.env.CRON_SECRET;
+  if (!secret) return false;
+  return request.headers.get('authorization') === `Bearer ${secret}`;
 }

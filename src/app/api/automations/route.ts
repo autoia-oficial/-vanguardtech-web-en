@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/client';
 import { automations, automation_runs } from '@/db/schema';
+import { desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -50,5 +51,3 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create automation' }, { status: 500 });
   }
 }
-
-import { desc } from 'drizzle-orm';

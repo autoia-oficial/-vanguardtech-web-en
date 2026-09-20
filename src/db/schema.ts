@@ -322,6 +322,38 @@ export const emailsRelations = relations(emails, ({ one, many }) => ({
   events: many(email_events),
 }));
 
+export const automationsRelations = relations(automations, ({ many }) => ({
+  automation_runs: many(automation_runs),
+}));
+
+export const automationRunsRelations = relations(automation_runs, ({ one }) => ({
+  automation: one(automations, {
+    fields: [automation_runs.automation_id],
+    references: [automations.id],
+  }),
+}));
+
+export const auditChecksRelations = relations(audit_checks, ({ one }) => ({
+  audit: one(audits, { fields: [audit_checks.audit_id], references: [audits.id] }),
+}));
+
+export const emailEventsRelations = relations(email_events, ({ one }) => ({
+  email: one(emails, { fields: [email_events.email_id], references: [emails.id] }),
+}));
+
+export const activitiesRelations = relations(activities, ({ one }) => ({
+  lead: one(leads, { fields: [activities.lead_id], references: [leads.id] }),
+}));
+
+export const followUpsRelations = relations(follow_ups, ({ one }) => ({
+  lead: one(leads, { fields: [follow_ups.lead_id], references: [leads.id] }),
+  campaign: one(campaigns, { fields: [follow_ups.campaign_id], references: [campaigns.id] }),
+}));
+
+export const demosRelations = relations(demos, ({ one }) => ({
+  lead: one(leads, { fields: [demos.lead_id], references: [leads.id] }),
+}));
+
 export const campaignsRelations = relations(campaigns, ({ one, many }) => ({
   email_account: one(email_accounts, { fields: [campaigns.email_account_id], references: [email_accounts.id] }),
   campaign_leads: many(campaign_leads),
