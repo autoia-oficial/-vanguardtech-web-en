@@ -1,0 +1,1 @@
+ALTER TABLE "emails" ADD COLUMN "sequence_step" integer;

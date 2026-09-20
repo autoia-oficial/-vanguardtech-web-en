@@ -1,66 +1,130 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { and, desc, asc, eq, ilike, or, sql, type SQL } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { leads } from '@/db/schema';
+import { ok, fail, withAuth, readJson, intParam } from '@/lib/api';
+import { findDuplicateLead } from '@/lib/dedupe';
+import { recordActivity, ActivityType, isPipelineStage } from '@/lib/activity';
+import { scoreLead, priorityForScore } from '@/lib/scoring';
 
-export async function GET(request: NextRequest) {
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
-    const offset = parseInt(searchParams.get('offset') || '0');
+const SORTABLE = {
+  created_at: leads.created_at,
+  updated_at: leads.updated_at,
+  score: leads.score,
+  business_name: leads.business_name,
+  status: leads.status,
+} as const;
 
-    // Simple implementation - get all and filter in memory
-    const allLeads = await db.query.leads.findMany({
-      limit: 1000,
-    });
+export const GET = withAuth(async (req) => {
+  const p = req.nextUrl.searchParams;
+  const limit = intParam(p.get('limit'), 25, 200);
+  const offset = intParam(p.get('offset'), 0);
+  const sortKey = (p.get('sort') ?? 'created_at') as keyof typeof SORTABLE;
+  const column = SORTABLE[sortKey] ?? leads.created_at;
+  const direction = p.get('order') === 'asc' ? asc : desc;
 
-    let filtered = allLeads;
+  const filters: SQL[] = [];
+  const status = p.get('status');
+  const priority = p.get('priority');
+  const category = p.get('category');
+  const city = p.get('city');
+  const search = p.get('q');
 
-    // Apply filters in memory
-    const status = searchParams.get('status');
-    const priority = searchParams.get('priority');
-
-    if (status) {
-      filtered = filtered.filter(l => l.status === status);
-    }
-    if (priority) {
-      filtered = filtered.filter(l => l.priority === priority);
-    }
-
-    // Apply pagination
-    const data = filtered.slice(offset, offset + limit);
-
-    return NextResponse.json({
-      data,
-      pagination: { limit, offset, total: filtered.length },
-    });
-  } catch (error) {
-    console.error('Error fetching leads:', error);
-    return NextResponse.json({ error: 'Failed to fetch leads' }, { status: 500 });
+  if (status) filters.push(eq(leads.status, status));
+  if (priority) filters.push(eq(leads.priority, priority));
+  if (category) filters.push(eq(leads.category, category));
+  if (city) filters.push(eq(leads.city, city));
+  if (search) {
+    const term = `%${search}%`;
+    filters.push(
+      or(
+        ilike(leads.business_name, term),
+        ilike(leads.email, term),
+        ilike(leads.website, term),
+        ilike(leads.city, term),
+      ) as SQL,
+    );
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { business_name, category, city, province, email, phone, website, source } = body;
+  const where = filters.length ? and(...filters) : undefined;
 
-    const result = await db.insert(leads).values({
-      business_name,
-      category,
-      city,
-      province,
-      email,
-      phone,
-      website,
-      source,
-      status: 'NEW',
-      priority: 'medium',
-      score: 0,
-    }).returning();
+  const rows = await db
+    .select()
+    .from(leads)
+    .where(where)
+    .orderBy(direction(column))
+    .limit(limit)
+    .offset(offset);
 
-    return NextResponse.json(result[0], { status: 201 });
-  } catch (error) {
-    console.error('Error creating lead:', error);
-    return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 });
+  const counted = await db.select({ n: sql<number>`count(*)::int` }).from(leads).where(where);
+
+  return ok({ data: rows, pagination: { limit, offset, total: counted[0]?.n ?? 0 } });
+});
+
+export const POST = withAuth(async (req) => {
+  const body = await readJson<Record<string, unknown>>(req);
+  if (!body) return fail(400, 'Expected a JSON body.');
+
+  const business_name = typeof body.business_name === 'string' ? body.business_name.trim() : '';
+  if (!business_name) return fail(400, 'business_name is required.');
+
+  const str = (k: string): string | null => {
+    const v = body[k];
+    return typeof v === 'string' && v.trim() ? v.trim() : null;
+  };
+
+  const candidate = {
+    business_name,
+    email: str('email'),
+    phone: str('phone'),
+    website: str('website'),
+    google_url: str('google_url'),
+    city: str('city'),
+  };
+
+  const duplicate = await findDuplicateLead(candidate);
+  if (duplicate) {
+    return fail(409, 'This business is already in the CRM.', duplicate);
   }
-}
+
+  const status = str('status');
+  if (status && !isPipelineStage(status)) return fail(400, `Unknown pipeline stage "${status}".`);
+
+  const draft = {
+    business_name,
+    category: str('category'),
+    subcategory: str('subcategory'),
+    city: candidate.city,
+    province: str('province'),
+    country: str('country'),
+    address: str('address'),
+    phone: candidate.phone,
+    email: candidate.email,
+    website: candidate.website,
+    google_url: candidate.google_url,
+    instagram_url: str('instagram_url'),
+    facebook_url: str('facebook_url'),
+    linkedin_url: str('linkedin_url'),
+    source: str('source') ?? 'manual',
+    source_url: str('source_url'),
+    notes: str('notes'),
+  };
+
+  // Score what we know now; the audit job refines it once the site is checked.
+  const breakdown = scoreLead(draft);
+
+  const rows = await db
+    .insert(leads)
+    .values({
+      ...draft,
+      status: status ?? 'NEW',
+      score: breakdown.total,
+      priority: priorityForScore(breakdown.total),
+    })
+    .returning();
+
+  await recordActivity(rows[0].id, ActivityType.LEAD_CREATED, 'Created manually', {
+    score: breakdown,
+  });
+
+  return ok(rows[0], { status: 201 });
+});

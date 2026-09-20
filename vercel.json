@@ -1,27 +1,21 @@
 {
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "outputDirectory": ".next",
-  "env": {
-    "DATABASE_URL": "@database_url"
-  },
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
   "crons": [
-    {
-      "path": "/api/cron/leads-discovery",
-      "schedule": "0 */6 * * *"
+    { "path": "/api/cron/lead-discovery", "schedule": "0 */6 * * *" },
+    { "path": "/api/cron/website-audit", "schedule": "15 * * * *" },
+    { "path": "/api/cron/email-queue", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/follow-up", "schedule": "0 9 * * *" },
+    { "path": "/api/cron/crm-maintenance", "schedule": "30 * * * *" },
+    { "path": "/api/cron/duplicate-detection", "schedule": "0 2 * * 0" },
+    { "path": "/api/cron/error-retry", "schedule": "*/30 * * * *" }
+  ],
+  "functions": {
+    "src/app/api/cron/[job]/route.ts": {
+      "maxDuration": 300
     },
-    {
-      "path": "/api/cron/email-queue",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/follow-ups",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/duplicate-detection",
-      "schedule": "0 2 * * 0"
+    "src/app/api/leads/[id]/audit/route.ts": {
+      "maxDuration": 60
     }
-  ]
+  }
 }

@@ -38,6 +38,8 @@ export interface EnqueueInput {
   subject: string;
   body: string;
   scheduled_at?: Date;
+  /** Campaign sequence step this email belongs to, when it is part of one. */
+  sequence_step?: number | null;
   /** Supply to control dedupe; otherwise derived from lead+campaign+subject. */
   idempotency_key?: string;
 }
@@ -144,6 +146,7 @@ export async function enqueueEmail(input: EnqueueInput): Promise<EnqueueResult> 
       body: input.body,
       status: EmailStatus.PENDING,
       idempotency_key,
+      sequence_step: input.sequence_step ?? null,
       scheduled_at: input.scheduled_at ?? new Date(),
     })
     .onConflictDoNothing({ target: emails.idempotency_key })

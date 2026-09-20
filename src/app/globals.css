@@ -2,44 +2,253 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  @apply border-gray-700;
+/*
+ * Design tokens.
+ *
+ * Dark is the default and is defined on :root. Light is opt-in via
+ * [data-theme="light"], so a fresh visitor with no stored preference gets dark
+ * without a flash. Neutrals only — the single accent is a warm off-white used
+ * sparingly for the active state, never a saturated brand colour.
+ */
+:root {
+  --bg: #0b0b0c;
+  --bg-raised: #121214;
+  --bg-overlay: #17171a;
+  --surface: #121214;
+  --surface-hover: #1a1a1e;
+  --border: #26262b;
+  --border-strong: #35353c;
+
+  --text: #f2f2f3;
+  --text-muted: #a1a1aa;
+  --text-faint: #6c6c76;
+
+  --accent: #f2f2f3;
+  --accent-contrast: #0b0b0c;
+
+  --ok: #6ee7a8;
+  --warn: #f0c674;
+  --bad: #f2857f;
+  --idle: #8c8c96;
+
+  --radius: 10px;
+  --radius-lg: 14px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.55);
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+
+  color-scheme: dark;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+:root[data-theme='light'] {
+  --bg: #fbfbfc;
+  --bg-raised: #ffffff;
+  --bg-overlay: #ffffff;
+  --surface: #ffffff;
+  --surface-hover: #f4f4f6;
+  --border: #e4e4e8;
+  --border-strong: #d0d0d6;
+
+  --text: #16161a;
+  --text-muted: #5f5f6a;
+  --text-faint: #8e8e99;
+
+  --accent: #16161a;
+  --accent-contrast: #ffffff;
+
+  --ok: #1a7f50;
+  --warn: #8a6410;
+  --bad: #a83028;
+  --idle: #6f6f7a;
+
+  --shadow-sm: 0 1px 2px rgba(16, 16, 20, 0.06);
+  --shadow: 0 4px 16px rgba(16, 16, 20, 0.08);
+  --shadow-lg: 0 16px 48px rgba(16, 16, 20, 0.12);
+
+  color-scheme: light;
 }
 
-::-webkit-scrollbar-track {
-  @apply bg-graphite;
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
+      sans-serif;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Theme changes ease rather than snap. */
+    transition: background-color 220ms var(--ease), color 220ms var(--ease);
+  }
+
+  /* Respect a reduced-motion preference everywhere, including the theme fade. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  ::selection {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+    border: 3px solid var(--bg);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--text-faint);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--text);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
-::-webkit-scrollbar-thumb {
-  @apply bg-slate rounded;
+@layer components {
+  .vg-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .vg-input {
+    width: 100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    padding: 0.55rem 0.75rem;
+    font-size: 0.875rem;
+    transition: border-color 160ms var(--ease), box-shadow 160ms var(--ease);
+  }
+  .vg-input::placeholder {
+    color: var(--text-faint);
+  }
+  .vg-input:focus {
+    outline: none;
+    border-color: var(--text-faint);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--text) 10%, transparent);
+  }
+
+  .vg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border-radius: var(--radius);
+    padding: 0.5rem 0.9rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 140ms var(--ease), border-color 140ms var(--ease),
+      transform 140ms var(--ease), opacity 140ms var(--ease);
+  }
+  .vg-btn:hover:not(:disabled) {
+    background: var(--surface-hover);
+    border-color: var(--text-faint);
+  }
+  .vg-btn:active:not(:disabled) {
+    transform: translateY(0.5px) scale(0.995);
+  }
+  .vg-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  .vg-btn-primary {
+    background: var(--accent);
+    color: var(--accent-contrast);
+    border-color: var(--accent);
+  }
+  .vg-btn-primary:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 88%, var(--bg));
+    border-color: color-mix(in srgb, var(--accent) 88%, var(--bg));
+  }
+
+  .vg-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    padding: 0.15rem 0.55rem;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--text-muted);
+  }
+
+  .vg-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .vg-row-link {
+    transition: background-color 120ms var(--ease);
+  }
+  .vg-row-link:hover {
+    background: var(--surface-hover);
+  }
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-silver;
+@keyframes vg-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-body {
-  @apply bg-graphite text-white;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+.vg-enter {
+  animation: vg-fade-up 260ms var(--ease) both;
 }
 
-html {
-  scroll-behavior: smooth;
+@keyframes vg-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-input, textarea, select {
-  @apply bg-charcoal text-white border border-slate rounded px-3 py-2 focus:outline-none focus:border-silver focus:ring-1 focus:ring-silver;
-}
-
-button {
-  @apply transition-all duration-200 ease-in-out;
-}
-
-.container {
-  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+.vg-spin {
+  animation: vg-spin 700ms linear infinite;
 }

@@ -200,6 +200,9 @@ export const emails = pgTable('emails', {
   status: varchar('status', { length: 50 }).notNull().default('PENDING'),
   // Guarantees a given (lead, campaign, step) is only ever queued once.
   idempotency_key: varchar('idempotency_key', { length: 255 }).notNull(),
+  // Which campaign sequence step this email is, so the next step's wait is
+  // measured from the right send rather than whichever row is read first.
+  sequence_step: integer('sequence_step'),
   scheduled_at: timestamp('scheduled_at').notNull().defaultNow(),
   attempts: integer('attempts').notNull().default(0),
   max_attempts: integer('max_attempts').notNull().default(3),

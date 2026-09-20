@@ -1,6 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { activities, leads } from '@/db/schema';
+import { PIPELINE_STAGES, isPipelineStage, NO_OUTREACH_STAGES, type PipelineStage } from '@/lib/pipeline';
+
+export { PIPELINE_STAGES, isPipelineStage, NO_OUTREACH_STAGES };
+export type { PipelineStage };
 
 /**
  * Activity is the lead's permanent history. Nothing here is ever deleted by
@@ -49,40 +53,6 @@ export async function recordActivity(
     metadata: metadata ?? null,
   });
 }
-
-export const PIPELINE_STAGES = [
-  'NEW',
-  'QUALIFIED',
-  'AUDIT_READY',
-  'AUDITED',
-  'DEMO_READY',
-  'CONTACTED',
-  'REPLIED',
-  'DEMO_SENT',
-  'INTERESTED',
-  'MEETING',
-  'ACCEPTED',
-  'PAID',
-  'PROJECT',
-  'LIVE',
-  'LOST',
-  'DO_NOT_CONTACT',
-] as const;
-
-export type PipelineStage = (typeof PIPELINE_STAGES)[number];
-
-export function isPipelineStage(v: string): v is PipelineStage {
-  return (PIPELINE_STAGES as readonly string[]).includes(v);
-}
-
-/** Stages at which outbound sales email must stop. */
-export const NO_OUTREACH_STAGES: readonly string[] = [
-  'DO_NOT_CONTACT',
-  'LOST',
-  'PAID',
-  'PROJECT',
-  'LIVE',
-];
 
 /**
  * Changes a lead's stage and writes the transition to its history.

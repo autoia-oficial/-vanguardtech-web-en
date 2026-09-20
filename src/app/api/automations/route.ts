@@ -1,53 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db/client';
-import { automations, automation_runs } from '@/db/schema';
 import { desc } from 'drizzle-orm';
+import { db } from '@/db/client';
+import { automation_runs } from '@/db/schema';
+import { ok, withAuth } from '@/lib/api';
+import { ensureAutomations, JOB_DEFINITIONS, type JobKey } from '@/lib/automation/runner';
 
-export async function GET(request: NextRequest) {
-  try {
-    const status = request.nextUrl.searchParams.get('status');
+export const GET = withAuth(async () => {
+  await ensureAutomations();
+  const rows = await db.query.automations.findMany({
+    with: { runs: { orderBy: [desc(automation_runs.started_at)], limit: 5 } },
+  });
 
-    let query = db.query.automations.findMany({
-      with: {
-        automation_runs: {
-          limit: 1,
-          orderBy: desc(automation_runs.started_at),
-        },
-      },
-    });
-
-    const data = await query;
-
-    if (status) {
-      return NextResponse.json(data.filter(a => a.status === status));
-    }
-
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error fetching automations:', error);
-    return NextResponse.json({ error: 'Failed to fetch automations' }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { name, description, type, config } = body;
-
-    const result = await db
-      .insert(automations)
-      .values({
-        name,
-        description,
-        type,
-        config,
-        status: 'ACTIVE',
-      })
-      .returning();
-
-    return NextResponse.json(result[0], { status: 201 });
-  } catch (error) {
-    console.error('Error creating automation:', error);
-    return NextResponse.json({ error: 'Failed to create automation' }, { status: 500 });
-  }
-}
+  return ok({
+    data: rows.map((a) => {
+      const def = JOB_DEFINITIONS[a.key as JobKey];
+      const last = a.runs[0] ?? null;
+      return {
+        ...a,
+        schedule: def?.schedule ?? null,
+        description: a.description ?? def?.description ?? null,
+        last_run_detail: last,
+        totals: a.runs.reduce(
+          (acc, r) => ({
+            processed: acc.processed + r.processed,
+            success: acc.success + r.success,
+            failed: acc.failed + r.failed,
+            skipped: acc.skipped + r.skipped,
+          }),
+          { processed: 0, success: 0, failed: 0, skipped: 0 },
+        ),
+      };
+    }),
+  });
+});

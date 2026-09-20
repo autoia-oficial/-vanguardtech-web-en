@@ -1,62 +1,45 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { desc, eq, and, type SQL } from 'drizzle-orm';
 import { db } from '@/db/client';
-import { emails, suppression_list } from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import { emails } from '@/db/schema';
+import { ok, fail, withAuth, readJson, intParam } from '@/lib/api';
+import { enqueueEmail } from '@/lib/email/queue';
 
-export async function GET(request: NextRequest) {
-  try {
-    const lead_id = request.nextUrl.searchParams.get('lead_id');
-    const limit = parseInt(request.nextUrl.searchParams.get('limit') || '20');
+export const GET = withAuth(async (req) => {
+  const p = req.nextUrl.searchParams;
+  const limit = intParam(p.get('limit'), 50, 200);
+  const clauses: SQL[] = [];
+  const leadId = p.get('lead_id');
+  const status = p.get('status');
+  if (leadId && Number.isInteger(Number(leadId))) clauses.push(eq(emails.lead_id, Number(leadId)));
+  if (status) clauses.push(eq(emails.status, status));
 
-    const data = await db.query.emails.findMany({
-      ...(lead_id && {
-        where: eq(emails.lead_id, parseInt(lead_id)),
-      }),
-      limit,
-      orderBy: [desc(emails.created_at)],
-    });
+  const rows = await db.select().from(emails)
+    .where(clauses.length ? and(...clauses) : undefined)
+    .orderBy(desc(emails.created_at))
+    .limit(limit);
+  return ok({ data: rows });
+});
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error fetching emails:', error);
-    return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
+/** Queues an email. It is not sent here — the queue worker decides that. */
+export const POST = withAuth(async (req) => {
+  const body = await readJson<Record<string, unknown>>(req);
+  const lead_id = typeof body?.lead_id === 'number' ? body.lead_id : null;
+  const from_email = typeof body?.from_email === 'string' ? body.from_email : '';
+  const to_email = typeof body?.to_email === 'string' ? body.to_email : '';
+  const subject = typeof body?.subject === 'string' ? body.subject : '';
+  const content = typeof body?.body === 'string' ? body.body : '';
+
+  if (lead_id === null || !from_email || !to_email || !subject || !content) {
+    return fail(400, 'lead_id, from_email, to_email, subject and body are required.');
   }
-}
 
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const { to_email, subject, body: content, lead_id, contact_id, campaign_id, from_email } = body;
+  const result = await enqueueEmail({
+    lead_id,
+    contact_id: typeof body?.contact_id === 'number' ? body.contact_id : null,
+    campaign_id: typeof body?.campaign_id === 'number' ? body.campaign_id : null,
+    from_email, to_email, subject, body: content,
+  });
 
-    // Check suppression list
-    const suppressed = await db.query.suppression_list.findFirst({
-      where: eq(suppression_list.email, to_email),
-    });
-
-    if (suppressed) {
-      return NextResponse.json(
-        { error: 'Email is in suppression list' },
-        { status: 400 }
-      );
-    }
-
-    const result = await db
-      .insert(emails)
-      .values({
-        lead_id,
-        contact_id,
-        campaign_id,
-        from_email,
-        to_email,
-        subject,
-        body: content,
-        status: 'PENDING',
-      })
-      .returning();
-
-    return NextResponse.json(result[0], { status: 201 });
-  } catch (error) {
-    console.error('Error creating email:', error);
-    return NextResponse.json({ error: 'Failed to create email' }, { status: 500 });
-  }
-}
+  if (!result.queued) return fail(409, result.reason, result.detail);
+  return ok({ queued: true, email_id: result.email_id }, { status: 201 });
+});

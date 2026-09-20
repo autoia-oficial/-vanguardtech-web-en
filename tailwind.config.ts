@@ -1,36 +1,45 @@
-import type { Config } from 'tailwindcss'
+import type { Config } from 'tailwindcss';
 
+/**
+ * Colours resolve to CSS variables so a theme switch is a single attribute
+ * change on <html>, with no class rewriting across the tree.
+ */
 const config: Config = {
-  content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
+  darkMode: ['class', '[data-theme="dark"]'],
+  content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
       colors: {
-        'graphite': '#1a1a1a',
-        'charcoal': '#2a2a2a',
-        'slate': '#3a3a3a',
-        'silver': '#d1d5db',
+        bg: 'var(--bg)',
+        raised: 'var(--bg-raised)',
+        overlay: 'var(--bg-overlay)',
+        surface: 'var(--surface)',
+        'surface-hover': 'var(--surface-hover)',
+        line: 'var(--border)',
+        'line-strong': 'var(--border-strong)',
+        ink: 'var(--text)',
+        muted: 'var(--text-muted)',
+        faint: 'var(--text-faint)',
+        ok: 'var(--ok)',
+        warn: 'var(--warn)',
+        bad: 'var(--bad)',
+        idle: 'var(--idle)',
       },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideDown: {
-          '0%': { transform: 'translateY(-10px)', opacity: '0' },
-          '100%': { transform: 'translateY(0)', opacity: '1' },
-        },
+      borderRadius: {
+        DEFAULT: 'var(--radius)',
+        lg: 'var(--radius-lg)',
       },
-      animation: {
-        fadeIn: 'fadeIn 0.3s ease-in-out',
-        slideDown: 'slideDown 0.3s ease-in-out',
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        DEFAULT: 'var(--shadow)',
+        lg: 'var(--shadow-lg)',
+      },
+      maxWidth: {
+        shell: '1400px',
       },
     },
   },
-  darkMode: 'class',
   plugins: [],
-}
-export default config
+};
+
+export default config;
