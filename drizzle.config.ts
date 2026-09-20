@@ -1,10 +1,12 @@
-import { defineConfig } from "drizzle-kit";
+import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({
-  schema: "./src/db/schema.ts",
-  out: "./migrations",
-  dialect: "postgresql",
+  schema: './src/db/schema.ts',
+  out: './migrations',
+  dialect: 'postgresql',
   dbCredentials: {
-    url: process.env.DATABASE_URL || "postgresql://localhost/vanguard_crm",
+    url: process.env.DATABASE_URL ?? 'postgresql://vanguard:vanguard@127.0.0.1:5432/vanguard_crm',
   },
-} as any);
+  strict: true,
+  verbose: true,
+});
