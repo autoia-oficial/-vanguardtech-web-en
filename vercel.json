@@ -1,0 +1,27 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm install",
+  "outputDirectory": ".next",
+  "env": {
+    "DATABASE_URL": "@database_url"
+  },
+  "crons": [
+    {
+      "path": "/api/cron/leads-discovery",
+      "schedule": "0 */6 * * *"
+    },
+    {
+      "path": "/api/cron/email-queue",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/follow-ups",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/duplicate-detection",
+      "schedule": "0 2 * * 0"
+    }
+  ]
+}

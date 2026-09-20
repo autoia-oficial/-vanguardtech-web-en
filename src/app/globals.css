@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply border-gray-700;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-graphite;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate rounded;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-silver;
+}
+
+body {
+  @apply bg-graphite text-white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+input, textarea, select {
+  @apply bg-charcoal text-white border border-slate rounded px-3 py-2 focus:outline-none focus:border-silver focus:ring-1 focus:ring-silver;
+}
+
+button {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+.container {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
