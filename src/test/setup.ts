@@ -11,6 +11,10 @@ process.env.DATABASE_URL =
   'postgresql://vanguard:vanguard@127.0.0.1:5432/vanguard_crm_test';
 
 process.env.AUTH_SECRET ??= 'test-auth-secret-value-at-least-32-chars';
+
+// The auditor refuses private addresses to prevent SSRF. Tests serve their
+// fixture pages on loopback, so they opt in explicitly.
+process.env.AUDIT_ALLOW_PRIVATE_HOSTS = '1';
 process.env.CRON_SECRET ??= 'test-cron-secret';
 
 // SMTP is deliberately left unset: the default provider must report
