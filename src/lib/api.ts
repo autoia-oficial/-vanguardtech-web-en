@@ -75,26 +75,55 @@ export function withCronAuth(handler: (req: NextRequest) => Promise<Response>) {
  * far more use than a bare 500, which is what this looked like the first time
  * it happened.
  */
+/** Walks the cause chain collecting every code and message it finds. */
+function unwrap(err: unknown): { codes: string[]; messages: string[] } {
+  const codes: string[] = [];
+  const messages: string[] = [];
+  let node: unknown = err;
+
+  // Drizzle wraps driver errors, and the depth varies by call path, so follow
+  // the chain rather than guessing how many levels down the code sits.
+  for (let depth = 0; node && depth < 8; depth++) {
+    const o = node as { code?: unknown; message?: unknown; cause?: unknown };
+    if (typeof o.code === 'string') codes.push(o.code);
+    if (typeof o.message === 'string') messages.push(o.message);
+    node = o.cause;
+  }
+  return { codes, messages };
+}
+
 export function toErrorResponse(err: unknown) {
-  // Drizzle wraps driver errors, so the Postgres code may sit on the cause.
-  const code =
-    (err as { code?: string } | null)?.code ??
-    ((err as { cause?: { code?: string } } | null)?.cause?.code);
+  const { codes, messages } = unwrap(err);
+  const text = messages.join(' | ');
 
-  if (code === '42P01') {
+  const missingRelation =
+    codes.includes('42P01') ||
+    // Postgres phrases it this way; match it in case the code is not exposed.
+    /relation ".*" does not exist/i.test(text) ||
+    /relation .* does not exist/i.test(text);
+
+  if (missingRelation) {
     return fail(500, 'The database schema is out of date. Run: npm run db:migrate', {
-      detail: err instanceof Error ? err.message : String(err),
-      hint: 'A table the code expects does not exist yet.',
+      hint: 'A table the code expects does not exist in this database yet.',
+      detail: messages[0] ?? String(err),
     });
   }
 
-  if (code === 'ECONNREFUSED' || code === '57P03') {
+  const missingColumn = codes.includes('42703') || /column .* does not exist/i.test(text);
+  if (missingColumn) {
+    return fail(500, 'The database schema is out of date. Run: npm run db:migrate', {
+      hint: 'A column the code expects does not exist in this database yet.',
+      detail: messages[0] ?? String(err),
+    });
+  }
+
+  if (codes.includes('ECONNREFUSED') || codes.includes('57P03') || /ECONNREFUSED/.test(text)) {
     return fail(503, 'The database is not reachable. Check DATABASE_URL and that PostgreSQL is running.', {
-      detail: err instanceof Error ? err.message : String(err),
+      detail: messages[0] ?? String(err),
     });
   }
 
-  return fail(500, err instanceof Error ? err.message : String(err));
+  return fail(500, messages[0] ?? String(err));
 }
 
 export async function readJson<T>(req: NextRequest): Promise<T | null> {
