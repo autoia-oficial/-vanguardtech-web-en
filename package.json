@@ -18,7 +18,8 @@
     "test:watch": "vitest",
     "seed": "tsx scripts/seed.ts",
     "audit:url": "tsx scripts/audit-url.ts",
-    "ui-check": "tsx scripts/ui-check.ts"
+    "ui-check": "tsx scripts/ui-check.ts",
+    "set-password": "tsx scripts/set-password.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",

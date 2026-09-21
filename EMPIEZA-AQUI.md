@@ -68,6 +68,21 @@ Si usaste `npm run seed`, las credenciales por defecto son las de
 `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` en tu `.env.local`. **Cámbialas antes
 de exponer esto a nadie.**
 
+### Crear un usuario o cambiar una contraseña
+
+```bash
+npm run set-password -- xyrz@local mi-contraseña
+```
+
+Crea el usuario si no existe, o le cambia la contraseña si ya existe. El
+identificador tiene que ser un email — el login usa un campo de email, así que
+`xyrz` a secas no vale, pero `xyrz@local` sí.
+
+Esta herramienta no impone el mínimo de 12 caracteres que sí exige el registro
+por web: para ejecutarla ya necesitas la cadena de conexión a la base de datos,
+y quien la tiene puede hacer cualquier cosa con los datos de todos modos. Te
+avisa si la contraseña es corta.
+
 Para borrar los datos de ejemplo: `npx tsx scripts/seed.ts --clean`
 
 ---
@@ -83,6 +98,7 @@ Para borrar los datos de ejemplo: `npx tsx scripts/seed.ts --clean`
 | `npm run db:studio` | Explorador visual de la base de datos |
 | `npm run seed` | Datos de ejemplo · `-- --clean` para borrarlos |
 | `npm run audit:url -- https://una-web.com` | Audita cualquier web desde el terminal |
+| `npm run set-password -- <email> <contraseña>` | Crea un usuario o le cambia la contraseña |
 | `npm run ui-check` | Recorre la app en un navegador real |
 
 ---
