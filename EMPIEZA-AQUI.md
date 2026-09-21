@@ -55,6 +55,10 @@ CRON_SECRET=<pega aquí lo que devuelva: openssl rand -hex 32>
 > **Cada vez que hagas `git pull`, ejecuta `npm run db:migrate`.** Si el código
 > espera una tabla que tu base de datos todavía no tiene, la app te lo dirá con
 > ese mismo mensaje en vez de dar un error genérico.
+>
+> Si algo falla y no sabes por dónde empezar: **`npm run db:check`**. Te dice a
+> qué base está conectando, si responde, qué tablas faltan y qué comando
+> ejecutar. No necesita `psql` ni ninguna herramienta externa.
 
 ### 4. Instalar, migrar, arrancar
 
@@ -98,6 +102,7 @@ Para borrar los datos de ejemplo: `npx tsx scripts/seed.ts --clean`
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Build de producción |
 | `npm test` | Los 210 tests (necesita `vanguard_crm_test`) |
+| `npm run db:check` | **Diagnostica la base de datos**: conexión, tablas que faltan, qué hacer |
 | `npm run db:migrate` | Aplica las migraciones |
 | `npm run db:studio` | Explorador visual de la base de datos |
 | `npm run seed` | Datos de ejemplo · `-- --clean` para borrarlos |
