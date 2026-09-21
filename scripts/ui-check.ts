@@ -5,6 +5,7 @@
  *
  *   npx tsx scripts/ui-check.ts --base http://localhost:3000 --out /tmp/shots
  */
+import './load-env';
 import { chromium, type Page, type ConsoleMessage } from 'playwright';
 import { mkdir } from 'node:fs/promises';
 

@@ -9,6 +9,9 @@
  *   npx tsx scripts/seed.ts          seed
  *   npx tsx scripts/seed.ts --clean  remove everything it created
  */
+// Must come first: it puts .env.local into process.env before the database
+// client is imported, and that module throws on a missing DATABASE_URL.
+import './load-env';
 import { eq } from 'drizzle-orm';
 import { db, pool } from '../src/db/client';
 import { leads, email_accounts, campaigns } from '../src/db/schema';

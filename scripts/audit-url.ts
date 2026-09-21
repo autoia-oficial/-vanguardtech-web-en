@@ -4,6 +4,7 @@
  *
  *   npx tsx scripts/audit-url.ts https://example.com
  */
+import './load-env';
 import { auditWebsite } from '../src/lib/audit/auditor';
 
 async function main() {

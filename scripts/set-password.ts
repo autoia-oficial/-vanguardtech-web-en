@@ -8,6 +8,9 @@
  * it does not enforce the 12-character minimum that /api/auth/setup does — it
  * warns instead. The HTTP endpoints keep their validation.
  */
+// Must come first: it puts .env.local into process.env before the database
+// client is imported, and that module throws on a missing DATABASE_URL.
+import './load-env';
 import { eq } from 'drizzle-orm';
 import { db, pool } from '../src/db/client';
 import { users } from '../src/db/schema';
