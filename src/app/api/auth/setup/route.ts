@@ -1,6 +1,6 @@
 import { cookies } from 'next/headers';
 import { type NextRequest } from 'next/server';
-import { ok, fail, readJson } from '@/lib/api';
+import { ok, fail, readJson, toErrorResponse } from '@/lib/api';
 import { authStatus } from '@/lib/config';
 import { countUsers, createUser, createSession, SESSION_COOKIE } from '@/lib/auth';
 
@@ -9,6 +9,14 @@ import { countUsers, createUser, createSession, SESSION_COOKIE } from '@/lib/aut
  * endpoint closes itself permanently after initial setup.
  */
 export async function POST(req: NextRequest) {
+  try {
+    return await createFirstUser(req);
+  } catch (err) {
+    return toErrorResponse(err);
+  }
+}
+
+async function createFirstUser(req: NextRequest) {
   const status = authStatus();
   if (status.status === 'NOT_CONFIGURED') {
     return fail(503, 'NOT_CONFIGURED', { missing: status.missing, detail: status.detail });

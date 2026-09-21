@@ -28,15 +28,14 @@ export function withAuth<Ctx>(
     try {
       user = await getCurrentUser();
     } catch (err) {
-      return fail(500, 'Could not verify the session.', String(err));
+      return toErrorResponse(err);
     }
     if (!user) return unauthorized();
 
     try {
       return await handler(req, user, ctx);
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return fail(500, message);
+      return toErrorResponse(err);
     }
   };
 }
@@ -63,10 +62,39 @@ export function withCronAuth(handler: (req: NextRequest) => Promise<Response>) {
     try {
       return await handler(req);
     } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      return fail(500, message);
+      return toErrorResponse(err);
     }
   };
+}
+
+/**
+ * Turns a thrown error into a response.
+ *
+ * A missing table (Postgres 42P01) means the database is behind the code —
+ * almost always a migration that was never applied after a pull. Saying so is
+ * far more use than a bare 500, which is what this looked like the first time
+ * it happened.
+ */
+export function toErrorResponse(err: unknown) {
+  // Drizzle wraps driver errors, so the Postgres code may sit on the cause.
+  const code =
+    (err as { code?: string } | null)?.code ??
+    ((err as { cause?: { code?: string } } | null)?.cause?.code);
+
+  if (code === '42P01') {
+    return fail(500, 'The database schema is out of date. Run: npm run db:migrate', {
+      detail: err instanceof Error ? err.message : String(err),
+      hint: 'A table the code expects does not exist yet.',
+    });
+  }
+
+  if (code === 'ECONNREFUSED' || code === '57P03') {
+    return fail(503, 'The database is not reachable. Check DATABASE_URL and that PostgreSQL is running.', {
+      detail: err instanceof Error ? err.message : String(err),
+    });
+  }
+
+  return fail(500, err instanceof Error ? err.message : String(err));
 }
 
 export async function readJson<T>(req: NextRequest): Promise<T | null> {

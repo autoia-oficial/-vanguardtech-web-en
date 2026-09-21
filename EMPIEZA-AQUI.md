@@ -52,6 +52,10 @@ AUTH_SECRET=<pega aquí lo que devuelva: openssl rand -base64 32>
 CRON_SECRET=<pega aquí lo que devuelva: openssl rand -hex 32>
 ```
 
+> **Cada vez que hagas `git pull`, ejecuta `npm run db:migrate`.** Si el código
+> espera una tabla que tu base de datos todavía no tiene, la app te lo dirá con
+> ese mismo mensaje en vez de dar un error genérico.
+
 ### 4. Instalar, migrar, arrancar
 
 ```bash
