@@ -38,6 +38,20 @@ export const sessions = pgTable('sessions', {
   expiresIdx: index('sessions_expires_idx').on(t.expires_at),
 }));
 
+/**
+ * Failed sign-in attempts, so the login endpoint can be throttled. Keyed in
+ * the database rather than in memory because serverless instances do not share
+ * process state, and an in-memory counter would reset on every cold start.
+ */
+export const login_attempts = pgTable('login_attempts', {
+  identifier: varchar('identifier', { length: 255 }).primaryKey(),
+  attempts: integer('attempts').notNull().default(0),
+  first_attempt_at: timestamp('first_attempt_at').notNull().defaultNow(),
+  locked_until: timestamp('locked_until'),
+}, (t) => ({
+  lockedIdx: index('login_attempts_locked_idx').on(t.locked_until),
+}));
+
 // ---------------------------------------------------------------------------
 // LEADS
 // ---------------------------------------------------------------------------

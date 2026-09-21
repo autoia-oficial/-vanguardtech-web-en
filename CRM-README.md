@@ -34,7 +34,7 @@ src/
     api/              REST endpoints; withAuth / withCronAuth wrap every one
   components/         shell, theme, shared presentational primitives
   db/
-    schema.ts         20 tables, relations, indexes, cascade rules
+    schema.ts         21 tables, relations, indexes, cascade rules
     client.ts         pooled pg connection
   lib/
     audit/            fetcher, the 13 checks, scoring of a single site
@@ -53,7 +53,7 @@ scripts/              audit-url, seed, ui-check
 
 ### Database
 
-20 tables. The interesting parts:
+21 tables. The interesting parts:
 
 | Table | Holds |
 |---|---|
@@ -69,6 +69,7 @@ scripts/              audit-url, seed, ui-check
 | `job_locks` | Advisory locks with a dead-man expiry. |
 | `suppression_list` | Addresses that are never emailed. |
 | `users` / `sessions` | Authentication. |
+| `login_attempts` | Failed sign-in counters, so the login endpoint can be throttled. |
 
 ### Pipeline
 
@@ -259,6 +260,13 @@ scrypt with a per-password random salt, database-backed sessions, httpOnly
 cookie, 7-day expiry. Timing-safe comparison, and sign-in spends the hashing
 time even for an unknown account so the endpoint cannot enumerate users.
 
+Repeated failures are throttled: 8 failures within 15 minutes locks that email
+address for 15 minutes, and the correct password is refused while the lockout
+holds. Counters live in the database, not in memory — a serverless instance
+does not share process state, so an in-memory counter would reset on every cold
+start and protect nothing. Other accounts are unaffected, and a successful
+sign-in clears the counter.
+
 Every CRM page sits under a layout that checks the session server-side; every
 private API route is wrapped in `withAuth`. With `AUTH_SECRET` unset, sign-in is
 refused and the CRM stays locked.
@@ -313,6 +321,18 @@ npx tsx scripts/seed.ts --clean
 | `npm run seed` | Development seed |
 | `npm run audit:url -- <url>` | Audit one URL from the terminal |
 | `npm run ui-check` | Drive the running app in a browser across three viewports |
+
+### Getting a campaign sending
+
+1. **Settings → Sending accounts**: add the address that will send, with its
+   daily and hourly limits.
+2. **Campaigns → New campaign**, then open it.
+3. Add sequence steps. Step 1 has no wait; later steps wait that many days
+   after the previous step was *sent*.
+4. Pick the sending account.
+5. Enrol leads by pipeline stage.
+6. Activate. Until SMTP is configured the queue fills and holds; nothing is
+   marked sent.
 
 ---
 
@@ -390,7 +410,8 @@ Stated plainly so nothing here is mistaken for working:
   provider webhooks or an IMAP poller. No event is invented in their absence.
 - **Demos.** The `demos` table exists and lead detail reads it; nothing creates
   a demo yet.
-- **Sequence editing in the interface.** Campaigns are created in the UI, but
-  their steps are set through `PATCH /api/campaigns` for now.
-- **Email account management in the interface.** Accounts are inserted directly
-  or by the seed; there is no form yet.
+- **Discovery from the interface.** `POST /api/discovery` runs a search and the
+  `lead-discovery` job runs saved queries from Settings, but there is no
+  search form in the UI yet.
+- **Merging duplicates.** Duplicate groups are detected and reported under
+  Errors; merging them is still manual.

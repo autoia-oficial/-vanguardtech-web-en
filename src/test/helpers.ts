@@ -30,6 +30,7 @@ const TABLES = [
   'errors',
   'job_locks',
   'sessions',
+  'login_attempts',
   'users',
   'settings',
   'leads',

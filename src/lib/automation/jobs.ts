@@ -15,6 +15,7 @@ import { findDuplicateGroups } from '@/lib/dedupe';
 import { recordActivity, ActivityType, changeLeadStatus } from '@/lib/activity';
 import { clearExpiredLocks, nextRetryAt } from '@/lib/locks';
 import { pruneExpiredSessions } from '@/lib/auth';
+import { pruneLoginAttempts } from '@/lib/rate-limit';
 import { dueErrors, recordItemError, resolveError } from './runner';
 import type { JobResult } from './runner';
 import type { CheckResult } from '@/lib/audit/types';
@@ -368,6 +369,7 @@ export async function jobCrmMaintenance(): Promise<JobResult> {
   const reclaimed = await reclaimStuckSending();
   const locks = await clearExpiredLocks();
   const sessions = await pruneExpiredSessions();
+  const loginAttempts = await pruneLoginAttempts();
 
   // Leads whose audit finished but whose stage never moved on.
   const auditedLeads = await db.query.leads.findMany({
@@ -383,7 +385,8 @@ export async function jobCrmMaintenance(): Promise<JobResult> {
   }
 
   return {
-    processed: stoppedSequences + cancelledEmails + reclaimed + locks + sessions + promoted,
+    processed:
+      stoppedSequences + cancelledEmails + reclaimed + locks + sessions + loginAttempts + promoted,
     success: stoppedSequences + cancelledEmails + promoted,
     detail: {
       sequences_stopped: stoppedSequences,
@@ -391,6 +394,7 @@ export async function jobCrmMaintenance(): Promise<JobResult> {
       stuck_sends_reclaimed: reclaimed,
       expired_locks_cleared: locks,
       expired_sessions_pruned: sessions,
+      login_attempt_counters_pruned: loginAttempts,
       leads_promoted_to_audited: promoted,
     },
   };
