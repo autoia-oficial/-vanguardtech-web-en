@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useApi, mutate } from '@/hooks/useApi';
 import { Card, SectionTitle, Spinner, Empty, StatusChip, timeAgo } from '@/components/ui';
@@ -50,7 +51,9 @@ export default function CampaignsPage() {
             <Card key={c.id}>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <h2 className="text-sm font-medium truncate">{c.name}</h2>
+                  <Link href={`/campaigns/${c.id}`} className="text-sm font-medium truncate hover:underline block">
+                    {c.name}
+                  </Link>
                   <p className="text-xs text-faint mt-0.5">{timeAgo(c.created_at)}</p>
                 </div>
                 <StatusChip status={c.status} />
@@ -76,6 +79,9 @@ export default function CampaignsPage() {
               ) : null}
 
               <div className="mt-4 flex gap-2">
+                <Link href={`/campaigns/${c.id}`} className="vg-btn flex-1 justify-center">
+                  Open
+                </Link>
                 {c.status !== 'ACTIVE' ? (
                   <button className="vg-btn flex-1" disabled={busy === c.id} onClick={() => setStatus(c.id, 'ACTIVE')}>
                     Activate

@@ -78,6 +78,10 @@ export async function readJson<T>(req: NextRequest): Promise<T | null> {
 }
 
 export function intParam(value: string | null, fallback: number, max?: number): number {
+  // Number(null) and Number('') are both 0, which would silently become a
+  // limit of zero and return no rows. An absent or blank parameter must use
+  // the fallback instead.
+  if (value === null || value.trim() === '') return fallback;
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   const i = Math.trunc(n);

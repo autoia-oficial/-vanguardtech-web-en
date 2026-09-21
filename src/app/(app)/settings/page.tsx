@@ -155,6 +155,8 @@ export default function SettingsPage() {
         )}
       </Card>
 
+      <SendingAccounts />
+
       <Card>
         <SectionTitle>Suppression list</SectionTitle>
         <p className="text-xs text-muted mb-4">
@@ -190,5 +192,130 @@ export default function SettingsPage() {
         )}
       </Card>
     </div>
+  );
+}
+
+interface SendingAccount {
+  id: number; email: string; name: string | null; is_active: boolean;
+  daily_limit: number; hourly_limit: number;
+}
+
+function SendingAccounts() {
+  const { data, loading, reload } = useApi<{
+    data: SendingAccount[];
+    transport: { status: string; missing: string[]; detail: string };
+  }>('/api/email-accounts');
+
+  const [form, setForm] = useState({ email: '', name: '', daily_limit: '100', hourly_limit: '20' });
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const add = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy('add'); setError(null);
+    const res = await mutate('/api/email-accounts', 'POST', {
+      email: form.email,
+      name: form.name || undefined,
+      daily_limit: Number(form.daily_limit) || 100,
+      hourly_limit: Number(form.hourly_limit) || 20,
+    });
+    setBusy(null);
+    if (!res.ok) { setError(res.error); return; }
+    setForm({ email: '', name: '', daily_limit: '100', hourly_limit: '20' });
+    reload();
+  };
+
+  const toggle = async (account: SendingAccount) => {
+    setBusy(String(account.id));
+    await mutate('/api/email-accounts', 'PATCH', { id: account.id, is_active: !account.is_active });
+    setBusy(null);
+    reload();
+  };
+
+  return (
+    <Card>
+      <SectionTitle>Sending accounts</SectionTitle>
+      <p className="text-xs text-muted mb-4">
+        Which address sends, and how much it may send. Credentials live in environment
+        variables, never in the database.
+      </p>
+
+      {data?.transport?.status === 'NOT_CONFIGURED' ? (
+        <div className="mb-4">
+          <NotConfigured
+            label="Email transport"
+            missing={data.transport.missing}
+            detail={data.transport.detail}
+          />
+        </div>
+      ) : null}
+
+      <form onSubmit={add} className="grid gap-3 sm:grid-cols-4 mb-5">
+        <div className="sm:col-span-2">
+          <label htmlFor="acct-email" className="vg-label block mb-1.5">Address *</label>
+          <input
+            id="acct-email" type="email" required className="vg-input"
+            placeholder="sales@vanguardtech.com"
+            value={form.email}
+            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+          />
+        </div>
+        <div className="sm:col-span-2">
+          <label htmlFor="acct-name" className="vg-label block mb-1.5">Display name</label>
+          <input
+            id="acct-name" className="vg-input"
+            value={form.name}
+            onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+          />
+        </div>
+        <div>
+          <label htmlFor="acct-daily" className="vg-label block mb-1.5">Daily limit</label>
+          <input
+            id="acct-daily" type="number" min="1" className="vg-input"
+            value={form.daily_limit}
+            onChange={(e) => setForm((f) => ({ ...f, daily_limit: e.target.value }))}
+          />
+        </div>
+        <div>
+          <label htmlFor="acct-hourly" className="vg-label block mb-1.5">Hourly limit</label>
+          <input
+            id="acct-hourly" type="number" min="1" className="vg-input"
+            value={form.hourly_limit}
+            onChange={(e) => setForm((f) => ({ ...f, hourly_limit: e.target.value }))}
+          />
+        </div>
+        <div className="sm:col-span-2 flex items-end gap-3">
+          <button className="vg-btn" disabled={busy === 'add'}>
+            {busy === 'add' ? 'Adding…' : 'Add account'}
+          </button>
+          {error ? <span className="text-xs" style={{ color: 'var(--bad)' }}>{error}</span> : null}
+        </div>
+      </form>
+
+      {loading ? <Spinner /> : !data || data.data.length === 0 ? (
+        <Empty title="No sending accounts." detail="A campaign cannot send until one exists." />
+      ) : (
+        <ul className="divide-y" style={{ borderColor: 'var(--border)' }}>
+          {data.data.map((a) => (
+            <li key={a.id} className="py-3 flex flex-wrap items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm break-all">{a.email}</p>
+                <p className="text-xs text-faint mt-0.5">
+                  {a.name ? `${a.name} · ` : ''}{a.daily_limit}/day · {a.hourly_limit}/hour
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <StatusChip status={a.is_active ? 'ACTIVE' : 'PAUSED'}>
+                  {a.is_active ? 'ACTIVE' : 'INACTIVE'}
+                </StatusChip>
+                <button className="vg-btn" disabled={busy === String(a.id)} onClick={() => toggle(a)}>
+                  {a.is_active ? 'Deactivate' : 'Activate'}
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </Card>
   );
 }

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { NotConfigured } from '@/components/ui';
 import { ThemeToggle } from '@/components/theme';
@@ -20,6 +20,11 @@ export function LoginForm({
   const [fullName, setFullName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // Until React has hydrated, a click would submit the form natively, navigate
+  // away and discard what was typed. The button stays disabled until then.
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => setReady(true), []);
 
   const blocked = authMissing.length > 0 || databaseMissing.length > 0;
 
@@ -145,9 +150,20 @@ export function LoginForm({
                 </p>
               ) : null}
 
-              <button type="submit" className="vg-btn vg-btn-primary w-full" disabled={busy}>
+              <button
+                type="submit"
+                className="vg-btn vg-btn-primary w-full"
+                disabled={busy || !ready}
+                data-ready={ready ? 'true' : 'false'}
+              >
                 {busy ? 'Working…' : needsSetup ? 'Create account' : 'Sign in'}
               </button>
+
+              <noscript>
+                <p className="text-xs" style={{ color: 'var(--warn)' }}>
+                  This CRM needs JavaScript. Sign-in is disabled without it.
+                </p>
+              </noscript>
             </form>
           )}
         </div>
