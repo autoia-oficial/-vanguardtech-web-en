@@ -49,3 +49,7 @@ yarn-error.log*
 
 # Vercel
 .vercel/
+
+# Lanzador
+.sistema-servidor.log
+.sistema-servidor.pid

@@ -6,6 +6,21 @@ reales, los puntúa y gestiona el envío de emails con límites estrictos.
 
 La documentación técnica completa está en **[`CRM-README.md`](./CRM-README.md)**.
 
+## La forma rápida: el lanzador
+
+```bash
+./sistema/iniciar.sh
+```
+
+Sale un menú, **pulsas `1` y Enter**, y se abre en Brave. El lanzador instala
+las dependencias si hace falta, genera los secretos, arranca PostgreSQL,
+aplica las migraciones que falten y espera a que el servidor responda de
+verdad antes de abrir el navegador. Si algo falla, para y te dice qué pasa.
+
+Detalles en **[`sistema/LEEME.md`](./sistema/LEEME.md)**.
+
+El resto de esta página es el mismo proceso a mano, paso a paso.
+
 > Los ficheros `index.html`, `styles.css`, `aviso-legal.html` y similares en la
 > raíz son la **web comercial** anterior, que sigue aquí por historia del repo.
 > El CRM vive en `src/`. Ver la nota sobre despliegue más abajo.
@@ -101,7 +116,8 @@ Para borrar los datos de ejemplo: `npx tsx scripts/seed.ts --clean`
 |---|---|
 | `npm run dev` | Servidor de desarrollo |
 | `npm run build` | Build de producción |
-| `npm test` | Los 210 tests (necesita `vanguard_crm_test`) |
+| `./sistema/iniciar.sh` | **El lanzador**: menú, pulsas 1, se abre en Brave |
+| `npm test` | Los 220 tests (necesita `vanguard_crm_test`) |
 | `npm run db:check` | **Diagnostica la base de datos**: conexión, tablas que faltan, qué hacer |
 | `npm run db:migrate` | Aplica las migraciones |
 | `npm run db:studio` | Explorador visual de la base de datos |
