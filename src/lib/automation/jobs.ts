@@ -1,6 +1,6 @@
 import { and, eq, isNotNull, lte, inArray } from 'drizzle-orm';
 import { db } from '@/db/client';
-import { leads, audits, audit_checks, campaigns, emails, errors, follow_ups, settings } from '@/db/schema';
+import { leads, audits, audit_checks, campaigns, contacts, emails, errors, follow_ups, settings } from '@/db/schema';
 import { auditWebsite } from '@/lib/audit/auditor';
 import { scoreLead, priorityForScore } from '@/lib/scoring';
 import { runDiscovery } from '@/lib/discovery/engine';
@@ -149,6 +149,42 @@ async function persistAudit(leadId: number, url: string, lead: typeof leads.$inf
       checked_at: c.checked_at,
     })),
   );
+
+  // Una dirección publicada en la propia web es la única fuente honesta de
+  // email para un negocio que no lo tiene en OpenStreetMap. Se guarda sólo si
+  // el lead no tenía ya uno: lo que venga de la fuente original manda.
+  if (result.emails_found.length > 0) {
+    const principal = result.emails_found[0];
+
+    if (!lead.email) {
+      await db
+        .update(leads)
+        .set({ email: principal, updated_at: new Date() })
+        .where(eq(leads.id, leadId));
+      await recordActivity(
+        leadId,
+        ActivityType.LEAD_UPDATED,
+        `Email found on the site: ${principal}`,
+        { emails_found: result.emails_found, source: result.url },
+      );
+    }
+
+    // No hay índice único sobre (lead_id, contact_email), así que la
+    // comprobación es explícita: un reintento de auditoría no debe duplicar
+    // los contactos de un lead.
+    for (const [i, email] of result.emails_found.entries()) {
+      const yaEsta = await db.query.contacts.findFirst({
+        where: and(eq(contacts.lead_id, leadId), eq(contacts.contact_email, email)),
+      });
+      if (yaEsta) continue;
+      await db.insert(contacts).values({
+        lead_id: leadId,
+        contact_email: email,
+        is_primary: i === 0,
+        verified: false,
+      });
+    }
+  }
 
   return { audit, checks: result.checks, fetchError: result.fetch_error };
 }

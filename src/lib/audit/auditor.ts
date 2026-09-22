@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { extractEmails } from './contacts';
 import { fetchPage, probeHttp, normalizeUrl } from './fetcher';
 import { ALL_CHECKS } from './checks';
 import { CHECK_NAMES, TOTAL_CHECKS } from './types';
@@ -53,6 +54,7 @@ export async function auditWebsite(url: string, lead: LeadContext = {}): Promise
       overall_status: 'NOT_VERIFIED',
       overall_score: 0,
       checks: unverifiedChecks(reason),
+      emails_found: [],
     };
   }
 
@@ -65,6 +67,7 @@ export async function auditWebsite(url: string, lead: LeadContext = {}): Promise
       overall_status: 'NOT_VERIFIED',
       overall_score: 0,
       checks: unverifiedChecks(reason),
+      emails_found: [],
     };
   }
 
@@ -105,5 +108,8 @@ export async function auditWebsite(url: string, lead: LeadContext = {}): Promise
     overall_status: overallStatus(checks),
     overall_score: scoreChecks(checks),
     checks,
+    // La página ya está descargada y parseada: es el único momento honesto
+    // de recoger una dirección de contacto sin volver a salir a la red.
+    emails_found: extractEmails($, page.finalUrl),
   };
 }

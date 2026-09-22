@@ -22,6 +22,11 @@ export interface AuditResult {
   overall_status: CheckStatus;
   overall_score: number;
   checks: CheckResult[];
+  /**
+   * Contact addresses published on the page. Empty when the page publishes
+   * none — never inferred from the domain.
+   */
+  emails_found: string[];
 }
 
 /** Facts gathered about a lead that some checks compare the page against. */
