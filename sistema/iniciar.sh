@@ -190,15 +190,55 @@ instalar_paquete_postgres() {
   esac
 }
 
-inicializar_cluster() {
-  # Debian y derivados crean el cluster solos al instalar; RHEL no.
-  [ -f /var/lib/pgsql/data/PG_VERSION ] && return 0
-  ls /etc/postgresql/*/main/postgresql.conf >/dev/null 2>&1 && return 0
+# Dónde vive el cluster, si es que ya existe.
+#
+# El directorio de datos es 0700 y pertenece a postgres, así que un `test -f`
+# sin sudo devuelve siempre falso aunque el fichero esté ahí. Comprobarlo sin
+# sudo llevaba a lanzar initdb sobre un cluster ya inicializado, que se negaba
+# con "Data directory is not empty".
+directorio_datos() {
+  local d
+  for d in /var/lib/pgsql/data /var/lib/pgsql/*/data /var/lib/postgresql/*/main; do
+    if sudo test -f "$d/PG_VERSION" 2>/dev/null; then echo "$d"; return 0; fi
+  done
+  return 1
+}
 
-  if command -v postgresql-setup >/dev/null 2>&1; then
-    gris "Inicializando la base de datos…"
-    sudo postgresql-setup --initdb || return 1
+inicializar_cluster() {
+  if directorio_datos >/dev/null; then
+    gris "La base de datos ya estaba inicializada."
+    return 0
   fi
+
+  # Debian y derivados crean el cluster solos al instalar; RHEL no.
+  if ! command -v postgresql-setup >/dev/null 2>&1; then
+    return 0
+  fi
+
+  # Un directorio con cosas dentro pero sin PG_VERSION no es un cluster: es un
+  # initdb a medias. Borrarlo por nuestra cuenta sería destruir datos ajenos.
+  if sudo test -d /var/lib/pgsql/data && [ -n "$(sudo ls -A /var/lib/pgsql/data 2>/dev/null)" ]; then
+    rojo "/var/lib/pgsql/data tiene contenido pero no es un cluster válido."
+    echo
+    echo "Seguramente es una instalación a medias. Míralo antes de seguir:"
+    echo
+    echo "    sudo ls -la /var/lib/pgsql/data"
+    echo
+    echo "Si estás seguro de que ahí no hay nada que quieras conservar:"
+    echo
+    echo "    sudo rm -rf /var/lib/pgsql/data && sudo postgresql-setup --initdb"
+    echo
+    gris "No lo borro yo: no puedo saber qué hay dentro."
+    return 1
+  fi
+
+  gris "Inicializando la base de datos…"
+  local salida
+  salida="$(sudo postgresql-setup --initdb 2>&1)" || {
+    rojo "initdb falló:"
+    echo "$salida"
+    return 1
+  }
   return 0
 }
 
@@ -206,11 +246,23 @@ inicializar_cluster() {
 # terminal pero no desde la aplicación. Hay que pasar las líneas de red a
 # contraseña, dejando intactas las locales para que sudo -u postgres siga yendo.
 permitir_contrasena() {
-  local hba
+  local hba datos
+  # El propio servidor sabe qué fichero está usando; es más fiable que
+  # adivinar la ruta. Las comprobaciones van con sudo porque el directorio de
+  # datos no deja mirar dentro al usuario normal.
   hba="$(psql_admin 'SHOW hba_file' | grep '^/' | head -1)"
-  [ -f "$hba" ] || hba="/var/lib/pgsql/data/pg_hba.conf"
-  [ -f "$hba" ] || hba="$(ls /etc/postgresql/*/main/pg_hba.conf 2>/dev/null | head -1)"
-  [ -f "$hba" ] || { ambar "No encuentro pg_hba.conf; sigo sin tocarlo."; return 0; }
+  # En RHEL el fichero vive dentro del directorio de datos; en Debian, en
+  # /etc/postgresql. Se prueban los dos sitios.
+  if ! sudo test -f "$hba" 2>/dev/null; then
+    datos="$(directorio_datos)" && hba="$datos/pg_hba.conf"
+  fi
+  if ! sudo test -f "$hba" 2>/dev/null; then
+    hba="$(sudo ls /etc/postgresql/*/main/pg_hba.conf 2>/dev/null | head -1)"
+  fi
+  if ! sudo test -f "$hba" 2>/dev/null; then
+    ambar "No encuentro pg_hba.conf; sigo sin tocarlo."
+    return 0
+  fi
 
   # Si ya acepta contraseña en red, no hay nada que hacer.
   if sudo grep -qE '^[[:space:]]*host.*(scram-sha-256|md5)' "$hba"; then
@@ -299,10 +351,22 @@ configurar_base_de_datos() {
   inicializar_cluster || { rojo "No he podido inicializar la base de datos."; return 1; }
 
   gris "Arrancando el servicio…"
-  sudo systemctl enable --now postgresql 2>/dev/null || sudo systemctl start postgresql 2>/dev/null
+  local arranque
+  arranque="$(sudo systemctl enable --now postgresql 2>&1)" \
+    || arranque="$(sudo systemctl start postgresql 2>&1)" \
+    || true
 
   if ! esperar_postgres; then
-    rojo "PostgreSQL no ha llegado a responder. Mira: sudo systemctl status postgresql"
+    rojo "PostgreSQL no llega a responder."
+    [ -n "$arranque" ] && { echo; echo "$arranque"; }
+    echo
+    echo "$(psql_admin 'SELECT 1')"
+    echo
+    echo "Para ver qué le pasa:"
+    echo
+    echo "    sudo systemctl status postgresql"
+    echo "    sudo journalctl -u postgresql -n 30 --no-pager"
+    echo
     return 1
   fi
 
