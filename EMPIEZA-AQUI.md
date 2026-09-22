@@ -13,9 +13,10 @@ La documentación técnica completa está en **[`CRM-README.md`](./CRM-README.md
 ```
 
 Sale un menú, **pulsas `1` y Enter**, y se abre en Brave. El lanzador instala
-las dependencias si hace falta, genera los secretos, arranca PostgreSQL,
-aplica las migraciones que falten y espera a que el servidor responda de
-verdad antes de abrir el navegador. Si algo falla, para y te dice qué pasa.
+las dependencias si hace falta, genera los secretos, instala y configura
+PostgreSQL si todavía no lo tienes (preguntando antes, porque necesita
+`sudo`), aplica las migraciones que falten y espera a que el servidor responda
+de verdad antes de abrir el navegador. Si algo falla, para y te dice qué pasa.
 
 Detalles en **[`sistema/LEEME.md`](./sistema/LEEME.md)**.
 

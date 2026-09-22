@@ -30,26 +30,31 @@ La opción 1 hace, por este orden, todo lo que hace falta:
 
 1. Instala las dependencias si es un clon nuevo (`npm install`).
 2. Crea `.env.local` si no existe y genera `AUTH_SECRET` y `CRON_SECRET`.
-3. Arranca PostgreSQL si está parado.
-4. Comprueba la base de datos y aplica las migraciones que falten.
-5. Levanta el servidor y espera a que responda de verdad.
-6. Abre Brave.
+3. **Si falta la base de datos, instala y configura PostgreSQL** (te lo
+   pregunta una vez antes, porque necesita `sudo`).
+4. Arranca PostgreSQL si está parado.
+5. Aplica las migraciones que falten — y comprueba después que las tablas
+   están de verdad, sin fiarse de que el comando diga que fue bien.
+6. Levanta el servidor y espera a que responda de verdad.
+7. Abre Brave.
 
 Si algo falla, para ahí y te dice exactamente qué pasa. No abre el navegador
 para que te encuentres el error dentro de la aplicación.
 
 ## La primera vez
 
-Necesitas **PostgreSQL**. Si no lo tienes, pulsa `4` en el menú: te da los
-comandos exactos para AlmaLinux / Rocky / RHEL / Fedora.
+No tienes que preparar nada. Pulsa `1` y, cuando te pregunte si configura la
+base de datos, pulsa Enter. Eso:
 
-Al terminar esos comandos, ejecuta esto una vez para dejar la conexión escrita:
+- instala PostgreSQL con el gestor de paquetes de tu sistema,
+- crea el usuario de base de datos con una contraseña aleatoria,
+- crea `vanguard_crm` y `vanguard_crm_test`,
+- y escribe la conexión en `.env.local`.
 
-```bash
-./sistema/iniciar.sh 4 --escribir
-```
+Te pedirá tu contraseña de Linux, porque instalar paquetes necesita `sudo`.
 
-Y vuelve al menú y pulsa `1`.
+Si prefieres hacerlo a mano, pulsa `4`: te da los comandos exactos y no toca
+nada.
 
 La primera pantalla del sistema te pedirá crear tu cuenta de administrador.
 Ese formulario se cierra para siempre en cuanto exista un usuario.
@@ -83,10 +88,14 @@ proyecto.
 
 ## Lo que el lanzador **no** hace
 
-- No instala PostgreSQL por ti: te da los comandos, los ejecutas tú. Instalar
-  un servidor de base de datos y tocar `pg_hba.conf` con `sudo` no es algo que
-  un script deba hacer a tus espaldas.
-- No inventa una `DATABASE_URL`. Si no está puesta, se para y lo dice.
+- No instala PostgreSQL sin preguntar. Toca el sistema con `sudo` y cambia
+  `pg_hba.conf`, así que pide permiso una vez y deja una copia del fichero
+  original al lado (`pg_hba.conf.antes-de-vanguard`). Si dices que no, te da
+  los comandos y no toca nada.
+- No inventa una `DATABASE_URL` ni usa una por defecto. Si no está puesta,
+  se para y lo dice.
+- No da por buena una migración porque el comando diga que fue bien: vuelve a
+  mirar qué tablas hay.
 - No configura el envío de emails. Hasta que pongas `SMTP_*` en `.env.local`,
   la cola guarda los correos y no envía nada — y la interfaz lo dice con un
   `NOT CONFIGURED`, sin marcar nada como enviado.

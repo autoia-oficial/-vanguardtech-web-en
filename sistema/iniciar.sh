@@ -115,19 +115,11 @@ preparar_entorno() {
   fi
 
   # El valor de ejemplo apunta a un servidor llamado literalmente "host", que
-  # no existe. Es el fallo número uno al arrancar esto por primera vez.
+  # no existe. Devolver 2 (y no 1) deja que quien llama lo distinga de un
+  # error de verdad y ofrezca configurarlo.
   local bd; bd="$(valor_de DATABASE_URL)"
   if [ -z "$bd" ] || [[ "$bd" == postgresql://user:password@host/* ]]; then
-    rojo "Falta la dirección de la base de datos (DATABASE_URL)."
-    echo
-    echo "Si todavía no tienes PostgreSQL instalado, usa la opción 4 del menú:"
-    echo "te da los comandos exactos y deja esta línea puesta."
-    echo
-    echo "Si ya lo tienes, edita .env.local y pon tu cadena real:"
-    echo
-    echo "    DATABASE_URL=postgresql://$USUARIO:TU_CONTRASEÑA@127.0.0.1:5432/vanguard_crm"
-    echo
-    return 1
+    return 2
   fi
   return 0
 }
@@ -143,6 +135,200 @@ arrancar_postgres() {
   ambar "PostgreSQL está parado. Lo arranco (puede pedirte tu contraseña)."
   sudo systemctl start postgresql || return 1
   sleep 2
+  return 0
+}
+
+# ---------------------------------------------------------------------------
+# Instalación automática de PostgreSQL
+#
+# Esto toca el sistema con sudo, así que pregunta una vez antes de empezar y
+# dice exactamente lo que va a hacer. Todo lo de aquí se puede repetir sin
+# romper nada: si el paquete ya está, si el usuario ya existe o si la base ya
+# está creada, lo detecta y sigue.
+# ---------------------------------------------------------------------------
+
+gestor_paquetes() {
+  for g in dnf apt-get yum zypper pacman; do
+    command -v "$g" >/dev/null 2>&1 && { echo "$g"; return 0; }
+  done
+  return 1
+}
+
+postgres_instalado() {
+  command -v postgres >/dev/null 2>&1 && return 0
+  command -v pg_ctl   >/dev/null 2>&1 && return 0
+  ls /usr/pgsql-*/bin/postgres >/dev/null 2>&1 && return 0
+  ls /usr/lib/postgresql/*/bin/postgres >/dev/null 2>&1 && return 0
+  return 1
+}
+
+# psql como el usuario del sistema "postgres". El cd a /tmp evita el aviso de
+# "could not change directory" cuando el home de postgres no es accesible.
+psql_admin() {
+  sudo -u postgres bash -c "cd /tmp && psql -tAc \"$1\"" 2>&1
+}
+
+esperar_postgres() {
+  local intento=0
+  until psql_admin "SELECT 1" | grep -q '^1$'; do
+    intento=$((intento + 1))
+    [ "$intento" -gt 30 ] && return 1
+    sleep 1
+  done
+  return 0
+}
+
+instalar_paquete_postgres() {
+  local g; g="$(gestor_paquetes)" || return 1
+  gris "Instalando PostgreSQL con $g…"
+  case "$g" in
+    dnf|yum)  sudo "$g" install -y postgresql-server postgresql ;;
+    apt-get)  sudo apt-get update -qq && sudo apt-get install -y postgresql ;;
+    zypper)   sudo zypper --non-interactive install postgresql-server postgresql ;;
+    pacman)   sudo pacman -S --noconfirm postgresql ;;
+    *)        return 1 ;;
+  esac
+}
+
+inicializar_cluster() {
+  # Debian y derivados crean el cluster solos al instalar; RHEL no.
+  [ -f /var/lib/pgsql/data/PG_VERSION ] && return 0
+  ls /etc/postgresql/*/main/postgresql.conf >/dev/null 2>&1 && return 0
+
+  if command -v postgresql-setup >/dev/null 2>&1; then
+    gris "Inicializando la base de datos…"
+    sudo postgresql-setup --initdb || return 1
+  fi
+  return 0
+}
+
+# Por defecto sólo se permite entrar por "ident"/"peer", que funciona desde el
+# terminal pero no desde la aplicación. Hay que pasar las líneas de red a
+# contraseña, dejando intactas las locales para que sudo -u postgres siga yendo.
+permitir_contrasena() {
+  local hba
+  hba="$(psql_admin 'SHOW hba_file' | grep '^/' | head -1)"
+  [ -f "$hba" ] || hba="/var/lib/pgsql/data/pg_hba.conf"
+  [ -f "$hba" ] || hba="$(ls /etc/postgresql/*/main/pg_hba.conf 2>/dev/null | head -1)"
+  [ -f "$hba" ] || { ambar "No encuentro pg_hba.conf; sigo sin tocarlo."; return 0; }
+
+  # Si ya acepta contraseña en red, no hay nada que hacer.
+  if sudo grep -qE '^[[:space:]]*host.*(scram-sha-256|md5)' "$hba"; then
+    return 0
+  fi
+
+  sudo cp -n "$hba" "$hba.antes-de-vanguard" 2>/dev/null
+  gris "Permitiendo conexión por contraseña (copia en $hba.antes-de-vanguard)…"
+  # Sólo las líneas host: las local se quedan en peer.
+  sudo sed -i -E 's/^([[:space:]]*host[[:space:]].*[[:space:]])(ident|trust|peer)([[:space:]]*)$/\1scram-sha-256\3/' "$hba"
+  sudo systemctl reload postgresql 2>/dev/null || true
+  sleep 1
+}
+
+crear_usuario_y_bases() {
+  local clave="$1" salida
+
+  # El identificador va entre comillas dobles y la clave es hexadecimal, así
+  # que no hay nada que se pueda colar en la sentencia. psql_admin devuelve
+  # también el error en stdout: hay que enseñarlo, no tragárselo.
+  salida="$(psql_admin "DO \\\$\\\$ BEGIN
+    IF EXISTS (SELECT FROM pg_roles WHERE rolname = '$USUARIO') THEN
+      ALTER ROLE \\\"$USUARIO\\\" WITH LOGIN CREATEDB PASSWORD '$clave';
+    ELSE
+      CREATE ROLE \\\"$USUARIO\\\" WITH LOGIN CREATEDB PASSWORD '$clave';
+    END IF;
+  END \\\$\\\$;")"
+  if grep -qiE 'error|fatal' <<<"$salida"; then
+    rojo "No se ha podido crear el usuario '$USUARIO':"
+    echo "$salida"
+    return 1
+  fi
+
+  local base
+  for base in vanguard_crm vanguard_crm_test; do
+    if ! psql_admin "SELECT 1 FROM pg_database WHERE datname = '$base'" | grep -q '^1$'; then
+      salida="$(sudo -u postgres bash -c "cd /tmp && createdb -O '$USUARIO' '$base'" 2>&1)" || {
+        rojo "No se ha podido crear la base '$base':"
+        echo "$salida"
+        return 1
+      }
+      gris "Base '$base' creada."
+    fi
+  done
+  return 0
+}
+
+configurar_base_de_datos() {
+  echo
+  ambar "Falta la base de datos. Puedo instalarla y configurarla yo."
+  echo
+  echo "  · Instala PostgreSQL si no está"
+  echo "  · Crea el usuario '$USUARIO' con una contraseña aleatoria"
+  echo "  · Crea las bases vanguard_crm y vanguard_crm_test"
+  echo "  · Escribe la conexión en .env.local"
+  echo
+  gris "Necesita sudo, así que puede pedirte tu contraseña de Linux."
+  echo
+  local respuesta
+  read -r -p "  ¿Lo hago ahora? [S/n]: " respuesta
+  case "${respuesta:-s}" in
+    [nN]*)
+      echo
+      instalar_postgres
+      return 1
+      ;;
+  esac
+  echo
+
+  if ! command -v sudo >/dev/null 2>&1; then
+    rojo "No hay sudo en este sistema; no puedo instalarlo por ti."
+    instalar_postgres
+    return 1
+  fi
+
+  if ! postgres_instalado; then
+    instalar_paquete_postgres || {
+      rojo "No he podido instalar PostgreSQL. Los comandos a mano:"
+      instalar_postgres
+      return 1
+    }
+  else
+    gris "PostgreSQL ya está instalado."
+  fi
+
+  inicializar_cluster || { rojo "No he podido inicializar la base de datos."; return 1; }
+
+  gris "Arrancando el servicio…"
+  sudo systemctl enable --now postgresql 2>/dev/null || sudo systemctl start postgresql 2>/dev/null
+
+  if ! esperar_postgres; then
+    rojo "PostgreSQL no ha llegado a responder. Mira: sudo systemctl status postgresql"
+    return 1
+  fi
+
+  permitir_contrasena
+
+  local clave; clave="$(secreto_aleatorio)"
+  if ! crear_usuario_y_bases "$clave"; then
+    rojo "No he podido crear el usuario o las bases de datos."
+    return 1
+  fi
+
+  fijar_variable DATABASE_URL "postgresql://$USUARIO:$clave@127.0.0.1:5432/vanguard_crm"
+  fijar_variable TEST_DATABASE_URL "postgresql://$USUARIO:$clave@127.0.0.1:5432/vanguard_crm_test"
+  verde "Base de datos lista y conexión escrita en .env.local."
+
+  # Comprobación de verdad: conectar como lo hará la aplicación, no asumirlo.
+  if ! npm run --silent db:check >/dev/null 2>&1; then
+    local detalle; detalle="$(npm run --silent db:check 2>&1)"
+    if grep -q "Could not reach the database" <<<"$detalle"; then
+      rojo "Se ha configurado, pero la aplicación no consigue conectar:"
+      echo
+      echo "$detalle"
+      return 1
+    fi
+  fi
+  echo
   return 0
 }
 
@@ -191,9 +377,16 @@ abrir_navegador() {
 
 iniciar() {
   echo
-  comprobar_node       || return 1
+  comprobar_node        || return 1
   instalar_dependencias || return 1
-  preparar_entorno     || return 1
+
+  preparar_entorno
+  case $? in
+    0) ;;
+    2) configurar_base_de_datos || return 1 ;;   # falta DATABASE_URL
+    *) return 1 ;;
+  esac
+
   arrancar_postgres
 
   gris "Comprobando la base de datos…"
@@ -204,6 +397,16 @@ iniciar() {
     ambar "Faltan tablas. Aplico las migraciones."
     if ! npm run --silent db:migrate; then
       rojo "Las migraciones fallaron."
+      echo "$salida"
+      return 1
+    fi
+    # No basta con que db:migrate diga que ha ido bien: si estaba apuntando a
+    # otra base, diría exactamente lo mismo y el fallo aparecería después,
+    # dentro de la aplicación. Se vuelve a mirar qué tablas hay de verdad.
+    salida="$(npm run --silent db:check 2>&1)"
+    if grep -q "MISSING" <<<"$salida"; then
+      rojo "Las migraciones dijeron que fueron bien, pero las tablas siguen sin estar."
+      echo
       echo "$salida"
       return 1
     fi
@@ -366,7 +569,7 @@ menu() {
     echo "  1  Iniciar y abrir en Brave"
     echo "  2  Parar el servidor"
     echo "  3  Diagnosticar"
-    echo "  4  Instalar PostgreSQL (instrucciones)"
+    echo "  4  Instalar PostgreSQL a mano (instrucciones)"
     echo "  5  Crear usuario / cambiar contraseña"
     echo "  0  Salir"
     echo
