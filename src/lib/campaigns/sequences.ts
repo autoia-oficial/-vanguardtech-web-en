@@ -253,7 +253,14 @@ export async function advanceCampaign(campaignId: number, now: Date = new Date()
       continue;
     }
 
-    const leadRecord = lead as unknown as Record<string, unknown>;
+    // Los campos del lead, más quién firma. Sin esto un {{sender_email}} en
+    // la plantilla se queda en blanco, y la firma del correo pierde la
+    // dirección de contacto justo donde el destinatario la busca.
+    const leadRecord: Record<string, unknown> = {
+      ...(lead as unknown as Record<string, unknown>),
+      sender_email: senderEmail,
+      sender_name: sender?.name ?? null,
+    };
     const queued = await enqueueEmail({
       lead_id: lead.id,
       campaign_id: campaignId,

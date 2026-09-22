@@ -609,6 +609,72 @@ AYUDA
   fi
 }
 
+buscar_leads() {
+  echo
+  comprobar_node || return 1
+  preparar_entorno
+  [ $? -eq 2 ] && { rojo "Configura antes la base de datos (opción 1)."; return 1; }
+
+  gris "Busca negocios reales en OpenStreetMap y audita los que tengan web."
+  gris "Tarda: son muchas consultas y va despacio a propósito para no saturar"
+  gris "el servicio, que es gratuito y compartido. Ctrl-C para parar; continúa"
+  gris "donde lo dejaste la próxima vez."
+  echo
+  read -r -p "  Ciudades (Enter = todas las de España): " ciudades
+  read -r -p "  Sectores (Enter = los 20): " sectores
+  echo
+
+  local extra=()
+  [ -n "$ciudades" ] && extra+=(--ciudades "$ciudades")
+  [ -n "$sectores" ] && extra+=(--categorias "$sectores")
+
+  npm run --silent discover -- "${extra[@]}" || return 1
+  echo
+  gris "Auditando las webs encontradas…"
+  npm run --silent audit:pending
+  echo
+}
+
+campana() {
+  echo
+  comprobar_node || return 1
+  preparar_entorno
+  [ $? -eq 2 ] && { rojo "Configura antes la base de datos (opción 1)."; return 1; }
+
+  while true; do
+    echo
+    printf '\033[1m  CAMPAÑA\033[0m\n'
+    gris "  ────────────────────────────"
+    echo "  1  Ver cómo va"
+    echo "  2  Crear / actualizar la campaña"
+    echo "  3  Activar el envío"
+    echo "  4  Pausar el envío"
+    echo "  5  Programar el envío diario (9:00)"
+    echo "  6  Ver los temporizadores"
+    echo "  7  Quitar los temporizadores"
+    echo "  0  Volver"
+    echo
+    read -r -p "  Pulsa un número y Enter: " o
+    case "$o" in
+      1) echo; npm run --silent campaign -- --estado ;;
+      2)
+        echo
+        read -r -p "  Gmail desde el que escribes: " correo
+        [ -z "$correo" ] && { rojo "Hace falta una dirección."; continue; }
+        npm run --silent campaign -- --remitente "$correo"
+        ;;
+      3) echo; npm run --silent campaign -- --activar ;;
+      4) echo; npm run --silent campaign -- --pausar ;;
+      5) ./sistema/programar.sh ;;
+      6) ./sistema/programar.sh --estado ;;
+      7) ./sistema/programar.sh --quitar ;;
+      0) return 0 ;;
+      "") ;;
+      *) rojo "Opción no válida." ;;
+    esac
+  done
+}
+
 cambiar_password() {
   echo
   gris "El identificador tiene que ser un email (el login usa un campo de email)."
@@ -635,6 +701,9 @@ menu() {
     echo "  3  Diagnosticar"
     echo "  4  Instalar PostgreSQL a mano (instrucciones)"
     echo "  5  Crear usuario / cambiar contraseña"
+    gris "  ─── captación ───────────────"
+    echo "  6  Buscar leads y auditarlos"
+    echo "  7  Campaña y envío diario a las 9:00"
     echo "  0  Salir"
     echo
     read -r -p "  Pulsa un número y Enter: " opcion || { echo; exit 0; }
@@ -645,6 +714,8 @@ menu() {
       3) diagnosticar ;;
       4) instalar_postgres ;;
       5) cambiar_password ;;
+      6) buscar_leads ;;
+      7) campana ;;
       0) echo; gris "Hasta luego."; echo; exit 0 ;;
       "") ;;
       *) rojo "Opción no válida." ;;
@@ -659,6 +730,8 @@ case "${1:-}" in
   3) diagnosticar; exit $? ;;
   4) instalar_postgres "${2:-}"; exit $? ;;
   5) cambiar_password; exit $? ;;
+  6) buscar_leads; exit $? ;;
+  7) campana; exit $? ;;
 esac
 
 menu

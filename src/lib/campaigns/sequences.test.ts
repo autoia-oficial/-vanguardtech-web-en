@@ -374,3 +374,30 @@ describe('full sequence', () => {
     expect(enrollment?.status).toBe('COMPLETED');
   });
 });
+
+describe('sender fields in templates', () => {
+  it('fills {{sender_email}} from the campaign account, not with an empty string', async () => {
+    const account = await makeSender({ email: 'ventas@vanguard.example', name: 'Vanguard Tech' });
+    const lead = await makeLead({ business_name: 'Bar Central', email: 'bar@ejemplo.example' });
+    const campaign = await makeCampaign({
+      email_account_id: account.id,
+      status: 'ACTIVE',
+      sequence: [
+        {
+          step: 1,
+          wait_days: 0,
+          subject: 'Hola {{business_name}}',
+          body: 'Escríbeme a {{sender_email}} — {{sender_name}}',
+        },
+      ],
+    });
+    await enrollLead(campaign.id, lead.id);
+
+    await advanceCampaign(campaign.id);
+
+    const queued = await db.query.emails.findFirst({ where: eq(emails.lead_id, lead.id) });
+    expect(queued?.body).toContain('ventas@vanguard.example');
+    expect(queued?.body).toContain('Vanguard Tech');
+    expect(queued?.body).not.toContain('{{');
+  });
+});
