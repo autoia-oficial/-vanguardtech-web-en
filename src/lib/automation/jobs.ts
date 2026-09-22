@@ -195,6 +195,27 @@ export async function rescoreLead(leadId: number): Promise<number | null> {
   return breakdown.total;
 }
 
+/**
+ * Scores leads that still sit at zero.
+ *
+ * Discovery scores what it creates, but leads gathered before that did not get
+ * scored, and a lead with no website is never audited — so nothing else would
+ * ever come back for it. Returns how many were changed.
+ */
+export async function rescoreUnscored(limit = 500): Promise<number> {
+  const pendientes = await db.query.leads.findMany({
+    where: eq(leads.score, 0),
+    limit,
+  });
+
+  let changed = 0;
+  for (const lead of pendientes) {
+    const score = await rescoreLead(lead.id);
+    if (score !== null && score !== 0) changed++;
+  }
+  return changed;
+}
+
 export async function jobWebsiteAudit(limit?: number): Promise<JobResult> {
   const batch = limit ?? (await getNumberSetting('audit.batch_size', 10));
 

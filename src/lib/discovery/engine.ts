@@ -1,5 +1,7 @@
+import { eq } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { leads } from '@/db/schema';
+import { scoreLead, priorityForScore } from '@/lib/scoring';
 import { findDuplicateLead } from '@/lib/dedupe';
 import { recordActivity, ActivityType } from '@/lib/activity';
 import { OpenStreetMapProvider } from './providers/openstreetmap';
@@ -144,6 +146,20 @@ export async function persistDiscovered(business: DiscoveredBusiness): Promise<n
   if (rows.length === 0) return null;
 
   const lead = rows[0];
+
+  // Score it now, with no audit yet. A business with no website at all scores
+  // full marks on opportunity and never gets audited — nothing would ever come
+  // back to score it, so leaving this to the audit job left precisely the best
+  // prospects sitting at zero, sorted below everyone else.
+  const breakdown = scoreLead(lead, []);
+  const priority = priorityForScore(breakdown.total);
+  if (breakdown.total !== 0 || priority !== lead.priority) {
+    await db
+      .update(leads)
+      .set({ score: breakdown.total, priority, updated_at: new Date() })
+      .where(eq(leads.id, lead.id));
+  }
+
   await recordActivity(
     lead.id,
     ActivityType.LEAD_CREATED,
