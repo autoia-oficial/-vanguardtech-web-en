@@ -1,0 +1,3 @@
+# La carpeta comercial/ es la herramienta interna de ventas, no parte de la web.
+# Que Netlify nunca la sirva aunque llegue a publicarse este directorio.
+/comercial/*  /index.html  404!

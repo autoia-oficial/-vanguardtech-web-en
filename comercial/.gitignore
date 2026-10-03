@@ -1,0 +1,7 @@
+# Datos de leads, CRM y credenciales: NUNCA al repositorio
+config.local.env
+*.db
+*.db-journal
+datos/bajas.txt
+salida/
+__pycache__/

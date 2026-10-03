@@ -1,0 +1,26 @@
+{
+  "external_id": "ficticio-madrid-0001",
+  "business_name": "Brasa y Albahaca",
+  "sector": "restaurante",
+  "city": "Madrid",
+  "zone": "Malasaña",
+  "email": "",
+  "website_status": "none",
+  "google_business": true,
+  "rating": 4.6,
+  "reviews_count": 312,
+  "services": ["cocina de mercado", "menú del día", "terraza"],
+  "socials": {"instagram": "ficticio"},
+  "source": "datos ficticios de prueba",
+  "is_fictitious": 1,
+  "notes": "NEGOCIO FICTICIO. Creado solo para probar el diseño del correo. No corresponde a ningún restaurante real y nunca debe recibir correos.",
+  "facts": [
+    {"key": "sin_web",         "value": "true",  "source": "ficticio"},
+    {"key": "zona",            "value": "Malasaña", "source": "ficticio"},
+    {"key": "google_business", "value": "true",  "source": "ficticio"},
+    {"key": "rating",          "value": "4.6",   "source": "ficticio"},
+    {"key": "reviews_count",   "value": "312",   "source": "ficticio"},
+    {"key": "instagram",       "value": "true",  "source": "ficticio"},
+    {"key": "servicios",       "value": "su cocina de mercado, el menú del día y la terraza", "source": "ficticio"}
+  ]
+}
