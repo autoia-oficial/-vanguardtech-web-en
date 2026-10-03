@@ -175,6 +175,21 @@ class TestMime(Base):
                 construir(self.cfg, malo, "x", "BAJA", "BAJA")
 
 
+class TestLogoURL(Base):
+    def test_logo_por_url(self):
+        cfg = Config.cargar(entorno={"VT_LOGO_URL": "https://ejemplo.test/logo.png",
+                                     "VT_CONTACT_EMAIL": "c@vt.test"}, fichero=None)
+        lead = db.cargar_lead(self.conn, db.upsert_lead(self.conn, lead_base()))
+        b = construir_brief(lead)
+        html, texto = render_html(cfg, b), render_text(cfg, b)
+        self.assertIn('src="https://ejemplo.test/logo.png"', html)
+        self.assertNotIn("cid:", html)
+        self.assertEqual(problemas_contenido(b.subject, texto, html), [])
+        msg = construir(cfg, "a@b.es", b.subject, texto, html)
+        self.assertEqual([p.get_content_type() for p in msg.walk()],
+                         ["multipart/alternative", "text/plain", "text/html"])
+
+
 class TestCRMyDispatcher(Base):
     def preparar_lead(self, **extra):
         lead_id = db.upsert_lead(self.conn, lead_base(**extra))
@@ -293,7 +308,7 @@ class TestPrueba(Base):
         p = preparar_prueba(cfg, self.lead(), "andermartinez.tm@gmail.com")
         real = render_html(cfg, construir_brief(self.lead()))
         # Lo único que cambia es la franja de prueba
-        self.assertEqual(p["html"].replace(p["html"][p["html"].index("<tr><td style=\"background:#fff7d6"):
+        self.assertEqual(p["html"].replace(p["html"][p["html"].index("<tr><td bgcolor=\"#fff7d6\""):
                                                       p["html"].index("</td></tr>") + 10], ""), real)
 
 

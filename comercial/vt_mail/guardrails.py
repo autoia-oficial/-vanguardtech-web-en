@@ -43,7 +43,7 @@ def problemas_contenido(asunto: str, texto: str, html: str) -> list[str]:
         fallos.append("falta identificar el correo como comunicación comercial")
     if "<script" in html.lower() or "javascript:" in html.lower():
         fallos.append("el HTML contiene JavaScript")
-    if 'src="cid:vt-logo"' not in html:
+    if 'src="cid:vt-logo"' not in html and not re.search(r'<img src="https://[^"]+" width="44"', html):
         fallos.append("falta el logo de la firma")
     if re.search(r"<img(?![^>]*\balt=)", html):
         fallos.append("imagen sin texto alternativo")

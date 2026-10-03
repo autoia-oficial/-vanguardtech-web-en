@@ -239,7 +239,9 @@ def checklist_prueba(cfg: Config, msg, destinatario: str) -> list[tuple[str, boo
          and msg["Subject"].startswith(PREFIJO_PRUEBA)),
         ("multipart/alternative con text/plain y text/html",
          tipos[0] == "multipart/alternative" and "text/plain" in tipos and "text/html" in tipos),
-        ("logo inline (image/png, cid:vt-logo)", "image/png" in tipos and 'src="cid:vt-logo"' in html),
+        ("logo presente (inline cid:vt-logo, o URL https con VT_LOGO_URL)",
+         ("image/png" in tipos and 'src="cid:vt-logo"' in html)
+         or (bool(cfg.logo_url) and cfg.logo_url.startswith("https://") and cfg.logo_url in html)),
         ("firma de Vanguard Tech en HTML y texto", cfg.brand_name in html and cfg.brand_name in texto),
         ("sin credenciales en el mensaje", not cfg.smtp_password or cfg.smtp_password not in bytes(msg).decode(
             "utf-8", "replace")),

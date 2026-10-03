@@ -20,6 +20,10 @@ from .personalize import Brief
 TEMPLATE_VERSION = "vt-email-v1.0"
 LOGO_CID = "vt-logo"
 
+
+def logo_src(cfg: Config) -> str:
+    return escape(cfg.logo_url, quote=True) if cfg.logo_url else f"cid:{LOGO_CID}"
+
 TINTA = "#08090b"
 TEXTO = "#2b2f36"
 SUAVE = "#656d7a"
@@ -35,7 +39,7 @@ def _parrafo(texto: str, *, margen: int = 16, color: str = TEXTO) -> str:
 
 
 def banner_prueba(nota: str) -> str:
-    return (f'<tr><td style="background:#fff7d6;border-bottom:1px solid #f0e2a8;padding:12px 32px;'
+    return (f'<tr><td bgcolor="#fff7d6" style="background-color:#fff7d6;border-bottom:1px solid #f0e2a8;padding:12px 32px;'
             f'font-family:{FUENTE};font-size:13px;line-height:1.5;color:#5c4a00;" class="vt-pad">'
             f'<strong>PRUEBA INTERNA.</strong> {escape(nota)}</td></tr>')
 
@@ -44,7 +48,7 @@ def cabecera(cfg: Config) -> str:
     return (f'<tr><td class="vt-pad" style="padding:28px 40px 20px 40px;border-bottom:1px solid {LINEA};">'
             f'<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>'
             f'<td style="vertical-align:middle;padding-right:12px;">'
-            f'<img src="cid:{LOGO_CID}" width="36" height="36" alt="{escape(cfg.brand_name)}" '
+            f'<img src="{logo_src(cfg)}" width="36" height="36" alt="{escape(cfg.brand_name)}" '
             f'style="display:block;width:36px;height:36px;border:0;border-radius:18px;"></td>'
             f'<td style="vertical-align:middle;font-family:{FUENTE};font-size:15px;font-weight:700;'
             f'letter-spacing:.06em;text-transform:uppercase;color:{TINTA};">{escape(cfg.brand_name)}</td>'
@@ -98,7 +102,7 @@ def firma(cfg: Config) -> str:
     return (f'<tr><td class="vt-pad" style="padding:22px 40px 30px 40px;border-top:1px solid {LINEA};">'
             f'<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>'
             f'<td style="vertical-align:top;padding-right:14px;">'
-            f'<img src="cid:{LOGO_CID}" width="44" height="44" alt="Logotipo de {escape(cfg.brand_name)}" '
+            f'<img src="{logo_src(cfg)}" width="44" height="44" alt="Logotipo de {escape(cfg.brand_name)}" '
             f'style="display:block;width:44px;height:44px;border:0;border-radius:22px;"></td>'
             f'<td style="vertical-align:top;font-family:{FUENTE};font-size:14px;line-height:1.55;">'
             f'{"".join(lineas)}</td></tr></table></td></tr>')

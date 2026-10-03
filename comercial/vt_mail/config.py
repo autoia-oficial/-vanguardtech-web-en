@@ -77,6 +77,9 @@ class Config:
     exclusion_file: str = str(RAIZ / "datos" / "bajas.txt")
     outbox_dir: str = str(RAIZ / "salida")
     logo_path: str = str(RAIZ / "assets" / "vt-logo-96.png")
+    # Si se define, el logo se enlaza por URL (https) en vez de ir incrustado por Content-ID.
+    # Util cuando el canal de envio reescribe los Content-ID (p. ej. la API de Gmail).
+    logo_url: str = ""
 
     @classmethod
     def cargar(cls, entorno: dict[str, str] | None = None, fichero: Path | None = FICHERO_LOCAL) -> "Config":

@@ -17,7 +17,7 @@ LEAD → INVESTIGACIÓN → OPORTUNIDAD → PERSONALIZACIÓN → PROPUESTA → E
 cd comercial
 cp config.ejemplo.env config.local.env    # y rellénalo; no se sube al repo
 python3 cli.py estado                     # qué falta, sin mostrar valores
-python3 -m unittest discover -s tests -v  # 26 tests, sin red
+python3 -m unittest discover -s tests -v  # 27 tests, sin red
 ```
 
 ## Flujo
@@ -105,6 +105,14 @@ VT_TEST_RECIPIENT=tu@correo.es python3 cli.py prueba \
   --lead datos/ejemplo/restaurante_ficticio.json --para tu@correo.es
 # añade --enviar --confirmar para mandarla por SMTP (una sola)
 ```
+
+**Envíala por SMTP con este comando, no con otra herramienta.** Comprobado: la
+API/conector de Gmail reconstruye el mensaje (quita el `<style>`, elimina las
+`<img>` y reescribe los `Content-ID` y los enlaces), así que el resultado ya no
+es el que genera el motor y llega sin logo.
+
+`VT_LOGO_URL` permite enlazar el logo por https en vez de incrustarlo (por
+defecto va incrustado por `cid:vt-logo`, que es lo más fiable por SMTP).
 
 Solo acepta un negocio marcado `is_fictitious` y el destinatario de
 `VT_TEST_RECIPIENT`. Usa el mismo motor que la campaña, con una franja

@@ -46,6 +46,8 @@ def construir(cfg: Config, to: str, asunto: str, texto: str, html: str, *, prueb
 
     msg.set_content(texto, subtype="plain", charset="utf-8")
     msg.add_alternative(html, subtype="html", charset="utf-8")
+    if cfg.logo_url:
+        return msg  # logo enlazado: no hace falta la parte multipart/related
     parte_html = msg.get_payload()[1]
     logo = Path(cfg.logo_path).read_bytes()
     parte_html.add_related(logo, maintype="image", subtype="png", cid=f"<{LOGO_CID}>",
